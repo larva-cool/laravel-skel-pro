@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * This is NOT a freeware, use is subject to license terms.
+ */
+
+declare(strict_types=1);
+
+namespace App\Models\User;
+
+use App\Models\Model;
+use App\Models\Traits;
+use App\Policies\AddressPolicy;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
+
+/**
+ * 收货地址
+ *
+ * @property int $id 地址ID
+ * @property int $user_id 用户ID
+ * @property string $name 收货人
+ * @property string $country ISO 3166 国家码
+ * @property string $province 省
+ * @property string $city 市
+ * @property string $district 县区
+ * @property string $address 详细地址
+ * @property string $zipcode 邮编
+ * @property string $phone 手机
+ * @property bool $is_default 是否默认
+ * @property-read string $full_address 长地址
+ * @property-read string $phone_text 格式化后的手机号
+ * @property Carbon $created_at 创建时间
+ * @property Carbon $updated_at 更新时间
+ * @property Carbon|null $deleted_at 删除时间
+ *
+ * @author Tongle Xu <xutongle@msn.com>
+ */
+#[UsePolicy(AddressPolicy::class)]
+class Address extends Model
+{
+    use HasFactory, SoftDeletes;
+    use Traits\HasUser;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'addresses';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'user_id', 'name', 'country', 'province', 'city', 'district', 'address', 'zipcode', 'phone',
+        'is_default',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'user_id',
+    ];
+
+    /**
+     * The model's attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'country' => 'CN',
+    ];
+
+    /**
+     * 追加显示属性
+     *
+     * @var array
+     */
+    protected $appends = [
+        'full_address', 'phone_text',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'user_id' => 'integer',
+            'name' => 'string',
+            'country' => 'string',
+            'province' => 'string',
+            'city' => 'string',
+            'district' => 'string',
+            'address' => 'string',
+            'zipcode' => 'integer',
+            'phone' => 'string',
+            'is_default' => 'bool',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
+        ];
+    }
+
+    /**
+     * 获取手机号
+     */
+    protected function phoneText(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value, $attributes) => mobile_replace($attributes['phone'])
+        )->shouldCache();
+    }
+
+    /**
+     * 获取长地址
+     */
+    protected function fullAddress(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value, $attributes) => $attributes['province'].$attributes['city'].$attributes['district'].$attributes['address']
+        )->shouldCache();
+    }
+
+    /**
+     * 将当前地址设为默认
+     */
+    public function markDefault(): bool
+    {
+        static::where('user_id', $this->user_id)->update(['is_default' => false]);
+
+        return $this->updateQuietly(['is_default' => true]);
+    }
+
+    /**
+     * 获取默认地址
+     */
+    public static function getDefaultAddress(int|string $userId): ?array
+    {
+        return static::query()->where('user_id', $userId)->where('is_default', true)->first()?->toArray();
+    }
+}
