@@ -50,11 +50,6 @@ layui.config({
     labelSelector: "label-selector/labelSelector",//多选组件
     tablePlus: "tablePlus",         // 表格扩展组件
     tableSelect: "tableSelect",   //下拉表格数据选择器
-    ttuploader: {//TTUploader
-        src: rootPath + "module/tt-uploader/index", // 模块路径
-        api: 'TTUploader' // 接口名称
-    },
-    agentSelect: "agentSelect", // 服务商选择组件
 }).use(['layer', 'theme', 'table'], function () {
     layui.theme.changeTheme(window, false);
     layui.table.set({
