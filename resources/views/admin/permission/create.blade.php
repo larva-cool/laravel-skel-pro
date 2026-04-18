@@ -17,7 +17,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label required">描述</label>
                     <div class="layui-input-block">
-                        <input type="text" name="desc" value="{{ $item->desc }}" class="layui-input">
+                        <input type="text" name="desc" value="" class="layui-input">
                     </div>
                 </div>
 
@@ -39,7 +39,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label required">HTTP Path</label>
                     <div class="layui-input-block">
-                        <input type="text" name="http_path" value="" class="layui-input">
+                        <div name="http_path" id="routes" value=""></div>
                     </div>
                 </div>
 
@@ -148,6 +148,26 @@
                     })
                 }
             });
+            $.ajax({
+                url: "{{ route('admin.routes') }}",
+                dataType: "json",
+                success: function(res) {
+                    let value = $("#routes").attr("value");
+                    let initValue = value ? value.split(",") : [];
+                    xmSelect.render({
+                        el: "#routes",
+                        name: "routes",
+                        initValue: initValue,
+                        data: res,
+                        autoRow: true,
+                        toolbar: {
+                            show: true,
+                            list: ["ALL", "CLEAR", "REVERSE"]
+                        },
+                    })
+                }
+            });
+
             //提交事件
             form.on("submit(save)", function(data) {
                 let loading = layer.load();

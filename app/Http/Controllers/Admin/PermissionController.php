@@ -37,8 +37,7 @@ class PermissionController extends Controller
     public function index(Request $request)
     {
         if ($request->expectsJson()) {
-            $perPage = per_page($request, 15);
-            $items = AdminPermission::query()->orderBy('id')->paginate($perPage);
+            $items = AdminPermission::query()->orderBy('id')->paginate(per_page($request, 15));
 
             return PermissionResource::collection($items);
         }
@@ -57,11 +56,11 @@ class PermissionController extends Controller
         $container = collect();
 
         $routes = collect(app('router')->getRoutes())->map(function ($route) use ($prefix, $container) {
-            if (! Str::startsWith($uri = $route->uri(), $prefix) && $prefix && $prefix !== '/') {
+            if (!Str::startsWith($uri = $route->uri(), $prefix) && $prefix && $prefix !== '/') {
                 return;
             }
 
-            if (! Str::contains($uri, '{')) {
+            if (!Str::contains($uri, '{')) {
                 if ($prefix !== '/') {
                     $route = Str::replaceFirst($prefix, '', $uri.'*');
                 } else {
@@ -83,16 +82,6 @@ class PermissionController extends Controller
         });
 
         return $container->merge($routes)->filter()->all();
-    }
-
-    /**
-     * Get options of HTTP methods select field.
-     *
-     * @return array
-     */
-    protected function getHttpMethodsOptions(): array
-    {
-        return config('admin.route.http_methods');
     }
 
     /**
