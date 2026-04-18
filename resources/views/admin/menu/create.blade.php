@@ -96,7 +96,7 @@
         layui.use(["jquery", "xmSelect", "popup"], function () {
             let $ = layui.$;
             $.ajax({
-                url: "{{route('admin.menus.select')}}",
+                url: "{{route('admin.ajax.menu-select')}}",
                 dataType: "json",
                 success: function (res) {
                     let value = layui.$("#parent_id").attr("value");

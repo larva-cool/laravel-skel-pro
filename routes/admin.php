@@ -15,11 +15,28 @@ Route::group(['prefix' => 'auth'], function (Illuminate\Contracts\Routing\Regist
     $registrar->post('logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
 });
 
+/**
+ * Ajax
+ */
+Route::group(['prefix' => 'ajax','as'=>'ajax.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
+    $registrar->get('menus', [\App\Http\Controllers\Admin\AjaxController::class, 'menus'])->name('menus');
+    $registrar->get('permission', [\App\Http\Controllers\Admin\AjaxController::class, 'permission'])->name('permission');
+    $registrar->get('menu-select', [\App\Http\Controllers\Admin\AjaxController::class, 'menuSelect'])->name('menu-select');
+});
+
 // 后台首页
-Route::get('', [\App\Http\Controllers\Admin\IndexController::class, 'index'])->name('admin.main');
-Route::get('index', [\App\Http\Controllers\Admin\IndexController::class, 'index'])->name('admin.index');
-Route::get('account', [\App\Http\Controllers\Admin\IndexController::class, 'account'])->name('admin.account');
-Route::get('config', [\App\Http\Controllers\Admin\IndexController::class, 'config'])->name('admin.config');
-Route::get('dashboard', [\App\Http\Controllers\Admin\IndexController::class, 'dashboard'])->name('admin.dashboard');
-// 管理员管理
-Route::get('admins/person', [\App\Http\Controllers\Admin\AdminController::class, 'person'])->name('admin.admins.person');
+Route::get('', [\App\Http\Controllers\Admin\IndexController::class, 'index'])->name('main');
+Route::get('index', [\App\Http\Controllers\Admin\IndexController::class, 'index'])->name('index');
+Route::get('account', [\App\Http\Controllers\Admin\IndexController::class, 'account'])->name('account');
+Route::get('config', [\App\Http\Controllers\Admin\IndexController::class, 'config'])->name('config');
+Route::get('dashboard', [\App\Http\Controllers\Admin\IndexController::class, 'dashboard'])->name('dashboard');
+
+Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class, ['names' => 'menus'])->except(['show']);
+Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class, ['names' => 'roles'])->except(['show']);
+Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class, ['names' => 'permissions'])->except(['show']);
+Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class, ['names' => 'admins'])->except(['show']);
+Route::get('admins/person', [\App\Http\Controllers\Admin\AdminController::class, 'person'])->name('admins.person');
+
+
+
+

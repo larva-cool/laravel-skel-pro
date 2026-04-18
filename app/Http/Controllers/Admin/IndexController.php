@@ -99,7 +99,7 @@ class IndexController extends AbstractController
             ->first();
         $config = FileHelper::json(public_path('admin/config.json'));
         $config['logo']['title'] = config('app.name', 'Laravel');
-        $config['menu']['data'] = route('admin.menus.left_menu');
+        $config['menu']['data'] = route('admin.ajax.menus');
         $config['menu']['select'] = $dashboard['id'];
         $config['tab']['index'] = $dashboard;
 

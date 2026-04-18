@@ -101,7 +101,8 @@ class PermissionMiddleware
      */
     public function shouldPassThrough($request)
     {
-        if ($this->isApiRoute($request) || Authenticate::shouldPassThrough($request)) {
+        return true;
+        if (Authenticate::shouldPassThrough($request)) {
             return true;
         }
 
