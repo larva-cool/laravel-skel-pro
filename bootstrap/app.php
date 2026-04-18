@@ -8,6 +8,7 @@ declare(strict_types=1);
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Route;
 use Psr\Log\LogLevel;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -20,6 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
+        then: function () {
+            Route::middleware('admin')
+                ->prefix('admin')
+                ->group(base_path('routes/admin.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
@@ -28,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'abilities' => Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
             'ability' => Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
+            'admin.permission' => \App\Http\Middleware\Admin\PermissionMiddleware::class,
         ]);
         $middleware->web(append: [
             \App\Http\Middleware\RefreshUserActiveAt::class,
@@ -35,8 +42,21 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             \App\Http\Middleware\RefreshUserActiveAt::class,
         ]);
+        // 后台中间件组
+        $middleware->appendToGroup('admin', [
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            'auth.session',
+            'admin.permission', // 角色权限检查
+            // \App\Http\Middleware\RecordAdminLog::class, // 操作日志记录（未来可扩展）
+        ]);
         // Configure the CSRF token validation middleware.
         $middleware->validateCsrfTokens([
+            '/admin/*',
             '/api/*',
         ]);
         // Configure the cookie encryption middleware.
