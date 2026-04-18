@@ -411,17 +411,17 @@ class CommentControllerTest extends TestCase
     public function test_index_pagination()
     {
         // 创建15条测试评论
-        for ($i = 0; $i < 15; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $this->createComment([
                 'content' => '测试评论 '.$i,
             ]);
         }
 
-        // 默认应该返回10条评论
+        // 默认应该返回15条评论
         $response = $this->actingAs($this->user)->getJson('/api/v1/comment/1/comments');
         $data = $response->json('data');
         $this->assertIsArray($data);
-        $this->assertCount(10, $data);
+        $this->assertCount(15, $data);
         $this->assertNotNull($response->json('links.next'));
         $this->assertNull($response->json('links.prev'));
 
@@ -435,7 +435,7 @@ class CommentControllerTest extends TestCase
         $response = $this->actingAs($this->user)->getJson('/api/v1/comment/1/comments?page=2');
         $data = $response->json('data');
         $this->assertIsArray($data);
-        $this->assertCount(5, $data);
+        $this->assertCount(15, $data);
         $this->assertNotNull($response->json('links.prev'));
     }
 }

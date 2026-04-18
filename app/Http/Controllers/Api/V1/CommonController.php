@@ -42,8 +42,6 @@ class CommonController extends Controller
 
     /**
      * 系统配置
-     *
-     * @return JsonResponse
      */
     public function settings(): JsonResponse
     {

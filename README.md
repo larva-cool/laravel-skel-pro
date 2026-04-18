@@ -1,10 +1,10 @@
 # Laravel API 模板
 
-[![Tests](https://github.com/larva-cool/laravel-skel/actions/workflows/tests.yml/badge.svg)](https://github.com/larva-cool/laravel-skel/actions/workflows/tests.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/larva/laravel-skel)](https://packagist.org/packages/larva/laravel-skel)
-[![Latest Stable Version](https://img.shields.io/packagist/v/larva/laravel-skel)](https://packagist.org/packages/larva/laravel-skel)
-![badge](https://cnb.cool/larva-cool/laravel-skel/-/badge/git/latest/code/vscode-started)
-![badge](https://cnb.cool/larva-cool/laravel-skel/-/badge/git/latest/ci/pipeline-as-code)
+[![Tests](https://github.com/larva-cool/laravel-skel-pro/actions/workflows/tests.yml/badge.svg)](https://github.com/larva-cool/laravel-skel-pro/actions/workflows/tests.yml)
+[![Total Downloads](https://img.shields.io/packagist/dt/larva/laravel-skel-pro)](https://packagist.org/packages/larva/laravel-skel-pro)
+[![Latest Stable Version](https://img.shields.io/packagist/v/larva/laravel-skel-pro)](https://packagist.org/packages/larva/laravel-skel-pro)
+![badge](https://cnb.cool/larva-cool/laravel-skel-pro/-/badge/git/latest/code/vscode-started)
+![badge](https://cnb.cool/larva-cool/laravel-skel-pro/-/badge/git/latest/ci/pipeline-as-code)
 
 这是一个基于 Laravel 12.x 的 API 模板，采用 DDD 结构，内置 Sanctum 授权机制和用户系统，适合快速构建后端 API 服务。
 
@@ -45,7 +45,7 @@
 ### 1. 创建项目
 
 ```bash
-composer create-project larva/laravel-skel:dev-master -vv
+composer create-project larva/laravel-skel-pro:dev-master -vv
 ```
 
 ### 2. 环境配置
@@ -149,12 +149,12 @@ docker run -p 8787:8787 -d laravel_skel
 ## 监控与调试
 
 ### Telescope
-- 访问路径：`/telescope`
+- 访问路径：`admin/telescope`
 - 用途：查看请求、命令、队列等调试信息
 - 仅在开发环境中启用
 
 ### Pulse
-- 访问路径：`/pulse`
+- 访问路径：`admin/pulse`
 - 用途：实时监控应用性能、服务器状态
 - 可配置在生产环境使用
 

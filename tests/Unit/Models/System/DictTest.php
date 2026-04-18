@@ -143,10 +143,6 @@ class DictTest extends TestCase
         $this->assertEquals($parentDict->id, $childDict->parent->id);
         $this->assertCount(1, $parentDict->children);
         $this->assertEquals($childDict->id, $parentDict->children->first()->id);
-
-        // 验证子ID是否被正确设置
-        $parentDict->refresh();
-        $this->assertEquals($childDict->id, $parentDict->child_ids);
     }
 
     #[Test]

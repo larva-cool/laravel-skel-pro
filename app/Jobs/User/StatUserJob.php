@@ -56,11 +56,11 @@ class StatUserJob implements ShouldQueue
                 'stat_date' => $this->statDate,
                 'total_user_count' => $totalCount,
                 'total_coin_count' => $totalCoin,
-                'total_point_count'=> $totalPoint,
+                'total_point_count' => $totalPoint,
                 'new_user_count' => $registerCount,
                 'active_user_count' => $activeUserCount,
                 'coin_transaction_count' => $coinTradeCount,
-                'point_transaction_count'=> $pointTradeCount,
+                'point_transaction_count' => $pointTradeCount,
             ]);
         }
     }

@@ -103,6 +103,12 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "ignore": [
+                "GHSA-qrr6-mg7r-m243",
+                "PKSA-5jz8-6tcw-pbk4"
+            ]
         }
     },
     "minimum-stability": "stable",

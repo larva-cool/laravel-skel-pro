@@ -97,11 +97,6 @@ class Dict extends Model
     {
         parent::booted();
         static::saved(function (Dict $model) {
-            if ($model->parent_id) {
-                static::query()->where('id', $model->parent_id)->update([
-                    'child_ids' => static::getChildIds($model->parent_id),
-                ]);
-            }
             Cache::forget(CacheKey::key(CacheKey::DICT_TYPE, $model->code));
         });
         static::deleted(function (Dict $model) {
