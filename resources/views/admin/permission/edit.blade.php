@@ -11,21 +11,30 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label required">权限名</label>
                     <div class="layui-input-block">
-                        <input type="text" name="name" value="{{$item->name}}" required lay-verify="required" class="layui-input">
+                        <input type="text" name="name" value="{{ $item->name }}" required lay-verify="required"
+                            class="layui-input">
                     </div>
                 </div>
 
                 <div class="layui-form-item">
                     <label class="layui-form-label required">描述</label>
                     <div class="layui-input-block">
-                        <input type="text" name="desc" value="{{$item->desc}}" class="layui-input">
+                        <input type="text" name="desc" value="{{ $item->desc }}" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">权限标识</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="slug" value="{{ $item->slug }}" required lay-verify="required"
+                            class="layui-input">
                     </div>
                 </div>
 
                 <div class="layui-form-item">
                     <label class="layui-form-label">菜单</label>
                     <div class="layui-input-block">
-                        <div name="menus" id="menus" value="{{$item->menus}}" ></div>
+                        <div name="menus" id="menus" value="{{ $item->menus }}"></div>
                     </div>
                 </div>
             </div>
@@ -47,15 +56,15 @@
 @push('scripts')
     <script>
         // 字段 权限 rules
-        layui.use(["form", "xmSelect", "popup"], function () {
+        layui.use(["form", "xmSelect", "popup"], function() {
             let $ = layui.$;
             let xmSelect = layui.xmSelect;
             let form = layui.form;
             let popup = layui.popup;
             $.ajax({
-                url: "{{route('admin.menus.select')}}",
+                url: "{{ route('admin.ajax.menu-select') }}",
                 dataType: "json",
-                success: function (res) {
+                success: function(res) {
                     let value = $("#menus").attr("value");
                     let initValue = value ? value.split(",") : [];
                     xmSelect.render({
@@ -69,23 +78,26 @@
                             strict: false,
                             expandedKeys: true
                         },
-                        toolbar: {show: true, list: ["ALL", "CLEAR", "REVERSE"]},
+                        toolbar: {
+                            show: true,
+                            list: ["ALL", "CLEAR", "REVERSE"]
+                        },
                     })
                 }
             });
-            form.on("submit(save)", function (data) {
+            form.on("submit(save)", function(data) {
                 let loading = layer.load();
                 $.ajax({
-                    url: "{{route('admin.permissions.update', $item->id)}}",
+                    url: "{{ route('admin.permissions.update', $item->id) }}",
                     type: "POST",
                     dataType: "json",
                     data: data.field,
-                    success: function (res) {
-                        popup.success(res.message, function () {
+                    success: function(res) {
+                        popup.success(res.message, function() {
                             parent.layer.close(parent.layer.getFrameIndex(window.name));
                         });
                     },
-                    error: function (xhr, status, error) {
+                    error: function(xhr, status, error) {
                         popup.failure(xhr.responseJSON.message);
                     },
                     complete: function() {
@@ -95,6 +107,5 @@
                 return false;
             });
         });
-
     </script>
 @endpush
