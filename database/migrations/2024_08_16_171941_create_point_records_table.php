@@ -10,8 +10,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -34,12 +33,13 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->comment('用户ID');
             $table->integer('points')->comment('本次交易的积分数');
             $table->string('description')->comment('描述');
-            $table->morphs('source');
+            $table->string('source_type')->comment('源类型');
+            $table->unsignedBigInteger('source_id')->comment('源ID');
             $table->string('type')->comment('交易类型');
             $table->timestamp('expired_at')->nullable()->comment('过期时间');
             $table->timestamp('created_at')->nullable()->comment('创建时间');
 
-            $table->index(['user_id', 'expired_at'], 'idx_point_trades');
+            $table->index(['user_id', 'source_type', 'source_id', 'expired_at'], 'idx_point_trades');
 
             $table->comment('积分交易流水表');
         });

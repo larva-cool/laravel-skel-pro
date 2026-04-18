@@ -29,6 +29,7 @@ return new class extends Migration
             $table->unsignedBigInteger('point_transaction_count')->default(0)->comment('积分交易总数');
             $table->timestamp('created_at')->nullable()->comment('统计时间');
             $table->index(['stat_date', 'created_at']);
+            
             $table->comment('用户统计表');
         });
     }

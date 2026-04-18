@@ -25,7 +25,7 @@ return new class extends Migration
             $table->json('extra')->nullable()->comment('扩展信息');
             $table->timestamps();
 
-            $table->unique(['user_id', 'source_type', 'source_id'], 'uniq2_user_source');
+            $table->unique(['user_id', 'source_type', 'source_id'], 'uniq2_user_follow');
             $table->comment('关注');
         });
     }
