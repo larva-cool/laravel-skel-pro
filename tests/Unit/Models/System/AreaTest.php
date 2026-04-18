@@ -30,7 +30,7 @@ class AreaTest extends TestCase
         $fillable = $area->getFillable();
 
         $this->assertEqualsCanonicalizing([
-            'parent_id', 'name', 'child_ids', 'area_code', 'lat', 'lng', 'city_code', 'order',
+            'parent_id', 'name', 'area_code', 'lat', 'lng', 'city_code', 'order',
         ], $fillable);
     }
 
@@ -48,7 +48,6 @@ class AreaTest extends TestCase
             'lat' => 'float',
             'lng' => 'float',
             'city_code' => 'string',
-            'child_ids' => 'string',
             'order' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
@@ -245,34 +244,5 @@ class AreaTest extends TestCase
         // 测试强制删除
         $area->forceDelete();
         $this->assertModelMissing($area);
-    }
-
-    #[Test]
-    #[TestDox('测试在保存时更新父级子级ID')]
-    public function test_update_parent_child_ids_on_save()
-    {
-        $parent = Area::factory()->create(['child_ids' => '']);
-        $child1 = Area::factory()->child($parent->id)->create();
-
-        // 刷新父地区模型
-        $parent->refresh();
-        $this->assertEquals($child1->id, $parent->child_ids);
-
-        // 添加第二个子地区
-        $child2 = Area::factory()->child($parent->id)->create();
-        $parent->refresh();
-
-        // 对ID进行排序后再比较，不依赖插入顺序
-        $expectedIds = [$child1->id, $child2->id];
-        sort($expectedIds);
-        $actualIds = explode(',', $parent->child_ids);
-        sort($actualIds);
-
-        $this->assertEquals(implode(',', $expectedIds), implode(',', $actualIds));
-
-        // 强制删除一个子地区
-        $child1->forceDelete();
-        $parent->refresh();
-        $this->assertEquals($child2->id, $parent->child_ids);
     }
 }

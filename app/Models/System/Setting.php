@@ -108,9 +108,25 @@ class Setting extends Model
         $updateTime = Carbon::now();
         $items = [];
         foreach ($data as $item) {
+            $item = array_merge([
+                'name' => null,
+                'key' => null,
+                'value' => null,
+                'cast_type' => 'string',
+                'input_type' => 'text',
+                'param' => null,
+                'order' => 99,
+                'remark' => null,
+            ], $item);
+
             $item['updated_at'] = $updateTime;
             $items[] = $item;
         }
-        Setting::insert($items);
+
+        self::query()->upsert(
+            $items,
+            ['key'],
+            ['name', 'value', 'cast_type', 'input_type', 'param', 'order', 'remark', 'updated_at'],
+        );
     }
 }

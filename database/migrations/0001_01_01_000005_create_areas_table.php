@@ -14,6 +14,7 @@ declare(strict_types=1);
  * parent-child relationships, area names, codes, and ordering. The table also
  * supports soft deletes and timestamps for record management.
  */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -36,7 +37,6 @@ return new class extends Migration
             $table->float('lat', 10, 6)->nullable()->comment('纬度');
             $table->float('lng', 10, 6)->nullable()->comment('经度');
             $table->string('city_code')->nullable()->comment('城市编码');
-            $table->text('child_ids')->nullable()->comment('子ID');
             $table->unsignedSmallInteger('order')->default(0)->nullable()->comment('排序');
             $table->timestamps();
             $table->softDeletes()->comment('删除时间');

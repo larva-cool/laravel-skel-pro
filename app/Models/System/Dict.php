@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class Dict extends Model
 {
+    
     use HasFactory, SoftDeletes;
 
     /**
@@ -55,7 +56,7 @@ class Dict extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'parent_id', 'name', 'description', 'code', 'status', 'order', 'child_ids',
+        'parent_id', 'name', 'description', 'code', 'status', 'order',
     ];
 
     /**
@@ -65,7 +66,7 @@ class Dict extends Model
      */
     protected $attributes = [
         'status' => StatusSwitch::ENABLED->value,
-        'order' => 0,
+        'order' => 99,
     ];
 
     /**
@@ -81,7 +82,6 @@ class Dict extends Model
             'name' => 'string',
             'description' => 'string',
             'code' => 'string',
-            'child_ids' => 'string',
             'status' => StatusSwitch::class,
             'order' => 'integer',
             'created_at' => 'datetime',
@@ -117,7 +117,9 @@ class Dict extends Model
      */
     public function children(): HasMany
     {
-        return $this->hasMany(static::class, 'parent_id', 'id')->orderBy('order');
+        return $this->hasMany(static::class, 'parent_id', 'id')
+            ->where('status', StatusSwitch::ENABLED->value)
+            ->orderBy('order', 'asc');
     }
 
     /**
@@ -158,16 +160,18 @@ class Dict extends Model
     public static function getOptions(string $code): array
     {
         return Cache::remember(CacheKey::key(CacheKey::DICT_TYPE, $code), 3600, function () use ($code) {
-            $dict = self::query()->with(['children'])->whereNull('parent_id')
-                ->where('code', '=', $code)
-                ->where('status', StatusSwitch::ENABLED->value)
-                ->first();
-            if ($dict && $dict->children) {
+                $dict = static::query()->where('code', $code)
+                    ->whereNull('parent_id')
+                    ->where('status', StatusSwitch::ENABLED->value)
+                    ->first();
+
+                if (!$dict) {
+                    return [];
+                }
+
                 return $dict->children->pluck('name', 'code')->toArray();
             }
-
-            return [];
-        });
+        );
     }
 
     /**
@@ -181,8 +185,7 @@ class Dict extends Model
         if (! $code) {
             return '';
         }
-        $items = self::getOptions($type);
 
-        return $items[$code] ?? '';
+        return self::getOptions($type)[$code] ?? '';
     }
 }
