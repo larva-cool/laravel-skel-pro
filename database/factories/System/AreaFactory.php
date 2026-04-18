@@ -32,7 +32,6 @@ class AreaFactory extends Factory
             'name' => $this->faker->state(),
             'parent_id' => null,
             'area_code' => $this->faker->unique()->randomNumber(6),
-            'child_ids' => '',
             'order' => $this->faker->randomNumber(),
         ];
     }
