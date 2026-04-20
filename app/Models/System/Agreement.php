@@ -6,14 +6,13 @@
 
 declare(strict_types=1);
 
-namespace App\Models\Agreement;
+namespace App\Models\System;
 
 use App\Enum\StatusSwitch;
+use App\Models\Agreement\AgreementRead;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -98,60 +97,5 @@ class Agreement extends Model
     protected function scopeActive(Builder $query, string $type): Builder
     {
         return $query->where('status', '=', StatusSwitch::ENABLED->value)->where('type', '=', $type);
-    }
-
-    /**
-     * 协议同意关系定义
-     */
-    public function agree(): HasOne
-    {
-        return $this->hasOne(AgreementRead::class);
-    }
-
-    /**
-     * 协议已读关系
-     */
-    public function reads(): HasMany
-    {
-        return $this->hasMany(AgreementRead::class);
-    }
-
-    /**
-     * 是否已经同意
-     */
-    public function isAgree(int|string $userId): bool
-    {
-        $existing = $this->agree()->where('user_id', $userId)->first();
-        if ($existing) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * 标记协议为已读
-     *
-     * @param  int  $userId  用户ID
-     */
-    public function markAsAgree(int $userId): bool
-    {
-        if ($this->isAgree($userId)) {
-            return true;
-        }
-
-        return (bool) $this->agree()->create(['user_id' => $userId]);
-    }
-
-    /**
-     * 获取未同意协议数量
-     */
-    public static function getNotAgreedCount(int $userId, string $type): int
-    {
-        return self::active($type)
-            ->whereDoesntHave('agree', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-            ->count();
     }
 }

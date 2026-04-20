@@ -10,7 +10,7 @@ namespace Tests\Unit\Http\Resources\Api\V1;
 
 use App\Enum\StatusSwitch;
 use App\Http\Resources\Api\V1\AgreementResource;
-use App\Models\Agreement\Agreement;
+use App\Models\System\Agreement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Request;

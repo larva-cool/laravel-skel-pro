@@ -10,10 +10,9 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AgreementResource;
-use App\Models\Agreement\Agreement;
+use App\Models\System\Agreement;
 use App\Models\System\Dict;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
 
 /**
  * 协议
@@ -25,7 +24,7 @@ class AgreementController extends Controller
     /**
      * 协议类型
      */
-    public function types()
+    public function types(): JsonResponse
     {
         $items = Dict::getOptions('AGREEMENT_TYPE');
 
@@ -35,34 +34,14 @@ class AgreementController extends Controller
     /**
      * 按类型获取最新的一个协议
      *
+     * @param  string  $type
      * @return AgreementResource
      */
-    public function show($type)
+    public function show(string $type): AgreementResource
     {
-        $user = Auth::guard('sanctum')->user();
         $query = Agreement::query()->active($type);
-        if ($user) {
-            $query->with([
-                'agree' => function ($query) use ($user) {
-                    $query->where('user_id', $user->id);
-                },
-            ]);
-        }
         $item = $query->orderBy('id', 'desc')
             ->firstOrFail();
-
-        return new AgreementResource($item);
-    }
-
-    /**
-     * 同意协议
-     *
-     * @return AgreementResource
-     */
-    public function agree(Request $request)
-    {
-        $item = Agreement::query()->where('id', $request->id)->firstOrFail();
-        $item->markAsAgree($request->user()->id);
 
         return new AgreementResource($item);
     }

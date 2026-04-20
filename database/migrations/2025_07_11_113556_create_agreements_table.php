@@ -31,15 +31,6 @@ return new class extends Migration {
             $table->index(['type', 'status', 'order', 'created_at']);
             $table->comment('用户协议');
         });
-
-        Schema::create('agreement_reads', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('agreement_id')->comment('协议ID');
-            $table->unsignedBigInteger('user_id')->comment('用户ID');
-            $table->timestamp('created_at')->nullable()->comment('创建时间');
-            $table->index(['agreement_id', 'user_id'], 'idx_agreement_user');
-            $table->comment('协议已读');
-        });
     }
 
     /**
@@ -47,7 +38,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('agreement_reads');
         Schema::dropIfExists('agreements');
     }
 };
