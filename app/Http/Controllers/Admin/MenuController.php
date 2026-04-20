@@ -12,7 +12,6 @@ use App\Http\Requests\Admin\Admin\StoreAdminMenuRequest;
 use App\Http\Requests\Admin\Admin\UpdateAdminMenuRequest;
 use App\Http\Resources\Admin\MenuResource;
 use App\Models\Admin\AdminMenu;
-use App\Support\PermissionHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -52,7 +51,7 @@ class MenuController extends AbstractController
         return view('admin.menu.index');
     }
 
-    
+
 
     /**
      * 添加菜单页

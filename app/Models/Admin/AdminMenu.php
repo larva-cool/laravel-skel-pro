@@ -175,7 +175,7 @@ class AdminMenu extends Model
      *
      * @return array[]
      */
-    public static function makePermission(string $key, string $href): array
+    public static function makeSubMenu(string $key, string $href): array
     {
         return [
             [

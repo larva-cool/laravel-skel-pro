@@ -36,14 +36,13 @@ class AreaController extends AbstractController
     public function index(Request $request)
     {
         if ($request->expectsJson()) {
-            $perPage = per_page($request, 15);
             $query = Area::query()->orderBy('order')->orderBy('id');
             if ($request->has('parent_id')) {
                 $query->where('parent_id', $request->integer('parent_id'));
             } else {
                 $query->whereNull('parent_id');
             }
-            $items = $query->withCount(['children'])->paginate($perPage);
+            $items = $query->withCount(['children'])->paginate(per_page($request, 15));
 
             return AreaResource::collection($items);
         }
