@@ -17,17 +17,31 @@
                 </div>
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label required">描述</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="desc" value="{{ $item->desc }}" class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
                     <label class="layui-form-label required">权限标识</label>
                     <div class="layui-input-block">
                         <input type="text" name="slug" value="{{ $item->slug }}" required lay-verify="required"
                             class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">HTTP Method</label>
+                    <div class="layui-input-block">
+                        <div name="http_method" id="methods" value=""></div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">HTTP Path</label>
+                    <div class="layui-input-block">
+                        <div name="http_path" id="routes" value=""></div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">排序</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="order" value="0" class="layui-input">
                     </div>
                 </div>
 

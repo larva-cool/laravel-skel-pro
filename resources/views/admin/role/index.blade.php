@@ -13,7 +13,7 @@
 
         <!-- 表格顶部工具栏 -->
         <script type="text/html" id="table-toolbar">
-            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="create" permission="admin.roles.create">
+            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="create">
                 <i class="layui-icon layui-icon-add-1"></i>新增
             </button>
         </script>
@@ -21,8 +21,8 @@
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
             @{{# if(d.show_toolbar){ }}
-            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit" permission="admin.roles.edit"><i class="layui-icon layui-icon-edit"></i></button>
-            <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove" permission="admin.roles.delete"><i class="layui-icon layui-icon-delete"></i></button>
+            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+            <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
             @{{# } }}
         </script>
     </div>

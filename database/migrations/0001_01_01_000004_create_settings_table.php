@@ -39,7 +39,7 @@ return new class extends Migration
             // 基本设置
             ['name' => '网站URL', 'key' => 'system.url', 'value' => 'https://www.xxx.com', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => '移动网站URL', 'key' => 'system.m_url', 'value' => 'https://m.xxx.com', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
-            ['name' => '网站标题', 'key' => 'system.title', 'value' => 'Laravel Skeleton', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
+            ['name' => '网站标题', 'key' => 'system.title', 'value' => 'Laravel', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => '网站关键词', 'key' => 'system.keywords', 'value' => 'Laravel', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => '网站描述', 'key' => 'system.description', 'value' => 'Laravel', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => 'ICP备案号', 'key' => 'system.icp_beian', 'value' => 'ICP备XXXX号', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
