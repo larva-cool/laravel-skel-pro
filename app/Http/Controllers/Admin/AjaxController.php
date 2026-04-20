@@ -6,6 +6,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Admin\AdminMenu;
+use App\Models\Admin\AdminRole;
 use App\Support\TreeHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,10 +29,10 @@ class AjaxController extends AbstractController
     /**
      * 获取菜单列表
      */
-    public function adminMenus(Request $request)
+    public function menus(Request $request)
     {
         $rules = PermissionHelper::getRules($request->user()->getRoleIds());
-        $types = $request->get('type', '0,1');
+        $types = $request->query('type', '0,1');
         $types = is_string($types) ? explode(',', $types) : [0, 1];
         $items = AdminMenu::query()->orderByDesc('order')->orderBy('id')->get()->toArray();
 
@@ -47,18 +48,18 @@ class AjaxController extends AbstractController
         $tree = new TreeHelper($formattedItems);
         $tree_items = $tree->getTree();
         // 超级管理员权限为 *
-        if (! in_array('*', $rules)) {
+        if (!in_array('*', $rules)) {
             PermissionHelper::removeNotContain($tree_items, 'id', $rules);
         }
         PermissionHelper::removeNotContain($tree_items, 'type', $types);
         $menus = PermissionHelper::emptyFilter(TreeHelper::arrayValues($tree_items));
-        if (! app()->environment('production')) {
+        if (!app()->environment('production')) {
             $menus = array_merge($menus, AdminMenu::getDefaultMenus());
         }
 
         return response()->json($menus);
     }
-    
+
     /**
      * 获取权限
      */
@@ -70,7 +71,17 @@ class AjaxController extends AbstractController
     }
 
     /**
-     * 菜单Select
+     * 角色 Select
+     * @param  Request  $request
+     * @return array
+     */
+    public function roleSelect(Request $request): array
+    {
+        return AdminRole::getTreeForXmSelect();
+    }
+
+    /**
+     * 菜单 Select
      * @param  Request  $request
      * @return array
      */

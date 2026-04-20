@@ -31,7 +31,6 @@ class MenuResource extends JsonResource
         $type = match ($this->type) {
             0 => '目录',
             1 => '菜单',
-            2 => '权限',
             default => '未知',
         };
 
@@ -41,7 +40,6 @@ class MenuResource extends JsonResource
             'name' => $this->title,
             'title' => $this->title,
             'icon' => 'layui-icon '.$this->icon,
-            'key' => $this->key,
             'parent_id' => $this->parent_id,
             'order' => $this->order,
             'href' => $this->href,

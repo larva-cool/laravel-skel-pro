@@ -66,7 +66,8 @@ class MenuController extends AbstractController
      */
     public function store(StoreAdminMenuRequest $request): JsonResponse
     {
-        AdminMenu::create($request->validated());
+        $item = AdminMenu::create($request->safe()->except('roles'));
+        $item->roles()->attach($request->roles);
 
         return $this->success(trans('system.create_success'));
     }
@@ -86,7 +87,8 @@ class MenuController extends AbstractController
      */
     public function update(UpdateAdminMenuRequest $request, AdminMenu $menu)
     {
-        $menu->update($request->validated());
+        $menu->update($request->safe()->except('roles'));
+        $menu->roles()->attach($request->roles);
 
         return $this->success(trans('system.update_success'));
     }

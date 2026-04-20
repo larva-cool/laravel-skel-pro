@@ -165,8 +165,8 @@ class AdminController extends AbstractController
      */
     public function destroy(Admin $admin): JsonResponse
     {
-        if (Admin::count() == 1) {
-            return $this->fail(trans('system.last_admin_cant_delete'));
+        if ($admin == config('admin.permission.administrator_id')) {
+            return $this->fail(trans('system.super_admin_cant_delete'));
         }
         $admin->delete();
 

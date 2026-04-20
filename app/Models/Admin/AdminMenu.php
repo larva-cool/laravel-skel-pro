@@ -18,6 +18,13 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * 管理员菜单规则
+ * @property int $id 菜单ID
+ * @property int $parent_id 父菜单
+ * @property string $title 菜单名称
+ * @property string $icon 图标
+ * @property string $href 目标页面
+ * @property int $type 菜单类型 0目录，1菜单
+ * @property int $order 排序
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -38,7 +45,7 @@ class AdminMenu extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'id', 'parent_id', 'title', 'icon', 'key', 'href', 'type', 'order',
+        'id', 'parent_id', 'title', 'icon', 'href', 'type', 'order',
     ];
 
     /**
@@ -62,7 +69,6 @@ class AdminMenu extends Model
             'parent_id' => 'integer',
             'title' => 'string',
             'icon' => 'string',
-            'key' => 'string',
             'href' => 'string',
             'type' => 'integer',
             'order' => 'integer',
@@ -181,7 +187,6 @@ class AdminMenu extends Model
             [
                 'title' => '列表',
                 'icon' => 'layui-icon layui-icon-username',
-                'key' => $key.'.index',
                 'href' => $href.'/index',
                 'type' => 2,
                 'order' => 1000,
@@ -189,7 +194,6 @@ class AdminMenu extends Model
             [
                 'title' => '创建',
                 'icon' => 'layui-icon layui-icon-username',
-                'key' => $key.'.create',
                 'href' => $href.'/create',
                 'type' => 2,
                 'order' => 1000,
@@ -197,7 +201,6 @@ class AdminMenu extends Model
             [
                 'title' => '修改',
                 'icon' => 'layui-icon layui-icon-username',
-                'key' => $key.'.edit',
                 'href' => $href.'/edit',
                 'type' => 2,
                 'order' => 1000,
@@ -205,7 +208,6 @@ class AdminMenu extends Model
             [
                 'title' => '删除',
                 'icon' => 'layui-icon layui-icon-username',
-                'key' => $key.'.destroy',
                 'href' => $href.'/destroy',
                 'type' => 2,
                 'order' => 1000,

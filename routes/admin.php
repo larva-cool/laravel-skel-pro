@@ -10,18 +10,19 @@ use Illuminate\Support\Facades\Route;
 
 // 认证路由
 Route::group(['prefix' => 'auth'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
-    $registrar->get('login', [\App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('admin.login');
-    $registrar->post('login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login.auth');
-    $registrar->post('logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
+    $registrar->get('login', [\App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('login');
+    $registrar->post('login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login.auth');
+    $registrar->post('logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');
 });
 
 /**
  * Ajax
  */
 Route::group(['prefix' => 'ajax','as'=>'ajax.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
-    $registrar->get('menus', [\App\Http\Controllers\Admin\AjaxController::class, 'menus'])->name('menus');
+    $registrar->get('left-menus', [\App\Http\Controllers\Admin\AjaxController::class, 'menus'])->name('left-menus');
     $registrar->get('permission', [\App\Http\Controllers\Admin\AjaxController::class, 'permission'])->name('permission');
-    $registrar->get('menu-select', [\App\Http\Controllers\Admin\AjaxController::class, 'menuSelect'])->name('menu-select');
+    $registrar->get('menu-select', [\App\Http\Controllers\Admin\AjaxController::class, 'menuSelect'])->name('menu-select');// 菜单选择
+    $registrar->get('role-select', [\App\Http\Controllers\Admin\AjaxController::class, 'roleSelect'])->name('role-select');// 角色选择
 });
 
 // 后台首页
@@ -31,6 +32,7 @@ Route::get('account', [\App\Http\Controllers\Admin\IndexController::class, 'acco
 Route::get('config', [\App\Http\Controllers\Admin\IndexController::class, 'config'])->name('config');
 Route::get('dashboard', [\App\Http\Controllers\Admin\IndexController::class, 'dashboard'])->name('dashboard');
 
+// 管理员
 Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class, ['names' => 'menus'])->except(['show']);
 Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class, ['names' => 'roles'])->except(['show']);
 Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class, ['names' => 'permissions'])->except(['show']);

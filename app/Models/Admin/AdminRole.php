@@ -85,4 +85,32 @@ class AdminRole extends Model
     {
         return $this->belongsToMany(AdminMenu::class, 'admin_role_menus', 'role_id', 'menu_id')->withTimestamps();
     }
+
+    /**
+     * 获取角色树（兼容xm-select格式）
+     *
+     * @param  array  $options  配置选项
+     * @return array 树形结构数组
+     */
+    public static function getTreeForXmSelect(array $options = []): array
+    {
+        // 合并默认选项
+        $options = array_merge([
+            'includeAllFields' => false,
+            'selectedValues' => [],
+        ], $options);
+
+        // 构建查询
+        $query = self::query()->orderBy('id');
+
+        // 选择字段
+        if ($options['includeAllFields']) {
+            $query->select('*');
+        } else {
+            $query->select('id as value', 'name');
+        }
+
+        // 获取角色
+        return $query->get()->toArray();
+    }
 }
