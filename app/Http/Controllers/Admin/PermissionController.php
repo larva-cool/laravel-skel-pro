@@ -53,6 +53,9 @@ class PermissionController extends Controller
     {
         $prefix = (string) config('admin.route.prefix');
 
+        $aaa = collect(app('router')->getRoutes())->toArray();
+        print_r($aaa);
+
         $container = collect();
 
         $routes = collect(app('router')->getRoutes())->map(function ($route) use ($prefix, $container) {

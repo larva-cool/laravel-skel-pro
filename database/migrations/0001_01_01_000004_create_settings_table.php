@@ -90,6 +90,10 @@ return new class extends Migration
             ['name' => 'OpenAI Project', 'key' => 'openai.project', 'value' => null, 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => 'OpenAI Base URI', 'key' => 'openai.base_uri', 'value' => null, 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => 'OpenAI Request Timeout', 'key' => 'openai.request_timeout', 'value' => 30, 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
+
+            // 运维配置
+            ['name' => 'Telescope Switch', 'key' => 'telescope.enabled', 'value' => 1, 'cast_type' => SettingType::CAST_TYPE_BOOL, 'input_type' => SettingType::CAST_TYPE_BOOL],
+            ['name' => 'Pulse Switch', 'key' => 'pulse.enabled', 'value' => 1, 'cast_type' => SettingType::CAST_TYPE_BOOL, 'input_type' => SettingType::CAST_TYPE_BOOL],
         ]);
     }
 
