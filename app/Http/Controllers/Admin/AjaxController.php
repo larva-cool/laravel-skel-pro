@@ -29,11 +29,11 @@ class AjaxController extends AbstractController
     /**
      * 获取菜单列表
      */
-    public function menus(Request $request)
+    public function leftMenus(Request $request)
     {
-        $rules = PermissionHelper::getRules($request->user()->getRoleIds());
-        $types = $request->query('type', '0,1');
-        $types = is_string($types) ? explode(',', $types) : [0, 1];
+        //$rules = PermissionHelper::getRules($request->user()->getRoleIds());
+        //$types = $request->query('type', '0,1');
+        //$types = is_string($types) ? explode(',', $types) : [0, 1];
         $items = AdminMenu::query()->orderByDesc('order')->orderBy('id')->get()->toArray();
 
         $formattedItems = [];
@@ -48,16 +48,16 @@ class AjaxController extends AbstractController
         $tree = new TreeHelper($formattedItems);
         $tree_items = $tree->getTree();
         // 超级管理员权限为 *
-        if (!in_array('*', $rules)) {
-            PermissionHelper::removeNotContain($tree_items, 'id', $rules);
-        }
-        PermissionHelper::removeNotContain($tree_items, 'type', $types);
-        $menus = PermissionHelper::emptyFilter(TreeHelper::arrayValues($tree_items));
-        if (!app()->environment('production')) {
-            $menus = array_merge($menus, AdminMenu::getDefaultMenus());
-        }
+//        if (!in_array('*', $rules)) {
+//            PermissionHelper::removeNotContain($tree_items, 'id', $rules);
+//        }
+//        PermissionHelper::removeNotContain($tree_items, 'type', $types);
+//        $menus = PermissionHelper::emptyFilter(TreeHelper::arrayValues($tree_items));
+//        if (!app()->environment('production')) {
+//            $menus = array_merge($menus, AdminMenu::getDefaultMenus());
+//        }
 
-        return response()->json($menus);
+        return response()->json($tree_items);
     }
 
     /**

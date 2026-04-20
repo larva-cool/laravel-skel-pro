@@ -95,11 +95,11 @@ class IndexController extends AbstractController
     public function config(): JsonResponse
     {
         $dashboard = AdminMenu::query()
-            ->select(['id', 'href', 'title'])->where('key', 'admin.index.dashboard')
+            ->select(['id', 'href', 'title'])->where('href', '/admin/dashboard')
             ->first();
         $config = FileHelper::json(public_path('admin/config.json'));
         $config['logo']['title'] = config('app.name', 'Laravel');
-        $config['menu']['data'] = route('admin.ajax.menus');
+        $config['menu']['data'] = route('admin.ajax.left-menus');
         $config['menu']['select'] = $dashboard['id'] ?? '';
         $config['tab']['index'] = $dashboard;
 

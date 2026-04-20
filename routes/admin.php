@@ -19,7 +19,7 @@ Route::group(['prefix' => 'auth'], function (Illuminate\Contracts\Routing\Regist
  * Ajax
  */
 Route::group(['prefix' => 'ajax','as'=>'ajax.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
-    $registrar->get('left-menus', [\App\Http\Controllers\Admin\AjaxController::class, 'menus'])->name('left-menus');
+    $registrar->get('left-menus', [\App\Http\Controllers\Admin\AjaxController::class, 'leftMenus'])->name('left-menus');
     $registrar->get('permission', [\App\Http\Controllers\Admin\AjaxController::class, 'permission'])->name('permission');
     $registrar->get('menu-select', [\App\Http\Controllers\Admin\AjaxController::class, 'menuSelect'])->name('menu-select');// 菜单选择
     $registrar->get('role-select', [\App\Http\Controllers\Admin\AjaxController::class, 'roleSelect'])->name('role-select');// 角色选择
