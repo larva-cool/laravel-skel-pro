@@ -51,8 +51,6 @@ class MenuController extends AbstractController
         return view('admin.menu.index');
     }
 
-
-
     /**
      * 添加菜单页
      */
@@ -101,5 +99,15 @@ class MenuController extends AbstractController
         $menu->delete();
 
         return $this->success(trans('system.delete_success'));
+    }
+
+    /**
+     * 菜单 Select
+     * @param  Request  $request
+     * @return array
+     */
+    public function menuSelect(Request $request): array
+    {
+        return AdminMenu::getTreeForXmSelect();
     }
 }
