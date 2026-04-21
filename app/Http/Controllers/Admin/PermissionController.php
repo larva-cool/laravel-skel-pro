@@ -120,6 +120,7 @@ class PermissionController extends AbstractController
      */
     public function edit(AdminPermission $permission)
     {
+        $permission->load('menus');
         return view('admin.permission.edit', [
             'item' => $permission,
             'update_url' => route('admin.permissions.update', $permission->id),

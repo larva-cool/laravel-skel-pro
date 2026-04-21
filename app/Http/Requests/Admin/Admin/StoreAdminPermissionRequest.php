@@ -10,6 +10,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * 保存权限
+ * @property array $menus
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */

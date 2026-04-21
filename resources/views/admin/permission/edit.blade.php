@@ -48,7 +48,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">菜单</label>
                     <div class="layui-input-block">
-                        <div name="menus" id="menus" value="{{ $item->menus }}"></div>
+                        <div name="menus" id="menus" value="{{ $item->menus->pluck('id')->implode(',') }}"></div>
                     </div>
                 </div>
             </div>
@@ -75,16 +75,56 @@
             let xmSelect = layui.xmSelect;
             let form = layui.form;
             let popup = layui.popup;
+            let initHttpMethod = @json($item->http_method);
+            let initHttpPath = @json($item->http_path);
+            let initMenus = @json($item->menus->pluck('id'));
+
+            xmSelect.render({
+                el: "#http_method",
+                name: "http_method",
+                initValue: initHttpMethod,
+                autoRow: true,
+                data: [
+                    {name: 'GET', value: 'GET'},
+                    {name: 'POST', value: 'POST'},
+                    {name: 'PUT', value: 'PUT'},
+                    {name: 'DELETE', value: 'DELETE'},
+                    {name: 'PATCH', value: 'PATCH'},
+                    {name: 'OPTIONS', value: 'OPTIONS'},
+                    {name: 'HEAD', value: 'HEAD'},
+                ],
+                toolbar: {
+                    show: true,
+                    list: ["ALL", "CLEAR", "REVERSE"]
+                },
+            });
+
+            $.ajax({
+                url: "{{ route('admin.routes') }}",
+                dataType: "json",
+                success: function(res) {
+                    xmSelect.render({
+                        el: "#http_path",
+                        name: "http_path",
+                        initValue: initHttpPath,
+                        data: res,
+                        autoRow: true,
+                        toolbar: {
+                            show: true,
+                            list: ["ALL", "CLEAR", "REVERSE"]
+                        },
+                    })
+                }
+            });
+
             $.ajax({
                 url: "{{ route('admin.ajax.menu-select') }}",
                 dataType: "json",
                 success: function(res) {
-                    let value = $("#menus").attr("value");
-                    let initValue = value ? value.split(",") : [];
                     xmSelect.render({
                         el: "#menus",
                         name: "menus",
-                        initValue: initValue,
+                        initValue: initMenus,
                         data: res,
                         autoRow: true,
                         tree: {

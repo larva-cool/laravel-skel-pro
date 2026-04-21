@@ -64,16 +64,17 @@ layui.config({
             layEvent: 'refresh',
             icon: 'layui-icon-refresh',
             onClick: function (obj) { // 点击事件 - 2.9.12+
-                //console.log(obj); // 查看返回的对象成员
                 layui.table.reloadData(obj.config.id, {
                     where: obj.config.where,
                     page: {
                         page: obj.config.page.curr || 1,
                     }
                 });
-                //console.log('重载数据完成');
             }
         }, 'filter', 'print', 'exports'],
+        text: {
+            none: '暂无数据' // 无数据时的提示文本
+        },
         request: {
             pageName: 'page', // 页码参数名
             limitName: 'per_page', // 每页数据条数参数名

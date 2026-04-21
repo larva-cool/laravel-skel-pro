@@ -75,14 +75,10 @@
             let popup = layui.popup;
             let form = layui.form;
 
-            let http_method_value = $("#http_method").attr("value");
-            let http_path_value = $("#http_path").attr("value");
-            let menus_value = $("#menus").attr("value");
-
             xmSelect.render({
                 el: "#http_method",
                 name: "http_method",
-                initValue: http_method_value ? http_method_value.split(",") : [],
+                initValue: [],
                 autoRow: true,
                 data: [
                     {name: 'GET', value: 'GET'},
@@ -106,7 +102,7 @@
                     xmSelect.render({
                         el: "#http_path",
                         name: "http_path",
-                        initValue: http_path_value ? http_path_value.split(",") : [],
+                        initValue: [],
                         data: res,
                         autoRow: true,
                         toolbar: {
@@ -124,7 +120,7 @@
                     xmSelect.render({
                         el: "#menus",
                         name: "menus",
-                        initValue: menus_value ? menus_value.split(",") : [],
+                        initValue: [],
                         data: res,
                         autoRow: true,
                         tree: {
