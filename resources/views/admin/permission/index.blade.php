@@ -73,7 +73,7 @@
                         type: 2,
                         title: '修改权限',
                         shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "650px", common.isMobile() ? "100%" : "650px"],
+                        area: ["850px",  "850px"],
                         content: obj.data.edit_url,
                         end: function (index) {
                             table.reload('data-table');

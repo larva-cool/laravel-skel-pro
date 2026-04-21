@@ -50,40 +50,68 @@ class PermissionController extends AbstractController
      */
     public function getRoutes(): array
     {
-        $prefix = (string) config('admin.route.prefix');
+        // 1. 后台路由前缀
+        $prefix = 'admin';
 
-        $aaa = collect(app('router')->getRoutes())->toArray();
-        print_r($aaa);
-
+        // 2. 新建一个空集合，用来存放最终要返回的路由
         $container = collect();
 
+        // 3. 获取 Laravel 全部路由，开始遍历处理
         $routes = collect(app('router')->getRoutes())->map(function ($route) use ($prefix, $container) {
+
+            // ====================== 过滤：只保留后台路由 ======================
+            // 如果路由不是以 $prefix 开头，并且前缀不是 /，就跳过这条路由
             if (!Str::startsWith($uri = $route->uri(), $prefix) && $prefix && $prefix !== '/') {
                 return;
             }
 
+            // ====================== 处理【无参数路由】 ======================
+            // 如果路由里没有 {xxx} 这种动态参数
             if (!Str::contains($uri, '{')) {
+
+                // 如果前缀不是 /，就把前缀去掉，末尾加 *
+                // 例如：admin/user → user*
                 if ($prefix !== '/') {
                     $route = Str::replaceFirst($prefix, '', $uri.'*');
                 } else {
+                    // 前缀是 /，直接加 *
                     $route = $uri.'*';
                 }
 
+                // 把处理好的路由丢到容器里
                 if ($route !== '*') {
                     $container->push($route);
                 }
             }
 
+            // ====================== 处理【有参数路由】 ======================
+            // 把路由里的 {id} {name} 等动态参数 全部替换成 *
+            // 例如：admin/user/{id} → admin/user/*
             $path = preg_replace('/{.*}+/', '*', $uri);
 
-            if ($prefix !== '/') {
-                return Str::replaceFirst($prefix, '', $path);
-            }
+            // 去掉前缀
+//            if ($prefix !== '/') {
+//                return Str::replaceFirst($prefix, '', $path);
+//            }
 
+            // 返回处理好的路径
             return $path;
+
         });
 
-        return $container->merge($routes)->filter()->all();
+        // 合并、去重、去空
+        $finalRoutes = $container
+            ->merge($routes)
+            ->filter()
+            ->unique()
+            ->values();
+
+        return $finalRoutes->map(function ($route) {
+            return [
+                'name' => $route,  // 显示名称
+                'value' => $route // 值
+            ];
+        })->all();
     }
 
     /**

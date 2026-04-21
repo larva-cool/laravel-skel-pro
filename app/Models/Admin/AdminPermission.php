@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Models\Admin;
 
+use App\Casts\AsJson;
 use App\Models\Model;
 use App\Support\AdminHelper;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -60,8 +61,8 @@ class AdminPermission extends Model
             'parent_id' => 'integer',
             'name' => 'string',
             'slug' => 'string',
-            'http_method' => 'string',
-            'http_path' => 'string',
+            'http_method' => AsJson::class,
+            'http_path' => AsJson::class,
             'order' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
@@ -158,7 +159,7 @@ class AdminPermission extends Model
 
         return false;
     }
-    
+
     /**
      * 请求是否与特定的HTTP方法和路径相匹配。
      */
@@ -178,38 +179,4 @@ class AdminPermission extends Model
 
         return $method->isEmpty() || $method->contains($request->method());
     }
-
-    /**
-     * @param  string  $path
-     */
-    public function getHttpPathAttribute($path): array
-    {
-        return explode(',', $path);
-    }
-
-    public function setHttpPathAttribute($path)
-    {
-        if (is_array($path)) {
-            $path = implode(',', $path);
-        }
-
-        return $this->attributes['http_path'] = $path;
-    }
-
-    public function setHttpMethodAttribute($method): void
-    {
-        if (is_array($method)) {
-            $this->attributes['http_method'] = implode(',', $method);
-        }
-    }
-
-    public function getHttpMethodAttribute($method): array
-    {
-        if (is_string($method)) {
-            return array_filter(explode(',', $method));
-        }
-
-        return $method;
-    }
-
 }

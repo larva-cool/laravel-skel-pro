@@ -96,7 +96,7 @@
             });
 
             $.ajax({
-                url: "{{ route('admin.routes') }}",
+                url: "{{ route('admin.permissions.routes') }}",
                 dataType: "json",
                 success: function(res) {
                     xmSelect.render({

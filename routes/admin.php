@@ -36,6 +36,7 @@ Route::get('dashboard', [\App\Http\Controllers\Admin\IndexController::class, 'da
 Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class, ['names' => 'menus'])->except(['show']);
 Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class, ['names' => 'roles'])->except(['show']);
 Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class, ['names' => 'permissions'])->except(['show']);
+Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class, ['names' => 'admins'])->except(['show']);
 
 // 管理员管理
 Route::get('admins/person', [\App\Http\Controllers\Admin\AdminController::class, 'person'])->name('admins.person');
@@ -43,8 +44,7 @@ Route::post('admins/person', [\App\Http\Controllers\Admin\AdminController::class
 Route::post('admins/password', [\App\Http\Controllers\Admin\AdminController::class, 'storePassword'])->name('admins.update_password');
 Route::post('admins/status', [\App\Http\Controllers\Admin\AdminController::class, 'updateStatus'])->name('admins.status');
 Route::post('admins/avatar/{admin}', [\App\Http\Controllers\Admin\AdminController::class, 'updateAvatar'])->name('admins.avatar');
-Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class, ['names' => 'admins'])->except(['show']);
-Route::get('permissions/routes', [\App\Http\Controllers\Admin\PermissionController::class, 'getRoutes'])->name('routes');
+Route::get('permissions/routes', [\App\Http\Controllers\Admin\PermissionController::class, 'getRoutes'])->name('permissions.routes');
 
 // 系统设置
 Route::get('system-config', [\App\Http\Controllers\Admin\SettingController::class, 'config'])->name('system-config');
