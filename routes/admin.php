@@ -40,6 +40,11 @@ Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class, ['
 Route::get('permissions/routes', [\App\Http\Controllers\Admin\PermissionController::class, 'getRoutes'])->name('routes');
 Route::get('admins/person', [\App\Http\Controllers\Admin\AdminController::class, 'person'])->name('admins.person');
 
+// 系统设置
+Route::get('system-config', [\App\Http\Controllers\Admin\SettingController::class, 'config'])->name('system-config');
+Route::post('system-config', [\App\Http\Controllers\Admin\SettingController::class, 'storeConfig'])->name('system-config.store');
+Route::resource('settings', \App\Http\Controllers\Admin\SettingController::class, ['names' => 'settings'])->except(['show']);
+
 
 
 

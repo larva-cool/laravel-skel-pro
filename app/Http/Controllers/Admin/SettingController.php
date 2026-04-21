@@ -38,8 +38,6 @@ class SettingController extends AbstractController
     public function index(Request $request)
     {
         if ($request->expectsJson()) {
-            $perPage = per_page($request, 15);
-
             // 基础查询
             $query = Setting::query();
 
@@ -51,7 +49,7 @@ class SettingController extends AbstractController
                 $query->orderBy($request->field, $request->order);
             }
             // 获取分页数据
-            $items = $query->paginate($perPage);
+            $items = $query->paginate(per_page($request, 15));
 
             return SettingResource::collection($items);
         }

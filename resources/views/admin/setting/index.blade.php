@@ -13,15 +13,15 @@
 
         <!-- 表格顶部工具栏 -->
         <script type="text/html" id="table-toolbar">
-            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="create" permission="admin.settings.create">
+            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="create">
                 <i class="layui-icon layui-icon-add-1"></i>新增
             </button>
         </script>
 
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
-            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit" permission="admin.settings.edit"><i class="layui-icon layui-icon-edit"></i></button>
-            <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove" permission="admin.settings.delete"><i class="layui-icon layui-icon-delete"></i></button>
+            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+            <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
         </script>
     </div>
 @endsection

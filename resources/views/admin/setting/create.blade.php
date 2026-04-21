@@ -106,7 +106,7 @@
             form.on("submit(save)", function (data) {
                 let loading = layer.load();
                 $.ajax({
-                    url: "{{route('admin.ai_agents.store')}}"
+                    url: "{{route('admin.settings.store')}}"
                     , type: "POST"
                     , dataType: "json"
                     , data: data.field

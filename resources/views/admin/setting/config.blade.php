@@ -28,8 +28,6 @@
                             <li lay-id="mail">邮件设置</li>
                             <li lay-id="upload">上传设置</li>
                             <li lay-id="openai">OpenAI 配置</li>
-                            <li lay-id="vod">点播设置</li>
-                            <li lay-id="feed">Feed流</li>
                         </ul>
                         <div class="layui-tabs-body">
                             <!--基本信息-->
@@ -563,114 +561,6 @@
                                     </div>
                                     <div class="layui-form-mid layui-text-em">请求超时时间，单位为秒。</div>
                                 </div>
-                            </div>
-                            <!--点播设置-->
-                            <div class="layui-tabs-item" lay-id="vod">
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">视频空间</label>
-                                    <div class="layui-input-inline">
-                                        <input type="text" name="vod[space_name]"
-                                            value="{{ $settings['vod.space_name'] ?? '' }}" placeholder="请输入视频空间名称"
-                                            class="layui-input">
-                                    </div>
-                                    <div class="layui-form-mid layui-text-em">在视频点播控制台创建的空间的名称</div>
-                                </div>
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">视频区域</label>
-                                    <div class="layui-input-inline">
-                                        <input type="text" name="vod[region]"
-                                            value="{{ $settings['vod.region'] ?? '' }}" placeholder="请输入视频区域"
-                                            class="layui-input">
-                                    </div>
-                                    <div class="layui-form-mid layui-text-em">视频空间所属区域，例如：cn-north-1。</div>
-                                </div>
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">APP ID</label>
-                                    <div class="layui-input-inline">
-                                        <input type="text" name="vod[app_id]"
-                                            value="{{ $settings['vod.app_id'] ?? '' }}" placeholder="请输入APP ID"
-                                            class="layui-input">
-                                    </div>
-                                    <div class="layui-form-mid layui-text-em">在视频点播控制台应用管理页面创建的应用的
-                                        AppID。视频点播的质量监控等都是以这个参数来区分业务方的，务必正确填写。</div>
-                                </div>
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">Web/H5 APP ID</label>
-                                    <div class="layui-input-inline">
-                                        <input type="text" name="vod[web_app_id]"
-                                            value="{{ $settings['vod.web_app_id'] ?? '' }}"
-                                            placeholder="请输入Web/H5 APP ID" class="layui-input">
-                                    </div>
-                                    <div class="layui-form-mid layui-text-em">在视频点播控制台应用管理页面创建的应用的
-                                        AppID。视频点播的质量监控等都是以这个参数来区分业务方的，务必正确填写。</div>
-                                </div>
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">播放有效期</label>
-                                    <div class="layui-input-inline">
-                                        <div class="layui-input-group">
-                                            <input type="text" name="vod[token_expire]"
-                                                value="{{ $settings['vod.token_expire'] ?? '' }}"
-                                                placeholder="请输入播放签名有效期" class="layui-input">
-                                            <div class="layui-input-split layui-input-suffix">
-                                                秒
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-mid layui-text-em">播放地址签名有效期，单位为秒，最少60秒。</div>
-                                </div>
-
-                            </div>
-                            <!--Feed 流-->
-                            <div class="layui-tabs-item" lay-id="feed">
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">偏好内容数量</label>
-                                    <div class="layui-input-inline">
-                                        <input type="text" name="drama[recommend_prefer_limit]"
-                                            value="{{ $settings['drama.feed_prefer_limit'] ?? '12' }}"
-                                            placeholder="请输入偏好内容数量" class="layui-input">
-                                    </div>
-                                </div>
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">热门数量</label>
-                                    <div class="layui-input-inline">
-                                        <input type="text" name="drama[feed_hot_limit]"
-                                            value="{{ $settings['drama.feed_hot_limit'] ?? '6' }}"
-                                            placeholder="请输入热门数量" class="layui-input">
-                                    </div>
-                                </div>
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">新剧数量</label>
-                                    <div class="layui-input-inline">
-                                        <input type="text" name="drama[feed_new_limit]"
-                                            value="{{ $settings['drama.feed_new_limit'] ?? '4' }}"
-                                            placeholder="请输入新剧数量" class="layui-input">
-                                    </div>
-                                </div>
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">新剧天数范围</label>
-                                    <div class="layui-input-inline">
-                                        <input type="text" name="drama[feed_new_days]"
-                                            value="{{ $settings['drama.feed_new_days'] ?? '7' }}"
-                                            placeholder="请输入新剧天数范围" class="layui-input">
-                                    </div>
-                                </div>
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">未登录热门数量</label>
-                                    <div class="layui-input-inline">
-                                        <input type="text" name="drama[feed_guest_hot_limit]"
-                                            value="{{ $settings['drama.feed_guest_hot_limit'] ?? '12' }}"
-                                            placeholder="请输入未登录热门数量" class="layui-input">
-                                    </div>
-                                </div>
-                                <div class="layui-form-item">
-                                    <label class="layui-form-label">未登录新剧数量</label>
-                                    <div class="layui-input-inline">
-                                        <input type="text" name="drama[feed_guest_new_limit]"
-                                            value="{{ $settings['drama.feed_guest_new_limit'] ?? '8' }}"
-                                            placeholder="请输入未登录新剧数量" class="layui-input">
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
                     </div>

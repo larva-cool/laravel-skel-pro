@@ -94,13 +94,6 @@ class StoreConfigRequest extends FormRequest
             'openai.project' => ['nullable', 'string', 'max:255'],
             'openai.api_key' => ['nullable', 'string', 'max:255'],
             'openai.request_timeout' => ['nullable', 'integer', 'min:3'],
-
-            // 视频点播
-            'vod.space_name' => ['required', 'string', 'max:255'],
-            'vod.region' => ['required', 'string', 'max:255'],
-            'vod.app_id' => ['required', 'string', 'max:255'],
-            'vod.web_app_id' => ['required', 'string', 'max:255'],
-            'vod.token_expire' => ['required', 'integer', 'min:60'],
         ];
     }
 }
