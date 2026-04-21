@@ -55,7 +55,13 @@ class Area extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'parent_id', 'name',  'area_code', 'lat', 'lng', 'city_code', 'order',
+        'parent_id',
+        'name',
+        'area_code',
+        'lat',
+        'lng',
+        'city_code',
+        'order',
     ];
 
     /**
@@ -95,13 +101,14 @@ class Area extends Model
     protected static function booted(): void
     {
         parent::booted();
-        static::saved(function (Area $model) {
+        $clearCache = function (Area $model) {
             Cache::forget(CacheKey::key(CacheKey::AREA_TREE, $model->parent_id));
-        });
+            Cache::forget(CacheKey::key(CacheKey::AREA_TREE, 'xm-select', 0));
+            Cache::forget(CacheKey::key(CacheKey::AREA_TREE, 'xm-select', $model->parent_id));
+        };
 
-        static::deleted(function (Area $model) {
-            Cache::forget(CacheKey::key(CacheKey::AREA_TREE, $model->parent_id));
-        });
+        static::saved($clearCache);
+        static::deleted($clearCache);
     }
 
     /**
@@ -163,7 +170,7 @@ class Area extends Model
      */
     public static function getProvinces()
     {
-        return Cache::remember(CacheKey::AREA_TREE . ':province', 86400, function () {
+        return Cache::remember(CacheKey::AREA_TREE.':province', 86400, function () {
             return static::query()
                 ->whereNull('parent_id')
                 ->orderBy('order')
@@ -196,14 +203,14 @@ class Area extends Model
         $tree = [];
         foreach ($items as $item) {
             $tree[] = [
-                'id'         => $item->id,
-                'parent_id'  => $item->parent_id,
-                'name'       => $item->name,
-                'area_code'  => $item->area_code,
-                'city_code'  => $item->city_code,
-                'lat'        => $item->lat,
-                'lng'        => $item->lng,
-                'children'   => static::areaTree($item->id),
+                'id' => $item->id,
+                'parent_id' => $item->parent_id,
+                'name' => $item->name,
+                'area_code' => $item->area_code,
+                'city_code' => $item->city_code,
+                'lat' => $item->lat,
+                'lng' => $item->lng,
+                'children' => static::areaTree($item->id),
             ];
         }
 
@@ -233,32 +240,82 @@ class Area extends Model
 
     /**
      * 获取菜单树（兼容xm-select格式）
+     *
+     * @param  int|string|null  $parentId  父菜单ID
+     * @param  array  $options  配置选项
+     * @return array 树形结构数组
      */
     public static function getTreeForXmSelect(int|string|null $parentId = null, array $options = []): array
     {
+        // 合并默认选项
         $options = array_merge([
             'selectedValues' => [],
         ], $options);
 
-        $query = self::query()
-            ->withCount('children')
-            ->where('parent_id', $parentId)
-            ->orderBy('order')
-            ->orderBy('id');
+        // 规范化 parentId：null 或 0 都表示顶级
+        $normalizedParentId = empty($parentId) || $parentId === '0' ? null : $parentId;
+        $cacheParentId = $normalizedParentId ?? 'root';
 
-        $query->select('id as value', 'name', 'order');
-        $items = $query->get()->toArray();
+        // 使用缓存
+        $cacheKey = CacheKey::key(CacheKey::AREA_TREE, 'xm-select', $cacheParentId);
 
-        foreach ($items as &$item) {
-            $item['icon'] = 'layui-icon layui-icon-set';
-            $item['selected'] = in_array($item['value'], $options['selectedValues']);
-            $item['children'] = self::getTreeForXmSelect($item['value'], $options);
+        $tree = Cache::remember($cacheKey, 86400, function () use ($normalizedParentId) {
+            // 一次查询获取所有地区
+            $allAreas = self::query()
+                ->select('id', 'name', 'parent_id', 'order')
+                ->orderBy('order')
+                ->orderBy('id')
+                ->get()
+                ->keyBy('id');
 
-            if (empty($item['children'])) {
-                unset($item['children']);
+            // 按 parent_id 分组，null 键需要特殊处理
+            $grouped = [];
+            foreach ($allAreas as $area) {
+                $pid = $area->parent_id;
+                if (!isset($grouped[$pid])) {
+                    $grouped[$pid] = [];
+                }
+                $grouped[$pid][] = $area;
             }
-        }
 
-        return $items;
+            // 递归构建树形结构（内存操作）
+            $buildTree = function ($pid) use (&$buildTree, $grouped) {
+                $tree = [];
+                $children = $grouped[$pid] ?? [];
+
+                foreach ($children as $area) {
+                    $node = [
+                        'value' => $area->id,
+                        'name' => $area->name,
+                        'icon' => 'layui-icon layui-icon-set',
+                    ];
+
+                    $childNodes = $buildTree($area->id);
+                    if (!empty($childNodes)) {
+                        $node['children'] = $childNodes;
+                    }
+
+                    $tree[] = $node;
+                }
+
+                return $tree;
+            };
+
+            return $buildTree($normalizedParentId);
+        });
+
+        // 处理选中状态（每次调用都需要重新处理）
+        $applySelected = function (&$tree) use (&$applySelected, $options) {
+            foreach ($tree as &$node) {
+                $node['selected'] = in_array($node['value'], $options['selectedValues']);
+                if (isset($node['children'])) {
+                    $applySelected($node['children']);
+                }
+            }
+        };
+
+        $applySelected($tree);
+
+        return $tree;
     }
 }

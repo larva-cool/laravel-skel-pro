@@ -42,7 +42,7 @@ class AreaController extends AbstractController
             } else {
                 $query->whereNull('parent_id');
             }
-            $items = $query->withCount(['children'])->paginate(per_page($request, 15));
+            $items = $query->withCount(['children'])->paginate(per_page($request, 1000));
 
             return AreaResource::collection($items);
         }
