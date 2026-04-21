@@ -55,13 +55,7 @@ class Area extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'parent_id',
-        'name',
-        'area_code',
-        'lat',
-        'lng',
-        'city_code',
-        'order',
+        'parent_id', 'name', 'area_code', 'lat', 'lng', 'city_code', 'order',
     ];
 
     /**
@@ -257,7 +251,7 @@ class Area extends Model
         $cacheParentId = $normalizedParentId ?? 'root';
 
         // 使用缓存
-        $cacheKey = CacheKey::key(CacheKey::AREA_XM_SELECT,  $cacheParentId);
+        $cacheKey = CacheKey::key(CacheKey::AREA_XM_SELECT, $cacheParentId);
 
         $tree = Cache::remember($cacheKey, 86400, function () use ($normalizedParentId) {
             // 一次查询获取所有地区
@@ -272,7 +266,7 @@ class Area extends Model
             $grouped = [];
             foreach ($allAreas as $area) {
                 $pid = $area->parent_id;
-                if (!isset($grouped[$pid])) {
+                if (! isset($grouped[$pid])) {
                     $grouped[$pid] = [];
                 }
                 $grouped[$pid][] = $area;
@@ -291,7 +285,7 @@ class Area extends Model
                     ];
 
                     $childNodes = $buildTree($area->id);
-                    if (!empty($childNodes)) {
+                    if (! empty($childNodes)) {
                         $node['children'] = $childNodes;
                     }
 

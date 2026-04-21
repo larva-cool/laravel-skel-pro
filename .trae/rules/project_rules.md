@@ -12,7 +12,6 @@
 - **缓存**：Redis
 - **队列**：Laravel Horizon
 - **测试**：PHPUnit 12.x
-- **代码质量**：PHP_CodeSniffer
 
 ## 编码时需遵循的重要规则
 - 始终完成需求文档中的所有任务
