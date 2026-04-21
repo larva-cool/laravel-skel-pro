@@ -18,7 +18,7 @@ class CacheKey
     public const SETTINGS = 'system:settings'; // 系统配置缓存 Key
     public const DICT_TYPE = 'system:dicts:%s'; // 数据字典类型缓存 Key
     public const AREA_TREE = 'system:areas:%s';// 地区缓存
-
+    public const AREA_XM_SELECT = 'system:xm-select:%s';// 地区缓存
     /**
      * 生成数据字典类型缓存 Key
      */

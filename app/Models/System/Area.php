@@ -103,8 +103,8 @@ class Area extends Model
         parent::booted();
         $clearCache = function (Area $model) {
             Cache::forget(CacheKey::key(CacheKey::AREA_TREE, $model->parent_id));
-            Cache::forget(CacheKey::key(CacheKey::AREA_TREE, 'xm-select', 0));
-            Cache::forget(CacheKey::key(CacheKey::AREA_TREE, 'xm-select', $model->parent_id));
+            Cache::forget(CacheKey::key(CacheKey::AREA_XM_SELECT, 'root'));
+            Cache::forget(CacheKey::key(CacheKey::AREA_XM_SELECT, $model->parent_id));
         };
 
         static::saved($clearCache);
@@ -253,11 +253,11 @@ class Area extends Model
         ], $options);
 
         // 规范化 parentId：null 或 0 都表示顶级
-        $normalizedParentId = empty($parentId) || $parentId === '0' ? null : $parentId;
+        $normalizedParentId = empty($parentId) ? null : $parentId;
         $cacheParentId = $normalizedParentId ?? 'root';
 
         // 使用缓存
-        $cacheKey = CacheKey::key(CacheKey::AREA_TREE, 'xm-select', $cacheParentId);
+        $cacheKey = CacheKey::key(CacheKey::AREA_XM_SELECT,  $cacheParentId);
 
         $tree = Cache::remember($cacheKey, 86400, function () use ($normalizedParentId) {
             // 一次查询获取所有地区
