@@ -6,7 +6,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Admin\AdminMenu;
-use App\Models\Admin\AdminRole;
 use App\Support\TreeHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -70,23 +69,5 @@ class AjaxController extends AbstractController
         return $this->success('ok', $permissions);
     }
 
-    /**
-     * 角色 Select
-     * @param  Request  $request
-     * @return array
-     */
-    public function roleSelect(Request $request): array
-    {
-        return AdminRole::getTreeForXmSelect();
-    }
 
-    /**
-     * 菜单 Select
-     * @param  Request  $request
-     * @return array
-     */
-    public function menuSelect(Request $request): array
-    {
-        return AdminMenu::getTreeForXmSelect();
-    }
 }

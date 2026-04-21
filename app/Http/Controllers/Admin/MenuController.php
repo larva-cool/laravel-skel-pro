@@ -36,8 +36,8 @@ class MenuController extends AbstractController
     public function index(Request $request)
     {
         if ($request->expectsJson()) {
-            $perPage = per_page($request, 15);
-            $query = AdminMenu::query()->orderBy('order')->orderBy('id');
+            $perPage = per_page($request, 1000);
+            $query = AdminMenu::query()->withCount('children')->orderBy('order')->orderBy('id');
             if ($request->has('parent_id')) {
                 $query->where('parent_id', $request->integer('parent_id'));
             } else {
@@ -64,8 +64,10 @@ class MenuController extends AbstractController
      */
     public function store(StoreAdminMenuRequest $request): JsonResponse
     {
-        $item = AdminMenu::create($request->safe()->except('roles'));
-        $item->roles()->attach($request->roles);
+        $menu = AdminMenu::create($request->safe()->except('roles'));
+        if ($request->roles) {
+            $menu->roles()->attach($request->roles);
+        }
 
         return $this->success(trans('system.create_success'));
     }
@@ -86,7 +88,9 @@ class MenuController extends AbstractController
     public function update(UpdateAdminMenuRequest $request, AdminMenu $menu)
     {
         $menu->update($request->safe()->except('roles'));
-        $menu->roles()->attach($request->roles);
+        if ($request->roles) {
+            $menu->roles()->attach($request->roles);
+        }
 
         return $this->success(trans('system.update_success'));
     }

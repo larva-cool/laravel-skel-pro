@@ -161,7 +161,7 @@
             });
 
             $.ajax({
-                url: "{{ route('admin.ajax.menu-select') }}",
+                url: "{{ route('admin.menus.select') }}",
                 dataType: "json",
                 success: function(res) {
                     xmSelect.render({

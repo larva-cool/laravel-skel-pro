@@ -148,6 +148,7 @@
                         initValue: [],
                         data: res,
                         autoRow: true,
+                        direction: 'down',
                         toolbar: {
                             show: true,
                             list: ["ALL", "CLEAR", "REVERSE"]
@@ -157,7 +158,7 @@
             });
 
             $.ajax({
-                url: "{{ route('admin.ajax.menu-select') }}",
+                url: "{{ route('admin.menus.select') }}",
                 dataType: "json",
                 success: function(res) {
                     xmSelect.render({
@@ -166,6 +167,7 @@
                         initValue: [],
                         data: res,
                         autoRow: true,
+                        direction: 'down',
                         tree: {
                             "show": true,
                             strict: false,

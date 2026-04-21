@@ -30,8 +30,10 @@ class PermissionResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'value' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
+            'is_parent' => $this->children_count > 0,
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
             'edit_url' => route('admin.permissions.edit', $this->id),

@@ -95,6 +95,8 @@
                 },
                 cols: [cols],
                 page: true,
+                limit: 500,
+                limits: [50,100,150,200,500],
                 toolbar: "#table-toolbar",
                 defaultToolbar: [{
                     title: "刷新",

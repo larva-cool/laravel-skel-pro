@@ -36,7 +36,14 @@ class PermissionController extends AbstractController
     public function index(Request $request)
     {
         if ($request->expectsJson()) {
-            $items = AdminPermission::query()->orderBy('id')->paginate(per_page($request, 15));
+            $perPage = per_page($request, 1000);
+            $query = AdminPermission::query()->withCount('children')->orderBy('order')->orderBy('id');
+            if ($request->has('parent_id')) {
+                $query->where('parent_id', $request->integer('parent_id'));
+            } else {
+                $query->whereNull('parent_id');
+            }
+            $items = $query->withCount(['children'])->paginate($perPage);
 
             return PermissionResource::collection($items);
         }
@@ -115,13 +122,13 @@ class PermissionController extends AbstractController
     }
 
     /**
-     * xm-select 选择器
+     * 菜单 Select
+     * @param  Request  $request
+     * @return array
      */
-    public function select(): JsonResponse
+    public function select(Request $request): array
     {
-        $items = AdminPermission::query()->select(['id as value', 'name'])->orderBy('id')->get();
-
-        return response()->json($items);
+        return AdminPermission::getTreeForXmSelect();
     }
 
     /**
@@ -138,8 +145,9 @@ class PermissionController extends AbstractController
     public function store(StoreAdminPermissionRequest $request)
     {
         $permission = AdminPermission::create($request->safe()->except('menus'));
-        $permission->menus()->sync($request->menus);
-
+        if ($request->menus) {
+            $permission->menus()->sync($request->menus);
+        }
         return $this->success(trans('system.create_success'));
     }
 
@@ -161,7 +169,9 @@ class PermissionController extends AbstractController
     public function update(StoreAdminPermissionRequest $request, AdminPermission $permission)
     {
         $permission->update($request->safe()->except('menus'));
-        $permission->menus()->sync($request->menus);
+        if ($request->menus) {
+            $permission->menus()->sync($request->menus);
+        }
 
         return $this->success(trans('system.update_success'));
     }

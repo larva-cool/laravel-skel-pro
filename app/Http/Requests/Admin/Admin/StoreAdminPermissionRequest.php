@@ -47,6 +47,7 @@ class StoreAdminPermissionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'parent_id' => ['nullable', 'int'],
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255'],
             'http_method' => ['required', 'array'],

@@ -21,8 +21,6 @@ Route::group(['prefix' => 'auth'], function (Illuminate\Contracts\Routing\Regist
 Route::group(['prefix' => 'ajax','as'=>'ajax.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
     $registrar->get('left-menus', [\App\Http\Controllers\Admin\AjaxController::class, 'leftMenus'])->name('left-menus');
     $registrar->get('permission', [\App\Http\Controllers\Admin\AjaxController::class, 'permission'])->name('permission');
-    $registrar->get('menu-select', [\App\Http\Controllers\Admin\AjaxController::class, 'menuSelect'])->name('menu-select');// 菜单选择
-    $registrar->get('role-select', [\App\Http\Controllers\Admin\AjaxController::class, 'roleSelect'])->name('role-select');// 角色选择
 });
 
 // 后台首页
@@ -33,6 +31,7 @@ Route::get('config', [\App\Http\Controllers\Admin\IndexController::class, 'confi
 Route::get('dashboard', [\App\Http\Controllers\Admin\IndexController::class, 'dashboard'])->name('dashboard');
 
 // 角色管理
+Route::get('roles/select', [\App\Http\Controllers\Admin\RoleController::class, 'select'])->name('roles.select');
 Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class, ['names' => 'roles'])->except(['show']);
 
 // 权限管理
@@ -49,6 +48,7 @@ Route::post('admins/avatar/{admin}', [\App\Http\Controllers\Admin\AdminControlle
 Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class, ['names' => 'admins'])->except(['show']);
 
 // 菜单管理
+Route::get('menus/select', [\App\Http\Controllers\Admin\MenuController::class, 'menuSelect'])->name('menus.select');
 Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class, ['names' => 'menus'])->except(['show']);
 
 // 系统设置
