@@ -75,40 +75,40 @@
         </div>
     </div>
     <script type="text/html" id="dict-type-toolbar">
-        <button class="pear-btn pear-btn-primary pear-btn-md" permission="admin.dicts.create"  lay-event="add">
+        <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
             <i class="layui-icon layui-icon-add-1"></i>
             新增
         </button>
     </script>
 
     <script type="text/html" id="dict-type-bar">
-        <button class="pear-btn pear-btn-primary pear-btn-xs" permission="admin.dicts.edit" lay-event="edit">
+        <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit">
             <i class="layui-icon layui-icon-edit"></i>
         </button>
         <button class="pear-btn pear-btn-warming pear-btn-xs" lay-event="details">
             <i class="layui-icon layui-icon-transfer"></i>
         </button>
-        <button class="pear-btn pear-btn-danger pear-btn-xs" permission="admin.dicts.delete" lay-event="remove">
+        <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove">
             <i class="layui-icon layui-icon-delete"></i>
         </button>
     </script>
 
     <script type="text/html" id="dict-data-toolbar">
-        <button class="pear-btn pear-btn-primary pear-btn-md" permission="admin.dicts.create" lay-event="add">
+        <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
             <i class="layui-icon layui-icon-add-1"></i>
             新增
         </button>
-        <button class="pear-btn pear-btn-danger pear-btn-md" permission="admin.dicts.delete" lay-event="batchRemove">
+        <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove">
             <i class="layui-icon layui-icon-delete"></i>
             删除
         </button>
     </script>
 
     <script type="text/html" id="dict-data-bar">
-        <button class="pear-btn pear-btn-primary pear-btn-xs" permission="admin.dicts.edit" lay-event="edit"><i
+        <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i
                 class="layui-icon layui-icon-edit"></i>
         </button>
-        <button class="pear-btn pear-btn-danger pear-btn-xs" permission="admin.dicts.delete" lay-event="remove"><i
+        <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i
                 class="layui-icon layui-icon-delete"></i>
         </button>
     </script>
@@ -125,67 +125,19 @@
             let tablePlus = layui.tablePlus;
             let parentId;
             let cols = [
-                {
-                    title: '字典名称',
-                    field: 'name',
-                    align: 'center',
-                    width: 120
-                },
-                {
-                    title: '描述',
-                    field: 'description',
-                    align: 'center'
-                },
-                {
-                    title: '字典编码',
-                    field: 'code',
-                    align: 'center',
-                },
-                {
-                    title: "字典状态",
-                    field: "status",
-                    templet: function (d) {
-                        return tablePlus.statusSwitch('{{route('admin.dicts.status')}}', d, "status");
-                    },
-                    width: 90,
-                },
-                {
-                    title: '操作',
-                    toolbar: '#dict-type-bar',
-                    align: 'center',
-                    width: 190
-                }
+                {title: '字典名称', field: 'name', align: 'center', width: 120},
+                {title: '描述', field: 'description', align: 'center'},
+                {title: '字典编码', field: 'code', align: 'center',},
+                {title: "字典状态", field: "status", templet: function (d) {return tablePlus.statusSwitch('{{route('admin.dicts.status')}}', d, "status");}, width: 90,},
+                {title: '操作', toolbar: '#dict-type-bar', align: 'center', width: 190}
             ];
             let dataCols = [
                 [
-                    {
-                        type: 'checkbox'
-                    },
-                    {
-                        title: '标签',
-                        field: 'name',
-                        align: 'center',
-                        width: 120
-                    },
-                    {
-                        title: '对应值',
-                        field: 'code',
-                        align: 'center'
-                    },
-                    {
-                        title: "状态",
-                        field: "status",
-                        templet: function (d) {
-                            return tablePlus.statusSwitch('{{route('admin.dicts.status')}}', d, "status");
-                        },
-                        width: 90,
-                    },
-                    {
-                        title: '操作',
-                        toolbar: '#dict-data-bar',
-                        align: 'center',
-                        width: 180
-                    }
+                    {type: 'checkbox'},
+                    {title: '标签', field: 'name', align: 'center', width: 120},
+                    {title: '对应值', field: 'code', align: 'center'},
+                    {title: "状态", field: "status", templet: function (d) {return tablePlus.statusSwitch('{{route('admin.dicts.status')}}', d, "status");}, width: 90,},
+                    {title: '操作', toolbar: '#dict-data-bar', align: 'center', width: 180}
                 ]
             ];
             let renderData = function (id) {
@@ -199,7 +151,6 @@
                     },
                     height: 'full-148',
                     cols: dataCols,
-
                     toolbar: '#dict-data-toolbar',
                 });
             }
@@ -219,7 +170,7 @@
                             dataType: 'json',
                             type: 'delete',
                             success: function (res) {
-                                if(res.code == 0) {
+                                if(res.code === 0) {
                                     layer.msg(res.message, {icon: 1, time: 1000}, function () {
                                         obj.del();
                                     });

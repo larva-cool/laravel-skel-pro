@@ -45,6 +45,13 @@ Route::get('system-config', [\App\Http\Controllers\Admin\SettingController::clas
 Route::post('system-config', [\App\Http\Controllers\Admin\SettingController::class, 'storeConfig'])->name('system-config.store');
 Route::resource('settings', \App\Http\Controllers\Admin\SettingController::class, ['names' => 'settings'])->except(['show']);
 
+// 字典管理
+Route::post('dicts/status', [\App\Http\Controllers\Admin\DictController::class, 'updateStatus'])->name('dicts.status');
+Route::post('dicts/store_data', [\App\Http\Controllers\Admin\DictController::class, 'storeData'])->name('dicts.stoer_data');
+Route::post('dicts/batch_destroy', [\App\Http\Controllers\Admin\DictController::class, 'batchDestroy'])->name('dicts.batch_destroy');
+Route::get('dicts/create_data', [\App\Http\Controllers\Admin\DictController::class, 'createData'])->name('dicts.create_data');
+Route::get('dicts/edit_data/{dict}', [\App\Http\Controllers\Admin\DictController::class, 'editData'])->name('dicts.edit_data');
+Route::resource('dicts', \App\Http\Controllers\Admin\DictController::class, ['names' => 'dicts'])->except(['show']);
 
 
 
