@@ -23,16 +23,16 @@
                 </div>
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label required">HTTP Method</label>
+                    <label class="layui-form-label required">HTTP方法</label>
                     <div class="layui-input-block">
-                        <div name="http_method" id="methods" value=""></div>
+                        <div name="http_method" id="http_method" value=""></div>
                     </div>
                 </div>
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label required">HTTP Path</label>
+                    <label class="layui-form-label required">HTTP路径</label>
                     <div class="layui-input-block">
-                        <div name="http_path" id="routes" value=""></div>
+                        <div name="http_path" id="http_path" value=""></div>
                     </div>
                 </div>
 
@@ -75,65 +75,40 @@
             let popup = layui.popup;
             let form = layui.form;
 
-            let value = $("#methods").attr("value");
-            let initValue = value ? value.split(",") : [];
+            let http_method_value = $("#http_method").attr("value");
+            let http_path_value = $("#http_path").attr("value");
+            let menus_value = $("#menus").attr("value");
+
             xmSelect.render({
-                el: "#methods",
-                name: "methods",
-                initValue: initValue,
+                el: "#http_method",
+                name: "http_method",
+                initValue: http_method_value ? http_method_value.split(",") : [],
                 autoRow: true,
-                data: [{
-                        name: 'GET',
-                        value: 'GET'
-                    },
-                    {
-                        name: 'POST',
-                        value: 'POST'
-                    },
-                    {
-                        name: 'PUT',
-                        value: 'PUT'
-                    },
-                    {
-                        name: 'DELETE',
-                        value: 'DELETE'
-                    },
-                    {
-                        name: 'PATCH',
-                        value: 'PATCH'
-                    },
-                    {
-                        name: 'OPTIONS',
-                        value: 'OPTIONS'
-                    },
-                    {
-                        name: 'HEAD',
-                        value: 'HEAD'
-                    },
+                data: [
+                    {name: 'GET', value: 'GET'},
+                    {name: 'POST', value: 'POST'},
+                    {name: 'PUT', value: 'PUT'},
+                    {name: 'DELETE', value: 'DELETE'},
+                    {name: 'PATCH', value: 'PATCH'},
+                    {name: 'OPTIONS', value: 'OPTIONS'},
+                    {name: 'HEAD', value: 'HEAD'},
                 ],
                 toolbar: {
                     show: true,
                     list: ["ALL", "CLEAR", "REVERSE"]
                 },
-            })
+            });
 
             $.ajax({
-                url: "{{ route('admin.ajax.menu-select') }}",
+                url: "{{ route('admin.routes') }}",
                 dataType: "json",
                 success: function(res) {
-                    let value = $("#menus").attr("value");
-                    let initValue = value ? value.split(",") : [];
                     xmSelect.render({
-                        el: "#menus",
-                        name: "menus",
-                        initValue: initValue,
+                        el: "#http_path",
+                        name: "http_path",
+                        initValue: http_path_value ? http_path_value.split(",") : [],
                         data: res,
                         autoRow: true,
-                        tree: {
-                            "show": true,
-                            strict: false,
-                            expandedKeys: true,
-                        },
                         toolbar: {
                             show: true,
                             list: ["ALL", "CLEAR", "REVERSE"]
@@ -141,18 +116,22 @@
                     })
                 }
             });
+
             $.ajax({
-                url: "{{ route('admin.routes') }}",
+                url: "{{ route('admin.ajax.menu-select') }}",
                 dataType: "json",
                 success: function(res) {
-                    let value = $("#routes").attr("value");
-                    let initValue = value ? value.split(",") : [];
                     xmSelect.render({
-                        el: "#routes",
-                        name: "routes",
-                        initValue: initValue,
+                        el: "#menus",
+                        name: "menus",
+                        initValue: menus_value ? menus_value.split(",") : [],
                         data: res,
                         autoRow: true,
+                        tree: {
+                            "show": true,
+                            strict: false,
+                            expandedKeys: true,
+                        },
                         toolbar: {
                             show: true,
                             list: ["ALL", "CLEAR", "REVERSE"]

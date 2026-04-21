@@ -25,16 +25,16 @@
                 </div>
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label required">HTTP Method</label>
+                    <label class="layui-form-label required">HTTP方法</label>
                     <div class="layui-input-block">
-                        <div name="http_method" id="methods" value=""></div>
+                        <div name="http_method" id="http_method" value=""></div>
                     </div>
                 </div>
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label required">HTTP Path</label>
+                    <label class="layui-form-label required">HTTP路径</label>
                     <div class="layui-input-block">
-                        <div name="http_path" id="routes" value=""></div>
+                        <div name="http_path" id="http_path" value=""></div>
                     </div>
                 </div>
 

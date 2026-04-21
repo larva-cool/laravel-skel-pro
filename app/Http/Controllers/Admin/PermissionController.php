@@ -8,8 +8,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Admin\StoreAdminRoleRequest;
+use App\Http\Requests\Admin\Admin\StoreAdminPermissionRequest;
 use App\Http\Resources\Admin\PermissionResource;
 use App\Models\Admin\AdminPermission;
 use Illuminate\Http\JsonResponse;
@@ -21,7 +20,7 @@ use Illuminate\Support\Str;
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */
-class PermissionController extends Controller
+class PermissionController extends AbstractController
 {
     /**
      * Constructor.
@@ -108,9 +107,10 @@ class PermissionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAdminRoleRequest $request)
+    public function store(StoreAdminPermissionRequest $request)
     {
-        AdminPermission::create($request->validated());
+        $permission = AdminPermission::create($request->safe()->except('menus'));
+        $permission->menus()->sync($request->menus);
 
         return $this->success(trans('system.create_success'));
     }
@@ -129,9 +129,10 @@ class PermissionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreAdminRoleRequest $request, AdminPermission $permission)
+    public function update(StoreAdminPermissionRequest $request, AdminPermission $permission)
     {
-        $permission->update($request->validated());
+        $permission->update($request->safe()->except('menus'));
+        $permission->menus()->sync($request->menus);
 
         return $this->success(trans('system.update_success'));
     }
@@ -141,9 +142,6 @@ class PermissionController extends Controller
      */
     public function destroy(AdminPermission $permission): JsonResponse
     {
-        if ($permission->id == 1) {
-            return $this->fail(trans('system.default_role_cannot_delete'));
-        }
         $permission->delete();
 
         return $this->success(trans('system.delete_success'));

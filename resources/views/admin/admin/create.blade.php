@@ -53,8 +53,7 @@
 
         <div class="bottom">
             <div class="button-container">
-                <button type="submit" class="pear-btn pear-btn-primary pear-btn-md" lay-submit=""
-                        lay-filter="save">
+                <button type="submit" class="pear-btn pear-btn-primary pear-btn-md" lay-submit="" lay-filter="save">
                     提交
                 </button>
                 <button type="reset" class="pear-btn pear-btn-md">

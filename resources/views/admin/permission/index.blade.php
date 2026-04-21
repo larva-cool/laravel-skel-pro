@@ -20,10 +20,8 @@
 
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
-            @{{# if(d.show_toolbar){ }}
             <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
             <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
-            @{{# } }}
         </script>
     </div>
 @endsection
@@ -37,7 +35,7 @@
             let cols = [
                 {title: '权限ID', field: 'id', align: 'center', width: 100},
                 {title: '权限名称', field: 'name', align: 'center'},
-                {title: '权限标识', field: 'key', align: 'left'},
+                {title: '权限标识', field: 'slug', align: 'left'},
                 {title: "创建时间", field: "created_at",},
                 {title: "更新时间", field: "updated_at",},
                 {title: "操作", toolbar: "#table-bar", align: "center", fixed: "right", width: 195,},
