@@ -32,11 +32,13 @@ Route::get('account', [\App\Http\Controllers\Admin\IndexController::class, 'acco
 Route::get('config', [\App\Http\Controllers\Admin\IndexController::class, 'config'])->name('config');
 Route::get('dashboard', [\App\Http\Controllers\Admin\IndexController::class, 'dashboard'])->name('dashboard');
 
-// 管理员
-Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class, ['names' => 'menus'])->except(['show']);
+// 角色管理
 Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class, ['names' => 'roles'])->except(['show']);
+
+// 权限管理
+Route::get('permissions/routes', [\App\Http\Controllers\Admin\PermissionController::class, 'getRoutes'])->name('permissions.routes');
+Route::get('permissions/select', [\App\Http\Controllers\Admin\PermissionController::class, 'select'])->name('permissions.select');
 Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class, ['names' => 'permissions'])->except(['show']);
-Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class, ['names' => 'admins'])->except(['show']);
 
 // 管理员管理
 Route::get('admins/person', [\App\Http\Controllers\Admin\AdminController::class, 'person'])->name('admins.person');
@@ -44,7 +46,10 @@ Route::post('admins/person', [\App\Http\Controllers\Admin\AdminController::class
 Route::post('admins/password', [\App\Http\Controllers\Admin\AdminController::class, 'storePassword'])->name('admins.update_password');
 Route::post('admins/status', [\App\Http\Controllers\Admin\AdminController::class, 'updateStatus'])->name('admins.status');
 Route::post('admins/avatar/{admin}', [\App\Http\Controllers\Admin\AdminController::class, 'updateAvatar'])->name('admins.avatar');
-Route::get('permissions/routes', [\App\Http\Controllers\Admin\PermissionController::class, 'getRoutes'])->name('permissions.routes');
+Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class, ['names' => 'admins'])->except(['show']);
+
+// 菜单管理
+Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class, ['names' => 'menus'])->except(['show']);
 
 // 系统设置
 Route::get('system-config', [\App\Http\Controllers\Admin\SettingController::class, 'config'])->name('system-config');
@@ -63,4 +68,16 @@ Route::resource('dicts', \App\Http\Controllers\Admin\DictController::class, ['na
 Route::get('areas/select', [\App\Http\Controllers\Admin\AreaController::class, 'select'])->name('areas.select');
 Route::resource('areas', \App\Http\Controllers\Admin\AreaController::class, ['names' => 'areas'])->except(['show']);
 
+// 文件上传
+//Route::post('uploader/tinymce', [\App\Http\Controllers\Admin\UploaderController::class, 'tinymce'])->name('uploader.tinymce');
+//Route::post('uploader/aieditor-file', [\App\Http\Controllers\Admin\UploaderController::class, 'aiEditorFile'])->name('uploader.aieditor-file');
+//Route::post('uploader/aieditor-video', [\App\Http\Controllers\Admin\UploaderController::class, 'aiEditorVideo'])->name('uploader.aieditor-video');
+//Route::post('uploader/aieditor-image', [\App\Http\Controllers\Admin\UploaderController::class, 'aiEditorImage'])->name('uploader.aieditor-image');
 
+// 用户组管理
+Route::get('user_groups/select', [\App\Http\Controllers\Admin\UserGroupController::class, 'select'])->name('user_groups.select');
+Route::resource('user_groups', \App\Http\Controllers\Admin\UserGroupController::class, ['names' => 'user_groups']);
+
+// 用户管理
+Route::post('users/status', [\App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.status');
+Route::resource('users', \App\Http\Controllers\Admin\UserController::class, ['names' => 'users']);

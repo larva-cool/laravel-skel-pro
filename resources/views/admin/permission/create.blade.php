@@ -8,6 +8,13 @@
         <div class="mainBox">
             <div class="main-container mr-5">
                 <div class="layui-form-item">
+                    <label class="layui-form-label">上级权限</label>
+                    <div class="layui-input-block">
+                        <div name="parent_id" id="parent_id" value=""></div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
                     <label class="layui-form-label required">权限名</label>
                     <div class="layui-input-block">
                         <input type="text" name="name" value="" required lay-verify="required" class="layui-input">
@@ -93,6 +100,42 @@
                     show: true,
                     list: ["ALL", "CLEAR", "REVERSE"]
                 },
+            });
+
+            $.ajax({
+                url: "{{ route('admin.permissions.select') }}",
+                dataType: "json",
+                success: function(res) {
+                    let value = layui.$("#parent_id").attr("value");
+                    layui.xmSelect.render({
+                        el: "#parent_id",
+                        name: "parent_id",
+                        initValue: [value],
+                        tips: "无",
+                        toolbar: {
+                            show: true,
+                            list: ["CLEAR"]
+                        },
+                        data: res,
+                        model: {
+                            "icon": "hidden",
+                            "label": {
+                                "type": "text"
+                            }
+                        },
+                        radio: true,
+                        clickClose: true,
+                        tree: {
+                            show: true,
+                            showFolderIcon: true,
+                            showLine: true,
+                            expandedKeys: true,
+                            clickExpand: false,
+                            clickCheck: true,
+                            strict: false
+                        },
+                    });
+                }
             });
 
             $.ajax({
