@@ -12,7 +12,7 @@
         </div>
         <!-- 表格顶部工具栏 -->
         <script type="text/html" id="table-toolbar">
-            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add" permission="admin.areas.create">
+            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
                 <i class="layui-icon layui-icon-add-1"></i>新增
             </button>
             <button class="pear-btn pear-btn-success pear-btn-md" lay-event="expandAll">
@@ -27,9 +27,9 @@
 
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
-            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit" permission="admin.areas.edit"><i
+            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i
                     class="layui-icon layui-icon-edit"></i></button>
-            <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove" permission="admin.areas.delete"><i
+            <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i
                     class="layui-icon layui-icon-delete"></i></button>
         </script>
     </div>

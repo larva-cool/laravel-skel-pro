@@ -10,7 +10,6 @@ namespace App\Models\User;
 
 use App\Models\Model;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * 昵称
@@ -60,20 +59,13 @@ class Nickname extends Model
      */
     public static function getRandomNickname(): string
     {
-        // 尝试从缓存中获取昵称列表
-        $nicknameCount = Cache::get('nickname_count');
-        if (! $nicknameCount) {
-            $nicknameCount = self::query()->count();
-            Cache::put('nickname_count', $nicknameCount, 60);
+        $maxId = self::max('id');
+        if (! $maxId) {
+            return '用户'.random_int(100000, 999999);
         }
-        if ($nicknameCount > 1000) {
-            $nickname = self::query()->inRandomOrder()->value('nickname');
 
-            return $nickname ?? '';
-        }
-        $id = rand(1, $nicknameCount);
-        $nickname = self::query()->where('id', $id)->value('nickname');
+        $randomId = random_int(1, $maxId);
 
-        return $nickname ?? '';
+        return self::query()->where('id', $randomId)->limit(1)->value('nickname') ?? '用户'.random_int(100000, 999999);
     }
 }

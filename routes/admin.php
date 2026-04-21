@@ -53,5 +53,8 @@ Route::get('dicts/create_data', [\App\Http\Controllers\Admin\DictController::cla
 Route::get('dicts/edit_data/{dict}', [\App\Http\Controllers\Admin\DictController::class, 'editData'])->name('dicts.edit_data');
 Route::resource('dicts', \App\Http\Controllers\Admin\DictController::class, ['names' => 'dicts'])->except(['show']);
 
+// 地区管理
+Route::get('areas/select', [\App\Http\Controllers\Admin\AreaController::class, 'select'])->name('areas.select');
+Route::resource('areas', \App\Http\Controllers\Admin\AreaController::class, ['names' => 'areas'])->except(['show']);
 
 

@@ -135,6 +135,8 @@ class LoginHistory extends Model
     {
         return static::query()->where('user_id', $userId)
             ->where('user_type', $type)
-            ->whereDate('login_at', '=', Carbon::now())->exists();
+            ->where('login_at', '>=', Carbon::now()->startOfDay()->toDateTimeString())
+            ->where('login_at', '<=', Carbon::now()->endOfDay()->toDateTimeString())
+            ->exists();
     }
 }
