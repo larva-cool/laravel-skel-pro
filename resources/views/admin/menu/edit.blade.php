@@ -96,7 +96,7 @@
         layui.use(["jquery", "xmSelect", "popup"], function() {
             // 加载父菜单
             layui.$.ajax({
-                url: "{{ route('admin.ajax.menu-select') }}",
+                url: "{{ route('admin.menus.select') }}",
                 dataType: "json",
                 success: function(res) {
                     let value = layui.$("#parent_id").attr("value");
@@ -132,7 +132,7 @@
             });
             // 加载角色
             layui.$.ajax({
-                url: "{{route('admin.ajax.role-select')}}",
+                url: "{{route('admin.roles.select')}}",
                 dataType: "json",
                 success: function (res) {
                     let value = layui.$("#roles").attr("value");
