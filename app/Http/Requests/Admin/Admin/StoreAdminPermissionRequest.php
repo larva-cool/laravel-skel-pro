@@ -3,6 +3,8 @@
  * This is NOT a freeware, use is subject to license terms.
  */
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Admin\Admin;
 
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -10,6 +12,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * 保存权限
+ *
  * @property array $menus
  *
  * @author Tongle Xu <xutongle@gmail.com>

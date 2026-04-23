@@ -107,8 +107,6 @@ class MenuController extends AbstractController
 
     /**
      * 菜单 Select
-     * @param  Request  $request
-     * @return array
      */
     public function menuSelect(Request $request): array
     {

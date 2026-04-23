@@ -31,6 +31,6 @@ class AppTestCommand extends Command
      */
     public function handle(): void
     {
-        //Log::error('这是一条错误日志');
+        // Log::error('这是一条错误日志');
     }
 }

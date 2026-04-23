@@ -3,6 +3,8 @@
  * This is NOT a freeware, use is subject to license terms.
  */
 
+declare(strict_types=1);
+
 namespace App\Support;
 
 use Illuminate\Support\Str;
@@ -12,15 +14,11 @@ class AdminHelper
     /**
      * 匹配请求路径.
      *
-     * @param  string  $path
-     * @param  null|string  $current
-     * @return bool
      *@example
      *      Helper::matchRequestPath(admin_base_path('auth/user'))
      *      Helper::matchRequestPath(admin_base_path('auth/user*'))
      *      Helper::matchRequestPath(admin_base_path('auth/user/* /edit'))
-          *      Helper::matchRequestPath('GET,POST:auth/user')
-     *
+     *      Helper::matchRequestPath('GET,POST:auth/user')
      */
     public static function matchRequestPath(string $path, ?string $current = null): bool
     {
@@ -53,11 +51,8 @@ class AdminHelper
 
     /**
      * 获取路由别名.
-     *
-     * @param  string|null  $route
-     * @return string
      */
-    public static  function getRouteName(?string $route): string
+    public static function getRouteName(?string $route): string
     {
         return config('admin.route.prefix').$route;
     }

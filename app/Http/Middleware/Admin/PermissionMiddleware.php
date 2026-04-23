@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
@@ -20,16 +21,11 @@ use Illuminate\Support\Str;
  */
 class PermissionMiddleware
 {
-    /**
-     * @var string
-     */
     protected string $middlewarePrefix = 'admin.permission:';
 
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @param  array  $args
      * @return mixed
      */
@@ -59,7 +55,6 @@ class PermissionMiddleware
      * If the route of current request contains a middleware prefixed with 'admin.permission:',
      * then it has a manually set permission middleware, we need to handle it first.
      *
-     * @param  Request  $request
      * @return bool
      */
     public function checkRoutePermission(Request $request)
@@ -84,19 +79,19 @@ class PermissionMiddleware
     }
 
     /**
-     * @param  \Illuminate\Http\Request  $request
-     * @return bool
+     * @param  Request  $request
      */
     protected function isApiRoute($request): bool
     {
         return true;
+
         return $request->routeIs(admin_api_route_name('*'));
     }
 
     /**
      * Determine if the request has a URI that should pass through verification.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return bool
      */
     public function shouldPassThrough($request)

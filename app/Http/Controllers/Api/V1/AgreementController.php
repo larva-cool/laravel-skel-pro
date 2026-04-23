@@ -33,9 +33,6 @@ class AgreementController extends Controller
 
     /**
      * 按类型获取最新的一个协议
-     *
-     * @param  string  $type
-     * @return AgreementResource
      */
     public function show(string $type): AgreementResource
     {

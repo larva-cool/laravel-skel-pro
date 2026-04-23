@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\User\SearchUserRequest;
 use App\Http\Requests\Admin\User\StoreUserRequest;
 use App\Http\Requests\Admin\User\UpdateUserRequest;
 use App\Http\Requests\SwitchRequest;
@@ -54,6 +53,7 @@ class UserController extends AbstractController
 
             return UserResource::collection($items);
         }
+
         return view('admin.user.index');
     }
 

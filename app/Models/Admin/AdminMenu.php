@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * 管理员菜单规则
+ *
  * @property int $id 菜单ID
  * @property int $parent_id 父菜单
  * @property string $title 菜单名称

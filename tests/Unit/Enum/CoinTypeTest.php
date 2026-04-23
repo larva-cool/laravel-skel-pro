@@ -118,7 +118,7 @@ class CoinTypeTest extends TestCase
     public function test_coin_type_cases_method_returns_all_values()
     {
         $cases = CoinType::cases();
-        
+
         $this->assertEquals(CoinType::TYPE_UNKNOWN, $cases[0]);
         $this->assertEquals(CoinType::TYPE_SIGN_IN, $cases[1]);
         $this->assertEquals(CoinType::TYPE_INVITE_REGISTER, $cases[2]);

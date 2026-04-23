@@ -53,7 +53,6 @@ class PermissionController extends AbstractController
 
     /**
      * 获取路由
-     * @return array
      */
     public function getRoutes(): array
     {
@@ -68,13 +67,13 @@ class PermissionController extends AbstractController
 
             // ====================== 过滤：只保留后台路由 ======================
             // 如果路由不是以 $prefix 开头，并且前缀不是 /，就跳过这条路由
-            if (!Str::startsWith($uri = $route->uri(), $prefix) && $prefix && $prefix !== '/') {
+            if (! Str::startsWith($uri = $route->uri(), $prefix) && $prefix && $prefix !== '/') {
                 return;
             }
 
             // ====================== 处理【无参数路由】 ======================
             // 如果路由里没有 {xxx} 这种动态参数
-            if (!Str::contains($uri, '{')) {
+            if (! Str::contains($uri, '{')) {
 
                 // 如果前缀不是 /，就把前缀去掉，末尾加 *
                 // 例如：admin/user → user*
@@ -97,9 +96,9 @@ class PermissionController extends AbstractController
             $path = preg_replace('/{.*}+/', '*', $uri);
 
             // 去掉前缀
-//            if ($prefix !== '/') {
-//                return Str::replaceFirst($prefix, '', $path);
-//            }
+            //            if ($prefix !== '/') {
+            //                return Str::replaceFirst($prefix, '', $path);
+            //            }
 
             // 返回处理好的路径
             return $path;
@@ -116,15 +115,13 @@ class PermissionController extends AbstractController
         return $finalRoutes->map(function ($route) {
             return [
                 'name' => $route,  // 显示名称
-                'value' => $route // 值
+                'value' => $route, // 值
             ];
         })->all();
     }
 
     /**
      * 菜单 Select
-     * @param  Request  $request
-     * @return array
      */
     public function select(Request $request): array
     {
@@ -148,6 +145,7 @@ class PermissionController extends AbstractController
         if ($request->menus) {
             $permission->menus()->sync($request->menus);
         }
+
         return $this->success(trans('system.create_success'));
     }
 
@@ -157,6 +155,7 @@ class PermissionController extends AbstractController
     public function edit(AdminPermission $permission)
     {
         $permission->load('menus');
+
         return view('admin.permission.edit', [
             'item' => $permission,
             'update_url' => route('admin.permissions.update', $permission->id),

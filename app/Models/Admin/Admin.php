@@ -45,7 +45,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon $updated_at 最后更新时间
  * @property Carbon|null $deleted_at 删除时间
  * @property Collection<int, AdminRole> $roles 关联的角色模型
- *
  * @property User $user 关联的用户模型
  * @property-read string $avatar 头像URL（来自关联的User模型）
  *
@@ -186,7 +185,6 @@ class Admin extends Authenticatable
     /**
      * 检查用户是否具有指定的角色
      *
-     * @param  string  $role
      * @return mixed
      */
     public function isRole(string $role): bool
@@ -196,8 +194,6 @@ class Admin extends Authenticatable
 
     /**
      * 检查当前实例是否是超管
-     *
-     * @return bool
      */
     public function isAdministrator(): bool
     {
@@ -248,7 +244,7 @@ class Admin extends Authenticatable
      */
     public function can($abilities, $arguments = [])
     {
-        if (!$abilities) {
+        if (! $abilities) {
             return false;
         }
 
@@ -269,6 +265,6 @@ class Admin extends Authenticatable
      */
     public function cannot($abilities, $arguments = [])
     {
-        return !$this->can($abilities);
+        return ! $this->can($abilities);
     }
 }

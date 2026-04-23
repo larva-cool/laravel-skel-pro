@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Models\Agreement;
 
 use App\Enum\StatusSwitch;
-use App\Models\Agreement\AgreementRead;
 use App\Models\System\Agreement;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\CoversClass;

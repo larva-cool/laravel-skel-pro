@@ -40,7 +40,6 @@ use Illuminate\Support\Facades\Cache;
  */
 class Dict extends Model
 {
-    
     use HasFactory, SoftDeletes;
 
     /**
@@ -160,17 +159,17 @@ class Dict extends Model
     public static function getOptions(string $code): array
     {
         return Cache::remember(CacheKey::key(CacheKey::DICT_TYPE, $code), 3600, function () use ($code) {
-                $dict = static::query()->where('code', $code)
-                    ->whereNull('parent_id')
-                    ->where('status', StatusSwitch::ENABLED->value)
-                    ->first();
+            $dict = static::query()->where('code', $code)
+                ->whereNull('parent_id')
+                ->where('status', StatusSwitch::ENABLED->value)
+                ->first();
 
-                if (!$dict) {
-                    return [];
-                }
-
-                return $dict->children->pluck('name', 'code')->toArray();
+            if (! $dict) {
+                return [];
             }
+
+            return $dict->children->pluck('name', 'code')->toArray();
+        }
         );
     }
 
