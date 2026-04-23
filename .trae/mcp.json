@@ -7,6 +7,17 @@
                 "boost:mcp"
             ],
             "cwd": "${workspaceFolder}"
+        },
+        "API 文档": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "apifox-mcp-server@latest",
+                "--project=6638987"
+            ],
+            "env": {
+                "APIFOX_ACCESS_TOKEN": "APS-QTnJqCVoGAIrO9OFYhJpRfG5LWgpfBsZ"
+            }
         }
     }
 }
