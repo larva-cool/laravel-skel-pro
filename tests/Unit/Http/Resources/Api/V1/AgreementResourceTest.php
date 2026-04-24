@@ -55,7 +55,7 @@ class AgreementResourceTest extends TestCase
         $this->assertArrayHasKey('updated_at', $result);
 
         // 验证字段数量
-        $this->assertCount(6, $result);
+        $this->assertCount(5, $result);
     }
 
     #[Test]

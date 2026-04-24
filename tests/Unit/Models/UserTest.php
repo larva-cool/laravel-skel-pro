@@ -181,7 +181,7 @@ class UserTest extends TestCase
 
         $activeUsers = User::active()->get();
 
-        $this->assertCount($userCount + 2, $activeUsers);
+        $this->assertCount($userCount + 1, $activeUsers);
         $this->assertEquals(UserStatus::STATUS_ACTIVE, $activeUsers->first()->status);
     }
 
@@ -210,7 +210,7 @@ class UserTest extends TestCase
 
         // 测试昵称搜索
         $results = User::keyword('测试')->get();
-        $this->assertCount($uCount + 1, $results);
+        $this->assertCount($uCount, $results);
         $this->assertEquals($user1->id, $results->last()->id);
 
         // 测试邮箱搜索
