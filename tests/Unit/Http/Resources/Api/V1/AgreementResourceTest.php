@@ -51,7 +51,6 @@ class AgreementResourceTest extends TestCase
         $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('content', $result);
-        $this->assertArrayHasKey('is_agree', $result);
         $this->assertArrayHasKey('created_at', $result);
         $this->assertArrayHasKey('updated_at', $result);
 

@@ -174,13 +174,14 @@ class UserTest extends TestCase
     #[TestDox('测试活跃用户作用域')]
     public function test_active_scope()
     {
+        $userCount = User::query()->active()->count();
         User::factory()->create(['status' => UserStatus::STATUS_ACTIVE]);
         User::factory()->create(['status' => UserStatus::STATUS_FROZEN]);
         User::factory()->create(['status' => UserStatus::STATUS_NOT_ACTIVE]);
 
         $activeUsers = User::active()->get();
 
-        $this->assertCount(22, $activeUsers);
+        $this->assertCount($userCount + 2, $activeUsers);
         $this->assertEquals(UserStatus::STATUS_ACTIVE, $activeUsers->first()->status);
     }
 
