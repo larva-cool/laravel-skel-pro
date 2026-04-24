@@ -11,6 +11,7 @@ $:
           # 参考文档：https://docs.cnb.cool/zh/grammar/pipeline.html#build
           by:
             - .ide/php.ini
+            - .ide/settings.json
       services:
         # 声明使用 vscode 服务
         - vscode
@@ -28,9 +29,11 @@ $:
         - docker
       stages:
         - name: docker login
-          script: docker login -u ${CNB_TOKEN_USER_NAME} -p "${CNB_TOKEN}" ${CNB_DOCKER_REGISTRY}
+          script: docker login -u ${CNB_TOKEN_USER_NAME} -p "${CNB_TOKEN}"
+            ${CNB_DOCKER_REGISTRY}
         - name: docker build
-          script: docker build --build-arg ENV=prod -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest .
+          script: docker build --build-arg ENV=prod -t
+            ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest .
         - name: docker push
           script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest
 
@@ -53,11 +56,14 @@ $:
         - docker
       stages:
         - name: docker login
-          script: docker login -u ${CNB_TOKEN_USER_NAME} -p "${CNB_TOKEN}" ${CNB_DOCKER_REGISTRY}
+          script: docker login -u ${CNB_TOKEN_USER_NAME} -p "${CNB_TOKEN}"
+            ${CNB_DOCKER_REGISTRY}
         - name: docker build
-          script: docker build --build-arg ENV=develop -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:${CNB_BRANCH} .
+          script: docker build --build-arg ENV=develop -t
+            ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:${CNB_BRANCH} .
         - name: docker push
-          script: docker push ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:${CNB_BRANCH}
+          script: docker push
+            ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:${CNB_BRANCH}
 
     - name: 代码同步流水线
       imports:
