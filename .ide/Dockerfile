@@ -76,7 +76,12 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh \
     && code-server --install-extension esbenp.prettier-vscode \
     && code-server --install-extension tencent-cloud.coding-copilot \
     && code-server --install-extension zobo.php-intellisense \
-    && code-server --install-extension laravel.vscode-laravel
+    && code-server --install-extension laravel.vscode-laravel \
+    && code-server --install-extension shufo.vscode-blade-formatter \
+    && code-server --install-extension Vue.volar \
+    && code-server --install-extension onecentlin.laravel-blade \
+    && code-server --install-extension ryannaddy.laravel-artisan \
+    && code-server --install-extension bradlc.vscode-tailwindcss
 
 # 指定字符集支持命令行输入中文
 ENV LANG C.UTF-8
