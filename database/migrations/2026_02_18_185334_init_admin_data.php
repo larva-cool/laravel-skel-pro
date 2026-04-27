@@ -11,8 +11,7 @@ use App\Models\Admin\AdminRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Hash;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,7 +20,7 @@ return new class extends Migration
         AdminRole::create([
             'id' => 1,
             'name' => '超级管理员',
-            'slug' => 'administrator',
+            'slug' => config('admin.permission.administrator'),
         ]);
         Admin::create([
             'username' => 'admin',

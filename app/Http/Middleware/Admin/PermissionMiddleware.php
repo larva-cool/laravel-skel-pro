@@ -31,6 +31,8 @@ class PermissionMiddleware
         /** @var Admin|null $user */
         $user = Auth::guard('admin')->user();
 
+        
+
         if (!$user || !empty($args) || !config('admin.permission.enable') || $this->shouldPassThrough($request) || $user->isAdministrator()) {
             return $next($request);
         }

@@ -197,7 +197,7 @@ class Admin extends Authenticatable
      */
     public function isAdministrator(): bool
     {
-        return $this->isRole(config('admin.permission.administrator_id'));
+        return $this->isRole(config('admin.permission.administrator'));
     }
 
     /**

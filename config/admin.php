@@ -5,15 +5,19 @@
 
 return [
     'route' => [
+        // 前缀
         'prefix' => 'admin',
+        // HTTP 方法
         'http_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD',]
     ],
     'permission' => [
         //开启权限检查
         'enable' => true,
+        // 超管组名
+        'administrator' => 'administrator',
         // 超级管理员ID
         'administrator_id' => 1,
-        // 例外
+        // 例外路由
         'except' => [
             'admin.dashboard',  // 后台首页
             'admin.admins.person',  // 管理员个人中心
