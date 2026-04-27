@@ -31,7 +31,7 @@ class PermissionMiddleware
         /** @var Admin|null $user */
         $user = Auth::guard('admin')->user();
 
-        
+
 
         if (!$user || !empty($args) || !config('admin.permission.enable') || $this->shouldPassThrough($request) || $user->isAdministrator()) {
             return $next($request);
@@ -58,7 +58,7 @@ class PermissionMiddleware
     public function shouldPassThrough(Request $request): bool
     {
         // 检查是否是 API 请求
-        if ($request->routeIs(AdminHelper::getRouteName('larva-api.*'))) {
+        if ($request->routeIs(AdminHelper::getRouteName('api.*'))) {
             return true;
         }
 

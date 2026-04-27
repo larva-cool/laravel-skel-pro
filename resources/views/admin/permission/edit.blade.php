@@ -170,8 +170,9 @@
                         initValue: initMenus,
                         data: res,
                         autoRow: true,
+                        filterable: true,
                         tree: {
-                            "show": true,
+                            show: true,
                             strict: false,
                             expandedKeys: true
                         },

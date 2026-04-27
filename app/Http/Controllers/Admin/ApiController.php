@@ -13,11 +13,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Ajax 接口
+ * API 接口
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */
-class AjaxController extends AbstractController
+class ApiController extends AbstractController
 {
     /**
      * Constructor.

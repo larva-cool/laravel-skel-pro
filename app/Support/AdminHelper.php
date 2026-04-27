@@ -54,16 +54,16 @@ class AdminHelper
      */
     public static function getRouteName(?string $route): string
     {
-        return 'admin.'.$route;
+        return config('admin.route.prefix').'.'.$route;
     }
 
     /**
      * 获取API 路由名称
-     * @param string $route
+     * @param  string  $route
      * @return string
      */
     public static function getApiRouteName(string $route = ''): string
     {
-        return self::getRouteName('larva-api.').$route;
+        return self::getRouteName('api.').$route;
     }
 }

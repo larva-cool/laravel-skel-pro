@@ -168,13 +168,15 @@
                         data: res,
                         autoRow: true,
                         direction: 'down',
+                        filterable: true,
                         tree: {
-                            "show": true,
-                            strict: false,
+                            show: true,
+                            strict: true,
                             expandedKeys: true,
                         },
                         toolbar: {
                             show: true,
+                            showIcon: false,
                             list: ["ALL", "CLEAR", "REVERSE"]
                         },
                     })

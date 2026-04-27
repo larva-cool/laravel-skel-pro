@@ -18,9 +18,9 @@ Route::group(['prefix' => 'auth'], function (Illuminate\Contracts\Routing\Regist
 /**
  * Ajax
  */
-Route::group(['prefix' => 'ajax','as'=>'ajax.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
-    $registrar->get('left-menus', [\App\Http\Controllers\Admin\AjaxController::class, 'leftMenus'])->name('left-menus');
-    $registrar->get('permission', [\App\Http\Controllers\Admin\AjaxController::class, 'permission'])->name('permission');
+Route::group(['prefix' => 'api','as'=>'api.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
+    $registrar->get('left-menus', [\App\Http\Controllers\Admin\ApiController::class, 'leftMenus'])->name('left-menus');
+    $registrar->get('permission', [\App\Http\Controllers\Admin\ApiController::class, 'permission'])->name('permission');
 });
 
 // 后台首页
