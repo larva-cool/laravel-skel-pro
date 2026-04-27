@@ -12,7 +12,6 @@ use App\Models\Admin\Admin;
 use App\Support\AdminHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 /**
  * 权限检查
@@ -21,8 +20,6 @@ use Illuminate\Support\Str;
  */
 class PermissionMiddleware
 {
-    protected string $middlewarePrefix = 'admin.permission:';
-
     /**
      * Handle an incoming request.
      *
@@ -34,87 +31,39 @@ class PermissionMiddleware
         /** @var Admin|null $user */
         $user = Auth::guard('admin')->user();
 
-        if (! $user || ! empty($args) || ! config('admin.permission.enable')
-            || $this->shouldPassThrough($request)
-            || $user->isAdministrator()
-            || $this->checkRoutePermission($request)
-        ) {
+        if (!$user || !empty($args) || !config('admin.permission.enable') || $this->shouldPassThrough($request) || $user->isAdministrator()) {
             return $next($request);
         }
 
-        if (! $user->allPermissions()->first(function ($permission) use ($request) {
+        if (!$user->allPermissions()->first(function ($permission) use ($request) {
             return $permission->shouldPassThrough($request);
         })) {
-            Checker::error();
+            return response()->json([
+                'code' => 403,
+                'message' => '无权访问',
+            ], 403);
         }
 
         return $next($request);
     }
 
     /**
-     * If the route of current request contains a middleware prefixed with 'admin.permission:',
-     * then it has a manually set permission middleware, we need to handle it first.
-     *
-     * @return bool
-     */
-    public function checkRoutePermission(Request $request)
-    {
-        if (! $middleware = collect($request->route()->middleware())->first(function ($middleware) {
-            return Str::startsWith($middleware, $this->middlewarePrefix);
-        })) {
-            return false;
-        }
-
-        $args = explode(',', str_replace($this->middlewarePrefix, '', $middleware));
-
-        $method = array_shift($args);
-
-        if (! method_exists(Checker::class, $method)) {
-            throw new \RuntimeException("Invalid permission method [$method].");
-        }
-
-        call_user_func_array([Checker::class, $method], [$args]);
-
-        return true;
-    }
-
-    /**
-     * @param  Request  $request
-     */
-    protected function isApiRoute($request): bool
-    {
-        return true;
-
-        return $request->routeIs(admin_api_route_name('*'));
-    }
-
-    /**
-     * Determine if the request has a URI that should pass through verification.
+     * 判断请求中的URI是否应通过验证。
      *
      * @param  Request  $request
      * @return bool
      */
-    public function shouldPassThrough($request)
+    public function shouldPassThrough(Request $request): bool
     {
-        return true;
-        if (Authenticate::shouldPassThrough($request)) {
+        // 检查是否是 API 请求
+        if ($request->routeIs(AdminHelper::getRouteName('larva-api.*'))) {
             return true;
         }
 
+        // 检查是否忽略检查权限
         $excepts = (array) config('admin.permission.except', []);
-
         foreach ($excepts as $except) {
-            if ($request->routeIs($except) || $request->routeIs(AdminHelper::getRouteName($except))) {
-                return true;
-            }
-
-            $except = admin_base_path($except);
-
-            if ($except !== '/') {
-                $except = trim($except, '/');
-            }
-
-            if (AdminHelper::matchRequestPath($except)) {
+            if (AdminHelper::matchRequestPath($except, $request->decodedPath())) {
                 return true;
             }
         }

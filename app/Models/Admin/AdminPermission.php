@@ -117,6 +117,55 @@ class AdminPermission extends Model
     }
 
     /**
+     * 获取权限树（兼容xm-select格式）
+     *
+     * @param  int|string|null  $parentId  父菜单ID
+     * @param  array  $options  配置选项
+     * @return array 树形结构数组
+     */
+    public static function getTreeForXmSelect(int|string|null $parentId = null, array $options = []): array
+    {
+        // 合并默认选项
+        $options = array_merge([
+            'includeAllFields' => false,
+            'selectedValues' => [],
+        ], $options);
+
+        // 构建查询
+        $query = self::query()
+            ->withCount('children')
+            ->where('parent_id', $parentId)
+            ->orderBy('order')
+            ->orderBy('id');
+
+        // 选择字段
+        if ($options['includeAllFields']) {
+            $query->select('*');
+        } else {
+            $query->select('id as value', 'name', 'order');
+        }
+
+        // 获取当前层级菜单
+        $items = $query->get()->toArray();
+
+        // 递归获取子菜单，构建树形结构
+        foreach ($items as &$item) {
+            // 检查是否需要标记为选中
+            $item['selected'] = in_array($item['value'], $options['selectedValues']);
+
+            // 递归获取子菜单
+            $item['children'] = self::getTreeForXmSelect($item['value'], $options);
+
+            // 移除空children数组，避免xm-select显示空折叠图标
+            if (empty($item['children'])) {
+                unset($item['children']);
+            }
+        }
+
+        return $items;
+    }
+
+    /**
      * 创建权限配置
      *
      * @return array[]
@@ -148,7 +197,7 @@ class AdminPermission extends Model
     }
 
     /**
-     * If request should pass through the current permission.
+     * 判断请求是否满足当前权限
      */
     public function shouldPassThrough(Request $request): bool
     {
@@ -196,54 +245,5 @@ class AdminPermission extends Model
         });
 
         return $method->isEmpty() || $method->contains($request->method());
-    }
-
-    /**
-     * 获取权限树（兼容xm-select格式）
-     *
-     * @param  int|string|null  $parentId  父菜单ID
-     * @param  array  $options  配置选项
-     * @return array 树形结构数组
-     */
-    public static function getTreeForXmSelect(int|string|null $parentId = null, array $options = []): array
-    {
-        // 合并默认选项
-        $options = array_merge([
-            'includeAllFields' => false,
-            'selectedValues' => [],
-        ], $options);
-
-        // 构建查询
-        $query = self::query()
-            ->withCount('children')
-            ->where('parent_id', $parentId)
-            ->orderBy('order')
-            ->orderBy('id');
-
-        // 选择字段
-        if ($options['includeAllFields']) {
-            $query->select('*');
-        } else {
-            $query->select('id as value', 'name', 'order');
-        }
-
-        // 获取当前层级菜单
-        $items = $query->get()->toArray();
-
-        // 递归获取子菜单，构建树形结构
-        foreach ($items as &$item) {
-            // 检查是否需要标记为选中
-            $item['selected'] = in_array($item['value'], $options['selectedValues']);
-
-            // 递归获取子菜单
-            $item['children'] = self::getTreeForXmSelect($item['value'], $options);
-
-            // 移除空children数组，避免xm-select显示空折叠图标
-            if (empty($item['children'])) {
-                unset($item['children']);
-            }
-        }
-
-        return $items;
     }
 }

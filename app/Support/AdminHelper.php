@@ -14,7 +14,7 @@ class AdminHelper
     /**
      * 匹配请求路径.
      *
-     *@example
+     * @example
      *      Helper::matchRequestPath(admin_base_path('auth/user'))
      *      Helper::matchRequestPath(admin_base_path('auth/user*'))
      *      Helper::matchRequestPath(admin_base_path('auth/user/* /edit'))
@@ -30,7 +30,7 @@ class AdminHelper
 
             $methods = array_map('strtoupper', explode(',', $methods));
 
-            if (! empty($methods) && ! in_array($request->method(), $methods)) {
+            if (!empty($methods) && !in_array($request->method(), $methods)) {
                 return false;
             }
         }
@@ -40,7 +40,7 @@ class AdminHelper
             return true;
         }
 
-        if (! Str::contains($path, '*')) {
+        if (!Str::contains($path, '*')) {
             return $path === $current;
         }
 
@@ -50,10 +50,20 @@ class AdminHelper
     }
 
     /**
-     * 获取路由别名.
+     * 获取路由名称.
      */
     public static function getRouteName(?string $route): string
     {
-        return config('admin.route.prefix').$route;
+        return 'admin.'.$route;
+    }
+
+    /**
+     * 获取API 路由名称
+     * @param string $route
+     * @return string
+     */
+    public static function getApiRouteName(string $route = ''): string
+    {
+        return self::getRouteName('larva-api.').$route;
     }
 }
