@@ -39,13 +39,13 @@ class DynamicConfigServiceProvider extends ServiceProvider
                 $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
                 $this->app->register(TelescopeServiceProvider::class);
             }
-            // 上传配置
-            if ($instance->has('upload.storage')) {
-                Config::set('filesystems.default', $instance->get('upload.storage'));
-            }
             // pulse 配置
             if ($instance->has('pulse.enabled')) {
                 Config::set('pulse.enabled', $instance->get('pulse.enabled'));
+            }
+            // 上传配置
+            if ($instance->has('upload.storage')) {
+                Config::set('filesystems.default', $instance->get('upload.storage'));
             }
         } catch (\Exception $e) {
             Log::warning($e->getMessage());

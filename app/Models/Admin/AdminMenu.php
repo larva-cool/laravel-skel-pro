@@ -265,4 +265,20 @@ class AdminMenu extends Model
 
         return $items;
     }
+
+    public static function getLeftMenus(): array
+    {
+        // 读取所有菜单
+        $items = AdminMenu::query()->orderByDesc('order')->orderBy('id')->get()->toArray();
+
+        $formattedItems = [];
+        foreach ($items as $item) {
+            $item['parent_id'] = (int) $item['parent_id'];
+            $item['name'] = $item['title'];
+            $item['value'] = $item['id'];
+            $item['icon'] = $item['icon'] ? "layui-icon {$item['icon']}" : '';
+            $formattedItems[] = $item;
+        }
+        return $formattedItems;
+    }
 }
