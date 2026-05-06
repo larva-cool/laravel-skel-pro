@@ -17,7 +17,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $lastMonth = Carbon::now()->subMonth()->format('pYm');
+        $lastMonth = 'p'.Carbon::now()->subMonth()->format('Ym');
         $month = Carbon::now()->format('Y-m-01');
         if (DB::connection()->getConfig('driver') == 'mysql') {
             $tableName = DB::connection()->getTablePrefix().'coin_trades';
