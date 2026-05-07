@@ -10,7 +10,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\Admin\StoreAdminRoleRequest;
 use App\Http\Resources\Admin\RoleResource;
-use App\Models\Admin\AdminRole;
 use App\Models\System\Permission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -65,6 +64,7 @@ class RoleController extends AbstractController
     public function create()
     {
         $permissions = Permission::query()->select('name', 'display_name')->orderBy('id')->get()->toArray();
+
         return view('admin.role.create', [
             'permissions' => $permissions,
         ]);
@@ -89,6 +89,7 @@ class RoleController extends AbstractController
     {
         $rolePermissions = $role->getAllPermissions()->pluck('name')->toArray();
         $permissions = Permission::query()->select('name', 'display_name')->orderBy('id')->get()->toArray();
+
         return view('admin.role.edit', [
             'item' => $role,
             'permissions' => $permissions,

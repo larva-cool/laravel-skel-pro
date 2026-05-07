@@ -145,7 +145,7 @@ class MenuController extends AbstractController
         $tree = new TreeHelper($formattedItems);
         $treeItems = $tree->getTree();
 
-        if (!app()->environment('production')) {
+        if (! app()->environment('production')) {
             $treeItems = array_merge($treeItems, AdminMenu::getDefaultMenus());
         }
 

@@ -43,7 +43,7 @@ class MenuResource extends JsonResource
             'parent_id' => $this->parent_id,
             'order' => $this->order,
             'href' => $this->href,
-            'permission_name'=> $this->permission_name,
+            'permission_name' => $this->permission_name,
             'type' => $type,
             'is_parent' => $this->children_count > 0,
             'created_at' => $this->created_at?->toDateTimeString(),

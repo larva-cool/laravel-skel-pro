@@ -10,6 +10,7 @@ namespace App\Providers;
 
 use App\Models\PersonalAccessToken;
 use App\Services\SettingManagerService;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -52,6 +53,8 @@ class AppServiceProvider extends ServiceProvider
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
         Relation::enforceMorphMap(config('morph_maps'));
 
+        // 修改登录 redirect
+        Authenticate::redirectUsing('admin_login_url');
         // Implicitly grant "Super Admin" role all permissions
         // This works in the app by using gate-related functions like auth()->user->can() and @can()
         Gate::before(function ($user, $ability) {

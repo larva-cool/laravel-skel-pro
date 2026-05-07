@@ -99,7 +99,7 @@ class Attachment extends Model
                 if (! isset($attributes['file_path'])) {
                     return '';
                 }
-                
+
                 if (URL::isValidUrl($attributes['file_path'])) {
                     return $attributes['file_path'];
                 }

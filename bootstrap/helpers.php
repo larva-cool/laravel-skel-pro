@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 use App\Services\SettingManagerService;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Jenssegers\Agent\Agent;
 use Laravel\Telescope\Telescope;
@@ -202,5 +204,22 @@ if (! function_exists('disable_telescope')) {
         if (class_exists('Laravel\Telescope\Telescope')) {
             Telescope::stopRecording();
         }
+    }
+}
+/**
+ * 跳转到管理员登陆页
+ */
+if (!function_exists('admin_login_url')) {
+    function admin_login_url(Request $request): ?string
+    {
+        if ($request->expectsJson()) {
+            return null;
+        }
+
+        if (Str::startsWith($request->decodedPath(), 'admin')) {
+            return route('admin.login');
+        }
+
+        return route('login');
     }
 }

@@ -85,9 +85,7 @@ class AdminMenu extends Model
     protected static function booted(): void
     {
         parent::booted();
-        static::deleting(function (AdminMenu $model) {
-
-        });
+        static::deleting(function (AdminMenu $model) {});
     }
 
     /**
