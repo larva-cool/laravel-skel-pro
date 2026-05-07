@@ -76,7 +76,7 @@ class RoleController extends AbstractController
     public function store(StoreAdminRoleRequest $request): JsonResponse
     {
         /** @var Role $role */
-        $role = Role::create($request->validated());
+        $role = Role::create($request->safe()->except('permissions'));
         $role->givePermissionTo($request->permissions);
 
         return $this->success(trans('system.create_success'));
@@ -103,7 +103,7 @@ class RoleController extends AbstractController
      */
     public function update(StoreAdminRoleRequest $request, Role $role): JsonResponse
     {
-        $role->update($request->validated());
+        $role->update($request->safe()->except('permissions'));
         $role->syncPermissions($request->permissions);
 
         return $this->success(trans('system.update_success'));
