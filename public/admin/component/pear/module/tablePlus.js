@@ -78,6 +78,16 @@ layui.define(['jquery', 'form', 'util', 'layer'], function (exports) {
             }
             return '<input type="checkbox" title="可用|禁用" value="' + util.escape(d['id']) + '" lay-filter="' + util.escape(field) + '" lay-skin="switch" lay-text="' + util.escape('') + '" ' + checked + '/>';
         },
+        // 开关状态
+        status: function (d, field) {
+            let ret = '';
+            if (typeof d[field] === "object") {
+                ret = d[field].value === 1 ? "可用" : "禁用";
+            } else {
+                ret = d[field] === 1 ? "可用" : "禁用";
+            }
+            return ret;
+        },
     };
 
     // 输出模块

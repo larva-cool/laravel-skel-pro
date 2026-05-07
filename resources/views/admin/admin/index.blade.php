@@ -75,12 +75,10 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'form', 'jquery', 'popup', 'common', 'util','laydate','tablePlus'], function () {
+        layui.use(['table', 'form', 'jquery', 'popup', 'common', 'util','laydate', 'tablePlus'], function () {
             let table = layui.table;
             let form = layui.form;
-            let $ = layui.jquery;
             let util = layui.util;
-            let popup = layui.popup;
             let tablePlus = layui.tablePlus;
             // 表头参数
             let cols = [

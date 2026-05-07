@@ -169,8 +169,7 @@ class Dict extends Model
             }
 
             return $dict->children->pluck('name', 'code')->toArray();
-        }
-        );
+        });
     }
 
     /**

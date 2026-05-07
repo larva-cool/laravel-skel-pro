@@ -55,6 +55,16 @@ return new class extends Migration
             ['name' => '分类2', 'code' => 'category2'],
             ['name' => '分类3', 'code' => 'category3'],
         ]);
+
+        $agreementType = Dict::create([
+            'name' => '协议类型',
+            'code' => 'AGREEMENT_TYPE',
+        ]);
+        $agreementType->children()->createMany([
+            ['name' => '隐私政策', 'code' => '1'],
+            ['name' => '用户协议', 'code' => '2'],
+            ['name' => '第三方信息共享清单', 'code' => '3'],
+        ]);
     }
 
     /**

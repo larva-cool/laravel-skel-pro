@@ -12,7 +12,6 @@ use App\Enum\StatusSwitch;
 use App\Models\Agreement\AgreementRead;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 
 /**
@@ -28,8 +27,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at 添加时间
  * @property Carbon $updated_at 更新时间
  * @property Carbon $deleted_at 删除时间
- * @property AgreementRead $agree 同意记录
- * @property Collection<int, AgreementRead> $reads 已读关系
  *
  * @method Builder active(string $type) 查询已发布的协议
  *

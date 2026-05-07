@@ -2,7 +2,7 @@
     @if($placeholder)
     <option value="">{{$placeholder}}</option>
     @endif
-    @foreach($items as $item)
-        <option value="{{$item['value']}}" @selected($item['value'] == $selected)>{{$item['name']}}</option>
+    @foreach($items as $key=>$name)
+        <option value="{{$key}}" @selected($key == $selected)>{{$name}}</option>
     @endforeach
 </select>
