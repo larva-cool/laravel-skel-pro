@@ -13,9 +13,11 @@
 
         <!-- 表格顶部工具栏 -->
         <script type="text/html" id="table-toolbar">
+            @can('permissions.create')
             <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="create">
                 <i class="layui-icon layui-icon-add-1"></i>新增
             </button>
+            @endcan
         </script>
 
         <!-- 表格行工具栏 -->
@@ -33,9 +35,10 @@
             let common = layui.common;
 
             let cols = [
+                {title: "权限ID", field: "id", },
                 {title: '权限名称', field: 'display_name'},
-                {title: "权限ID", field: "id", hide: true,},
                 {title: '权限标识', field: 'name', align: 'left'},
+                {title: 'Guard', field: 'guard_name', align: 'left'},
                 {title: "创建时间", field: "created_at",},
                 {title: "更新时间", field: "updated_at",},
                 {title: "操作", toolbar: "#table-bar", align: "center", fixed: "right", width: 195,},
@@ -73,10 +76,10 @@
                         type: 2,
                         title: '修改权限',
                         shade: 0.1,
-                        area: ["850px",  "850px"],
+                        area: ["450px",  "450px"],
                         content: obj.data.edit_url,
                         end: function (index) {
-                            treeTable.reload('data-table');
+                            table.reload('data-table');
                         }
                     });
                 }
@@ -88,7 +91,7 @@
                         type: 2,
                         title: '新增权限',
                         shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "650px", common.isMobile() ? "100%" : "650px"],
+                        area: [common.isMobile() ? "100%" : "450px", common.isMobile() ? "100%" : "450px"],
                         content: "{{route('admin.permissions.create')}}",
                         end: function (index) {
                             table.reload('data-table');

@@ -37,6 +37,13 @@
                 </div>
 
                 <div class="layui-form-item">
+                    <label class="layui-form-label">权限标识</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="permission_name" value="" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
                     <label class="layui-form-label">图标</label>
                     <div class="layui-input-block">
                         <input name="icon" id="icon" />
@@ -55,20 +62,6 @@
                     <label class="layui-form-label">排序</label>
                     <div class="layui-input-block">
                         <input type="number" name="order" value="0" class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label">角色</label>
-                    <div class="layui-input-block">
-                        <div name="roles" id="roles" value=""></div>
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label">权限</label>
-                    <div class="layui-input-block">
-                        <div name="permissions" id="permissions" value=""></div>
                     </div>
                 </div>
             </div>
@@ -90,7 +83,7 @@
 @push('scripts')
     <script>
         // 上级菜单
-        layui.use(["jquery", "iconPicker", "xmSelect", "popup"], function() {
+        layui.use(["jquery", "iconPicker", "popup"], function() {
             let $ = layui.$;
             // 图标选择
             layui.iconPicker.render({
@@ -133,31 +126,6 @@
                     });
                 }
             });
-
-            $.ajax({
-                url: "{{ route('admin.roles.select') }}",
-                dataType: "json",
-                success: function(res) {
-                    let value = $("#roles").attr("value");
-                    let initValue = value ? value.split(",") : [];
-                    layui.xmSelect.render({
-                        el: "#roles",
-                        name: "roles",
-                        initValue: initValue,
-                        data: res,
-                        autoRow: true,
-                        tree: {
-                            "show": true,
-                            strict: false,
-                            expandedKeys: true,
-                        },
-                        toolbar: {
-                            show: true,
-                            list: ["ALL", "CLEAR", "REVERSE"]
-                        },
-                    })
-                }
-            });
         });
 
         // 表单提交事件
@@ -167,7 +135,6 @@
             let popup = layui.popup;
             form.on("submit(save)", function(data) {
                 let loading = layer.load();
-                data.field.roles = layui.xmSelect.getValue('roles');
                 $.ajax({
                     url: "{{ route('admin.menus.store') }}",
                     type: "POST",

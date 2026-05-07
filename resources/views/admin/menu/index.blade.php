@@ -12,9 +12,11 @@
         </div>
         <!-- 表格顶部工具栏 -->
         <script type="text/html" id="table-toolbar">
+            @can('menus.create')
             <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
                 <i class="layui-icon layui-icon-add-1"></i>新增
             </button>
+            @endcan
             <button class="pear-btn pear-btn-success pear-btn-md" lay-event="expandAll">
                 <i class="layui-icon layui-icon-spread-left"></i>
                 展开
@@ -27,10 +29,14 @@
 
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
+            @can('menus.edit')
             <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i
                     class="layui-icon layui-icon-edit"></i></button>
+            @endcan
+            @can('menus.delete')
             <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i
                     class="layui-icon layui-icon-delete"></i></button>
+            @endcan
         </script>
     </div>
 @endsection

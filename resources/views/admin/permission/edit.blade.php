@@ -9,53 +9,23 @@
         <div class="mainBox">
             <div class="main-container mr-5">
                 <div class="layui-form-item">
-                    <label class="layui-form-label">上级权限</label>
-                    <div class="layui-input-block">
-                        <div name="parent_id" id="parent_id" value="{{ $item->parent_id }}"></div>
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
                     <label class="layui-form-label required">权限名</label>
                     <div class="layui-input-block">
-                        <input type="text" name="name" value="{{ $item->name }}" required lay-verify="required"
-                            class="layui-input">
+                        <input type="text" name="display_name" value="{{ $item->display_name }}" required lay-verify="required" class="layui-input">
                     </div>
                 </div>
 
                 <div class="layui-form-item">
                     <label class="layui-form-label required">权限标识</label>
                     <div class="layui-input-block">
-                        <input type="text" name="slug" value="{{ $item->slug }}" required lay-verify="required"
-                            class="layui-input">
+                        <input type="text" name="name" value="{{ $item->name }}" required lay-verify="required" class="layui-input">
                     </div>
                 </div>
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label required">HTTP方法</label>
+                    <label class="layui-form-label required">Guard</label>
                     <div class="layui-input-block">
-                        <div name="http_method" id="http_method" value=""></div>
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label required">HTTP路径</label>
-                    <div class="layui-input-block">
-                        <div name="http_path" id="http_path" value=""></div>
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label required">排序</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="order" value="0" class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label">菜单</label>
-                    <div class="layui-input-block">
-                        <div name="menus" id="menus" value="{{ $item->menus->pluck('id')->implode(',') }}"></div>
+                        <input type="text" name="guard_name" value="{{ $item->guard_name }}" required lay-verify="required" class="layui-input">
                     </div>
                 </div>
             </div>
@@ -77,112 +47,11 @@
 @push('scripts')
     <script>
         // 字段 权限 rules
-        layui.use(["form", "xmSelect", "popup"], function() {
+        layui.use(["form", "popup"], function() {
             let $ = layui.$;
-            let xmSelect = layui.xmSelect;
             let form = layui.form;
             let popup = layui.popup;
-            let initHttpMethod = @json($item->http_method);
-            let initHttpPath = @json($item->http_path);
-            let initMenus = @json($item->menus->pluck('id'));
 
-            xmSelect.render({
-                el: "#http_method",
-                name: "http_method",
-                initValue: initHttpMethod,
-                autoRow: true,
-                data: [
-                    {name: 'GET', value: 'GET'},
-                    {name: 'POST', value: 'POST'},
-                    {name: 'PUT', value: 'PUT'},
-                    {name: 'DELETE', value: 'DELETE'},
-                    {name: 'PATCH', value: 'PATCH'},
-                    {name: 'OPTIONS', value: 'OPTIONS'},
-                    {name: 'HEAD', value: 'HEAD'},
-                ],
-                toolbar: {
-                    show: true,
-                    list: ["ALL", "CLEAR", "REVERSE"]
-                },
-            });
-
-            $.ajax({
-                url: "{{ route('admin.permissions.select') }}",
-                dataType: "json",
-                success: function(res) {
-                    let value = layui.$("#parent_id").attr("value");
-                    layui.xmSelect.render({
-                        el: "#parent_id",
-                        name: "parent_id",
-                        initValue: [value],
-                        tips: "无",
-                        toolbar: {
-                            show: true,
-                            list: ["CLEAR"]
-                        },
-                        data: res,
-                        model: {
-                            "icon": "hidden",
-                            "label": {
-                                "type": "text"
-                            }
-                        },
-                        radio: true,
-                        clickClose: true,
-                        tree: {
-                            show: true,
-                            showFolderIcon: true,
-                            showLine: true,
-                            expandedKeys: true,
-                            clickExpand: false,
-                            clickCheck: true,
-                            strict: false
-                        },
-                    });
-                }
-            });
-
-            $.ajax({
-                url: "{{ route('admin.permissions.routes') }}",
-                dataType: "json",
-                success: function(res) {
-                    xmSelect.render({
-                        el: "#http_path",
-                        name: "http_path",
-                        initValue: initHttpPath,
-                        data: res,
-                        autoRow: true,
-                        toolbar: {
-                            show: true,
-                            list: ["ALL", "CLEAR", "REVERSE"]
-                        },
-                    })
-                }
-            });
-
-            $.ajax({
-                url: "{{ route('admin.menus.select') }}",
-                dataType: "json",
-                success: function(res) {
-                    xmSelect.render({
-                        el: "#menus",
-                        name: "menus",
-                        initValue: initMenus,
-                        data: res,
-                        autoRow: true,
-                        filterable: true,
-                        tree: {
-                            show: true,
-                            strict: false,
-                            expandedKeys: true
-                        },
-                        toolbar: {
-                            show: true,
-                            list: ["ALL", "CLEAR", "REVERSE"]
-                        },
-                    })
-                }
-            });
             form.on("submit(save)", function(data) {
                 let loading = layer.load();
                 $.ajax({

@@ -25,14 +25,22 @@ return new class extends Migration
         $adminRole = Role::create(['guard_name' => 'admin', 'name' => 'Admin']);
         /** @var Admin $admin */
         $admin = Admin::create([
-            'username' => 'admin',
-            'phone' => '18615574213',
-            'email' => 'xutongle@msn.com',
+            'username' => 'super-admin',
+            'phone' => '13800138000',
+            'email' => 'super-admin@msn.com',
             'password' => Hash::make('password'),
             'status' => StatusSwitch::ENABLED->value,
         ]);
 
         $admin->assignRole('Super Admin');
+        $admin1 = Admin::create([
+            'username' => 'admin',
+            'phone' => '13700137000',
+            'email' => 'admin@msn.com',
+            'password' => Hash::make('password'),
+            'status' => StatusSwitch::ENABLED->value,
+        ]);
+        $admin1->assignRole('Admin');
 
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();

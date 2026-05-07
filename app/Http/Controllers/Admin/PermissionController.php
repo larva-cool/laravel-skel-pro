@@ -37,7 +37,7 @@ class PermissionController extends AbstractController
     {
         if ($request->expectsJson()) {
             $perPage = per_page($request, 15);
-            $items = Permission::query()->orderBy('id')->paginate($perPage);
+            $items = Permission::query()->orderByDesc('id')->paginate($perPage);
 
             return PermissionResource::collection($items);
         }

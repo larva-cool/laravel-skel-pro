@@ -33,6 +33,7 @@ class PermissionResource extends JsonResource
             'value' => $this->id,
             'display_name' => $this->display_name,
             'name' => $this->name,
+            'guard_name' => $this->guard_name,
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
             'edit_url' => route('admin.permissions.edit', $this->id),
