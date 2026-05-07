@@ -36,11 +36,8 @@ class DynamicConfigServiceProviderTest extends TestCase
         // 模拟 SettingManagerService
         $settingManagerMock = $this->createMock(SettingManagerService::class);
         $settingManagerMock->method('has')
-            ->willReturnMap([
-                ['telescope.enabled', false],
-                ['upload.storage', true],
-                ['pulse.enabled', false],
-            ]);
+            ->with('upload.storage')
+            ->willReturn(true);
         $settingManagerMock->method('get')
             ->with('upload.storage')
             ->willReturn('s3');
