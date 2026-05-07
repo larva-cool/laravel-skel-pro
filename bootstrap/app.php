@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
         then: function () {
-            Route::middleware('admin')
+            Route::middleware('web')
                 ->prefix('admin')
                 ->as('admin.')
                 ->group(base_path('routes/admin.php'));
@@ -44,17 +44,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->api(prepend: [
             \App\Http\Middleware\RefreshUserActiveAt::class,
-        ]);
-        // 后台中间件组
-        $middleware->appendToGroup('admin', [
-            \Illuminate\Cookie\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-            \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            'auth.session',
-            // \App\Http\Middleware\RecordAdminLog::class, // 操作日志记录（未来可扩展）
         ]);
         // Configure the CSRF token validation middleware.
         $middleware->validateCsrfTokens([

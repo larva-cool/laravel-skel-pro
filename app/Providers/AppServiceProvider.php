@@ -65,12 +65,5 @@ class AppServiceProvider extends ServiceProvider
             }
             return null;
         });
-        Gate::define('viewPulse', function ($user = null) {
-            if ($user instanceof Admin) {
-                return $user->hasRole('Super Admin') || $user->hasPermissionTo('pulse');
-            }
-
-            return false;
-        });
     }
 }
