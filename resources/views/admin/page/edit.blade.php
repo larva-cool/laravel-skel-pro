@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', '修改管理')
+@section('title', '修改页面')
 
 @section('content')
 <form class="layui-form">

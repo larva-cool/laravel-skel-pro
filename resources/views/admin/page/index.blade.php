@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', '标签管理')
+@section('title', '页面管理')
 
 @section('content')
 <div class="pear-container">

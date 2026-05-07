@@ -35,10 +35,11 @@ class UpdateAdminPersonRequest extends FormRequest
             'name' => ['nullable', 'string', 'max:255'],
             'phone' => [
                 'nullable', new PhoneRule,
-                Rule::unique(Admin::class)->ignore($this->user()->phone),
+                Rule::unique(Admin::class, 'phone')->ignore($this->user()->id),
             ],
             'email' => [
-                'required', 'string', 'email', Rule::unique(Admin::class)->ignore($this->user()->email),
+                'required', 'string', 'email',
+                Rule::unique(Admin::class, 'email')->ignore($this->user()->id),
             ],
         ];
     }
