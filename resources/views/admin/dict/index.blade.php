@@ -75,50 +75,63 @@
         </div>
     </div>
     <script type="text/html" id="dict-type-toolbar">
+        @can('dicts.create')
         <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
             <i class="layui-icon layui-icon-add-1"></i>
             新增
         </button>
+        @endcan
     </script>
 
     <script type="text/html" id="dict-type-bar">
+        @can('dicts.edit')
         <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit">
             <i class="layui-icon layui-icon-edit"></i>
         </button>
+        @endcan
         <button class="pear-btn pear-btn-warming pear-btn-xs" lay-event="details">
             <i class="layui-icon layui-icon-transfer"></i>
         </button>
+        @can('dicts.delete')
         <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove">
             <i class="layui-icon layui-icon-delete"></i>
         </button>
+        @endcan
     </script>
 
     <script type="text/html" id="dict-data-toolbar">
+        @can('dicts.create')
         <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
             <i class="layui-icon layui-icon-add-1"></i>
             新增
         </button>
+        @endcan
+        @can('dicts.delete')
         <button class="pear-btn pear-btn-danger pear-btn-md" lay-event="batchRemove">
             <i class="layui-icon layui-icon-delete"></i>
             删除
         </button>
+        @endcan
     </script>
 
     <script type="text/html" id="dict-data-bar">
+        @can('dicts.edit')
         <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i
                 class="layui-icon layui-icon-edit"></i>
         </button>
+        @endcan
+        @can('dicts.delete')
         <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i
                 class="layui-icon layui-icon-delete"></i>
         </button>
+        @endcan
     </script>
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'form', 'jquery', 'util', 'popup','common', 'tablePlus'], function () {
+        layui.use(['table', 'form', 'jquery', 'popup','common', 'tablePlus'], function () {
             let table = layui.table;
             let form = layui.form;
-            let util = layui.util;
             let $ = layui.jquery;
             let popup = layui.popup;
             let common = layui.common;

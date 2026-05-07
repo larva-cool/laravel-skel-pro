@@ -37,11 +37,10 @@ class StoreAdminMenuRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'parent_id' => ['nullable', 'max:255'],
             'href' => ['nullable', 'string', 'max:255'],
+            'permission_name' => ['nullable', 'string', 'max:255'],
             'icon' => ['nullable', 'string', 'max:255'],
             'type' => ['required', 'integer', 'min:0', 'max:2'],
             'order' => ['required', 'integer', 'min:0'],
-
-            'roles' => ['nullable', 'string'],
         ];
     }
 }

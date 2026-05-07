@@ -57,7 +57,7 @@ return new class extends Migration {
                     [
                         'title' => '系统设置',
                         'icon' => 'layui-icon layui-icon-set',
-                        'href' => '/admin/system-config',
+                        'href' => '/admin/settings/config',
                         'permission_name' => 'settings.*',
                         'type' => 1,
                         'order' => 1000,

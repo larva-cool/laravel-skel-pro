@@ -30,7 +30,10 @@ class MenuController extends AbstractController
     public function __construct()
     {
         $this->middleware('auth:admin');
-        $this->middleware('permission:menus.index|menus.create', ['guard' => 'admin']);
+        $this->middleware('permission:menus.index')->only(['index']);
+        $this->middleware('permission:menus.create')->only(['create', 'store']);
+        $this->middleware('permission:menus.edit')->only(['edit', 'update']);
+        $this->middleware('permission:menus.delete')->only(['destroy']);
     }
 
     /**
@@ -122,7 +125,7 @@ class MenuController extends AbstractController
         // 获取所有菜单
         $menus = AdminMenu::query();
         // 筛选出有权限的菜单
-        if (!in_array('all_menu_access', $permissions)) {
+        if ($permissions) {
             $menus->where(function ($query) use ($permissions) {
                 $query->whereNull('permission_name')
                     ->orWhereIn('permission_name', $permissions);

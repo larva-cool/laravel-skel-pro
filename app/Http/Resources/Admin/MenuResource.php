@@ -43,9 +43,9 @@ class MenuResource extends JsonResource
             'parent_id' => $this->parent_id,
             'order' => $this->order,
             'href' => $this->href,
+            'permission_name'=> $this->permission_name,
             'type' => $type,
             'is_parent' => $this->children_count > 0,
-            'show_toolbar' => $this->id != 10000000, // 是否显示编辑菜单
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
             'edit_url' => route('admin.menus.edit', ['menu' => $this]),

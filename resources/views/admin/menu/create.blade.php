@@ -83,7 +83,7 @@
 @push('scripts')
     <script>
         // 上级菜单
-        layui.use(["jquery", "iconPicker", "popup"], function() {
+        layui.use(["jquery", "iconPicker", "xmSelect", "popup"], function() {
             let $ = layui.$;
             // 图标选择
             layui.iconPicker.render({
@@ -95,11 +95,10 @@
                 url: "{{ route('admin.menus.select') }}",
                 dataType: "json",
                 success: function(res) {
-                    let value = layui.$("#parent_id").attr("value");
                     layui.xmSelect.render({
                         el: "#parent_id",
                         name: "parent_id",
-                        initValue: [value],
+                        initValue: [],
                         tips: "无",
                         toolbar: {
                             show: true,

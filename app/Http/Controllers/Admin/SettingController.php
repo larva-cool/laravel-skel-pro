@@ -30,6 +30,10 @@ class SettingController extends AbstractController
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('permission:settings.index')->only(['index']);
+        $this->middleware('permission:settings.create')->only(['create', 'store']);
+        $this->middleware('permission:settings.edit')->only(['edit', 'update', 'config', 'storeConfig']);
+        $this->middleware('permission:settings.delete')->only(['destroy']);
     }
 
     /**

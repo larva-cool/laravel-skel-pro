@@ -31,6 +31,10 @@ class DictController extends AbstractController
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('permission:admins.index')->only(['index']);
+        $this->middleware('permission:admins.create')->only(['create', 'store', 'createData', 'storeData']);
+        $this->middleware('permission:admins.edit')->only(['edit', 'update', 'editData','updateStatus']);
+        $this->middleware('permission:admins.delete')->only(['destroy', 'batchDestroy']);
     }
 
     /**

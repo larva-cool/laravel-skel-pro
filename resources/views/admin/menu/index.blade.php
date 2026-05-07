@@ -50,6 +50,7 @@
             let cols = [
                 {title: "标题", field: "title",},
                 {title: "主键", field: "id", hide: true,},
+                {title: "权限标识", field: "permission_name"},
                 {title: "创建时间", field: "created_at", hide: true,},
                 {title: "更新时间", field: "updated_at", hide: true,},
                 {title: "url", field: "href",},

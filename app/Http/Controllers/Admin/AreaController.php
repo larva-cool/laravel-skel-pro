@@ -28,6 +28,10 @@ class AreaController extends AbstractController
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('permission:areas.index')->only(['index']);
+        $this->middleware('permission:areas.create')->only(['create', 'store']);
+        $this->middleware('permission:areas.edit')->only(['edit', 'update']);
+        $this->middleware('permission:areas.delete')->only(['destroy']);
     }
 
     /**

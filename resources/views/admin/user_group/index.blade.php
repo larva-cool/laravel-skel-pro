@@ -13,17 +13,20 @@
 
         <!-- 表格顶部工具栏 -->
         <script type="text/html" id="table-toolbar">
-            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="create" permission="admin.user_groups.create">
+            @can('user_groups.create')
+            <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="create">
                 <i class="layui-icon layui-icon-add-1"></i>新增
             </button>
+            @endcan
         </script>
 
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
-            @{{# if(d.show_toolbar){ }}
-            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit" permission="admin.user_groups.edit"><i class="layui-icon layui-icon-edit"></i></button>
-            <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove" permission="admin.user_groups.delete"><i class="layui-icon layui-icon-delete"></i></button>
-            @{{# } }}
+            @can('user_groups.edit')
+            <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+            @endcan
+            @can('user_groups.delete')<button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+            @endcan
         </script>
     </div>
 @endsection

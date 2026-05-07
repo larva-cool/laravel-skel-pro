@@ -50,8 +50,8 @@ Route::post('admins/avatar/{admin}', [\App\Http\Controllers\Admin\AdminControlle
 Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class, ['names' => 'admins'])->except(['show']);
 
 // 系统设置
-Route::get('system-config', [\App\Http\Controllers\Admin\SettingController::class, 'config'])->name('system-config');
-Route::post('system-config', [\App\Http\Controllers\Admin\SettingController::class, 'storeConfig'])->name('system-config.store');
+Route::get('settings/config', [\App\Http\Controllers\Admin\SettingController::class, 'config'])->name('settings.config');
+Route::post('settings/config', [\App\Http\Controllers\Admin\SettingController::class, 'storeConfig'])->name('settings.config.store');
 Route::resource('settings', \App\Http\Controllers\Admin\SettingController::class, ['names' => 'settings'])->except(['show']);
 
 // 字典管理

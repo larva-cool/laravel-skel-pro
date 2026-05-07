@@ -28,6 +28,10 @@ class RoleController extends AbstractController
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('permission:roles.index')->only(['index']);
+        $this->middleware('permission:roles.create')->only(['create', 'store']);
+        $this->middleware('permission:roles.edit')->only(['edit', 'update']);
+        $this->middleware('permission:roles.delete')->only(['destroy']);
     }
 
     /**
@@ -49,7 +53,7 @@ class RoleController extends AbstractController
      */
     public function select(): JsonResponse
     {
-        $items = Role::query()->select(['id as value', 'name'])->orderBy('id')->get();
+        $items = Role::query()->select(['name as value', 'name'])->orderBy('id')->get();
 
         return response()->json($items);
     }

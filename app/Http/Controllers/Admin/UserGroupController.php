@@ -28,6 +28,10 @@ class UserGroupController extends AbstractController
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('permission:user_groups.index')->only(['index']);
+        $this->middleware('permission:user_groups.create')->only(['create', 'store']);
+        $this->middleware('permission:user_groups.edit')->only(['edit', 'update']);
+        $this->middleware('permission:user_groups.delete')->only(['destroy']);
     }
 
     /**

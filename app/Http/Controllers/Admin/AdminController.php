@@ -37,6 +37,10 @@ class AdminController extends AbstractController
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('permission:admins.index')->only(['index']);
+        $this->middleware('permission:admins.create')->only(['create', 'store']);
+        $this->middleware('permission:admins.edit')->only(['edit', 'update', 'updateStatus']);
+        $this->middleware('permission:admins.delete')->only(['destroy']);
     }
 
     /**
@@ -109,10 +113,11 @@ class AdminController extends AbstractController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAdminRequest $request)
+    public function store(StoreAdminRequest $request): JsonResponse
     {
+        /** @var Admin $admin */
         $admin = Admin::create($request->safe()->except('roles'));
-        $admin->roles()->attach($request->roles);
+        $admin->assignRole($request->roles);
 
         return $this->success(trans('system.create_success'));
     }
@@ -128,10 +133,10 @@ class AdminController extends AbstractController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAdminRequest $request, Admin $admin)
+    public function update(UpdateAdminRequest $request, Admin $admin): JsonResponse
     {
         $admin->update($request->safe()->except('roles'));
-        $admin->roles()->sync($request->roles);
+        //$admin->roles()->sync($request->roles);
 
         return $this->success(trans('system.update_success'));
     }
@@ -165,7 +170,7 @@ class AdminController extends AbstractController
      */
     public function destroy(Admin $admin): JsonResponse
     {
-        if ($admin == config('admin.permission.administrator_id')) {
+        if ($admin->id == 10000000) {
             return $this->fail(trans('system.super_admin_cant_delete'));
         }
         $admin->delete();

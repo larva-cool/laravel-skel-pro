@@ -22,8 +22,12 @@
 
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
+            @can('permissions.edit')
             <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+            @endcan
+            @can('permissions.delete')
             <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+            @endcan
         </script>
     </div>
 @endsection
