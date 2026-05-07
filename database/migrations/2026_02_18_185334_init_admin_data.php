@@ -44,6 +44,11 @@ return new class extends Migration
 
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        
+        Permission::create(['name' => 'pulse', 'display_name' => 'Pulse', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'telescope', 'display_name' => 'Telescope', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'horizon', 'display_name' => 'Horizon', 'guard_name' => 'admin']);
+
         // 管理员管理
         Permission::create(['name' => 'admins.*', 'display_name' => '管理员管理', 'guard_name' => 'admin']);
         Permission::create(['name' => 'admins.index', 'display_name' => '管理员列表', 'guard_name' => 'admin']);

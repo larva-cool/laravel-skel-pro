@@ -31,7 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
         // $middleware->authenticateSessions();
-        // $middleware->throttleWithRedis();
+        $middleware->throttleApi(redis: true);
         $middleware->alias([
             'abilities' => Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
             'ability' => Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,

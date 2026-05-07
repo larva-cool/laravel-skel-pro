@@ -55,6 +55,7 @@ class AppServiceProvider extends ServiceProvider
 
         // 修改登录 redirect
         Authenticate::redirectUsing('admin_login_url');
+
         // Implicitly grant "Super Admin" role all permissions
         // This works in the app by using gate-related functions like auth()->user->can() and @can()
         Gate::before(function ($user, $ability) {

@@ -37,9 +37,9 @@
         <div id="control" class="layui-layout-control"></div>
         <!-- 顶 部 右 侧 菜 单 -->
         <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item layui-hide-xs" permission="admin.pulse"><a href="/admin/pulse" target="_blank">Pulse</a></li>
-            <li class="layui-nav-item layui-hide-xs" permission="admin.telescope"><a href="/admin/telescope" target="_blank">Telescope</a></li>
-            <li class="layui-nav-item layui-hide-xs" permission="admin.horizon"><a href="/admin/horizon" target="_blank">Horizon</a></li>
+            @can('pulse')<li class="layui-nav-item layui-hide-xs" permission="admin.pulse"><a href="/admin/pulse" target="_blank">Pulse</a></li>@endcan
+            @can('telescope')<li class="layui-nav-item layui-hide-xs" permission="admin.telescope"><a href="/admin/telescope" target="_blank">Telescope</a></li>@endcan
+            @can('horizon')<li class="layui-nav-item layui-hide-xs" permission="admin.horizon"><a href="/admin/horizon" target="_blank">Horizon</a></li>@endcan
             <li class="layui-nav-item layui-hide-xs"><a href="#" class="menuSearch layui-icon layui-icon-search"></a>
             </li>
             <li class="layui-nav-item layui-hide-xs"><a href="#"

@@ -588,7 +588,7 @@
             form.on("submit(save)", function(data) {
                 let loading = layer.load();
                 $.ajax({
-                    url: "{{ route('admin.system-config.store') }}",
+                    url: "{{ route('admin.settings.config.store') }}",
                     type: "POST",
                     dataType: "json",
                     data: data.field,
