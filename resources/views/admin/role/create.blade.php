@@ -20,6 +20,15 @@
                         <input type="text" name="guard_name" value="admin" required lay-verify="required" class="layui-input">
                     </div>
                 </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">权限</label>
+                    <div class="layui-input-block">
+                        @foreach($permissions as $permission)
+                            <input type="checkbox" name="permissions[]" value="{{$permission['name']}}" title="{{$permission['display_name']}}">
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
 

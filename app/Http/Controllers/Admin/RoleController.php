@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\Admin\Admin\StoreAdminRoleRequest;
 use App\Http\Resources\Admin\RoleResource;
 use App\Models\Admin\AdminRole;
+use App\Models\System\Permission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -63,7 +64,10 @@ class RoleController extends AbstractController
      */
     public function create()
     {
-        return view('admin.role.create');
+        $permissions = Permission::query()->select('name', 'display_name')->orderBy('id')->get()->toArray();
+        return view('admin.role.create', [
+            'permissions' => $permissions,
+        ]);
     }
 
     /**
@@ -71,7 +75,9 @@ class RoleController extends AbstractController
      */
     public function store(StoreAdminRoleRequest $request): JsonResponse
     {
-        Role::create($request->validated());
+        /** @var Role $role */
+        $role = Role::create($request->validated());
+        $role->givePermissionTo($request->permissions);
 
         return $this->success(trans('system.create_success'));
     }
@@ -81,8 +87,12 @@ class RoleController extends AbstractController
      */
     public function edit(Role $role)
     {
+        $rolePermissions = $role->getAllPermissions()->pluck('name')->toArray();
+        $permissions = Permission::query()->select('name', 'display_name')->orderBy('id')->get()->toArray();
         return view('admin.role.edit', [
             'item' => $role,
+            'permissions' => $permissions,
+            'rolePermissions' => $rolePermissions,
             'update_url' => route('admin.roles.update', $role->id),
         ]);
     }
@@ -93,6 +103,7 @@ class RoleController extends AbstractController
     public function update(StoreAdminRoleRequest $request, Role $role): JsonResponse
     {
         $role->update($request->validated());
+        $role->syncPermissions($request->permissions);
 
         return $this->success(trans('system.update_success'));
     }

@@ -15,13 +15,6 @@ Route::group(['prefix' => 'auth'], function (Illuminate\Contracts\Routing\Regist
     $registrar->post('logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');
 });
 
-/**
- * Ajax
- */
-Route::group(['prefix' => 'api','as'=>'api.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
-    $registrar->get('permission', [\App\Http\Controllers\Admin\ApiController::class, 'permission'])->name('permission');
-});
-
 // 后台首页
 Route::get('', [\App\Http\Controllers\Admin\IndexController::class, 'index'])->name('main');
 Route::get('index', [\App\Http\Controllers\Admin\IndexController::class, 'index'])->name('index');

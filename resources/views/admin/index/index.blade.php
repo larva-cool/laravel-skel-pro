@@ -87,7 +87,7 @@
 		</span>
         <span class="center"></span>
         <span class="right">
-			Copyright © 2025-2026 soudong.top
+			Copyright © 2025-2026 Xutongle
 		</span>
     </div>
     <!-- 遮 盖 层 -->

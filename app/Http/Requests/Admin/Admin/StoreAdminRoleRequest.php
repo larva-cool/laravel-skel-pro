@@ -11,6 +11,13 @@ namespace App\Http\Requests\Admin\Admin;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @property-read string $name
+ * @property-read string $guard_name
+ * @property-read array $permissions
+ *
+ * @author Tongle Xu <xutongle@gmail.com>
+ */
 class StoreAdminRoleRequest extends FormRequest
 {
     /**
@@ -31,6 +38,7 @@ class StoreAdminRoleRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'guard_name' => ['required', 'string', 'max:255'],
+            'permissions' => ['nullable', 'array'],
         ];
     }
 }

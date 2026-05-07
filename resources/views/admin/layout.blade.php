@@ -16,7 +16,6 @@
 @yield('content')
 <script src="{{asset('admin/component/layui/layui.js')}}"></script>
 <script src="{{asset('admin/component/pear/pear.js')}}"></script>
-<script src="{{asset('admin/admin/js/permission.js')}}"></script>
 <script src="{{asset('admin/admin/js/common.js')}}"></script>
 @stack('scripts')
 @stack('footer')

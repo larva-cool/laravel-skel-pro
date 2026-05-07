@@ -136,7 +136,7 @@ class AdminController extends AbstractController
     public function update(UpdateAdminRequest $request, Admin $admin): JsonResponse
     {
         $admin->update($request->safe()->except('roles'));
-        //$admin->roles()->sync($request->roles);
+        $admin->syncRoles($request->roles);
 
         return $this->success(trans('system.update_success'));
     }
