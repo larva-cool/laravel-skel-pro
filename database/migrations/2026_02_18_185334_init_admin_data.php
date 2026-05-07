@@ -130,6 +130,13 @@ return new class extends Migration
         Permission::create(['name' => 'announcements.delete', 'display_name' => '删除公告', 'guard_name' => 'admin']);
         $adminRole->givePermissionTo(['announcements.*']);
 
+        // 单页管理
+        Permission::create(['name' => 'pages.*', 'display_name' => '单页管理', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'pages.create', 'display_name' => '创建单页', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'pages.edit', 'display_name' => '修改单页', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'pages.delete', 'display_name' => '删除单页', 'guard_name' => 'admin']);
+        $adminRole->givePermissionTo(['pages.*']);
+
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
     }
 
