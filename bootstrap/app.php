@@ -35,7 +35,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'abilities' => Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
             'ability' => Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
-            'admin.permission' => \App\Http\Middleware\Admin\PermissionMiddleware::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,//角色
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,//权限
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,//角色权限
         ]);
         $middleware->web(append: [
             \App\Http\Middleware\RefreshUserActiveAt::class,

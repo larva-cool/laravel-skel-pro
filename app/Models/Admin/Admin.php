@@ -17,13 +17,12 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Carbon;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * 管理员模型
@@ -52,7 +51,7 @@ use Illuminate\Support\Carbon;
  */
 class Admin extends Authenticatable
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, HasRoles, Notifiable, SoftDeletes;
     use Traits\DateTimeFormatter;
     use Traits\HasApiTokens;
 
@@ -135,7 +134,7 @@ class Admin extends Authenticatable
             $model->user_id = $user?->id;
         });
         static::deleting(function (Admin $model) {
-            $model->roles()->detach();
+
         });
     }
 
@@ -171,100 +170,5 @@ class Admin extends Authenticatable
     {
         return $this->morphMany(LoginHistory::class, 'user')
             ->latest('login_at');
-    }
-
-    /**
-     * A user has and belongs to many roles.
-     */
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(AdminRole::class, 'admin_role_users', 'user_id', 'role_id')
-            ->withTimestamps();
-    }
-
-    /**
-     * 检查用户是否具有指定的角色
-     *
-     * @return mixed
-     */
-    public function isRole(string $role): bool
-    {
-        return $this->roles->pluck('slug')->contains($role) || $this->roles->pluck('id')->contains($role);
-    }
-
-    /**
-     * 检查当前实例是否是超管
-     */
-    public function isAdministrator(): bool
-    {
-        return $this->isRole(config('admin.permission.administrator'));
-    }
-
-    /**
-     * 判断是否允许查看菜单.
-     *
-     * @param  array|AdminMenu  $menu
-     * @return bool
-     */
-    public function canSeeMenu($menu)
-    {
-        return true;
-    }
-
-    /**
-     * 获取手机号
-     *
-     * @param  Notification|null  $notification
-     */
-    public function routeNotificationForPhone($notification): ?string
-    {
-        return $this->phone ?: null;
-    }
-
-    protected ?\Illuminate\Support\Collection $allPermissions;
-
-    /**
-     * Get all permissions of user.
-     */
-    public function allPermissions(): \Illuminate\Support\Collection
-    {
-        if ($this->allPermissions) {
-            return $this->allPermissions;
-        }
-
-        return $this->allPermissions = $this->roles->pluck('permissions')->flatten()->keyBy($this->getKeyName());
-    }
-
-    /**
-     * 检查用户是否有指定的权限
-     *
-     * @param  string  $abilities
-     * @param  array  $arguments
-     * @return bool
-     */
-    public function can($abilities, $arguments = [])
-    {
-        if (! $abilities) {
-            return false;
-        }
-
-        if ($this->isAdministrator()) {
-            return true;
-        }
-
-        $permissions = $this->allPermissions();
-
-        return $permissions->pluck('slug')->contains($abilities) || $permissions->pluck('id')->contains($abilities);
-    }
-
-    /**
-     * Check if user has no permission.
-     *
-     * @param  string  $abilities
-     * @return bool
-     */
-    public function cannot($abilities, $arguments = [])
-    {
-        return ! $this->can($abilities);
     }
 }

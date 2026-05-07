@@ -12,7 +12,6 @@ use App\Models\Model;
 use App\Support\FileHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Cache;
 
@@ -85,8 +84,7 @@ class AdminMenu extends Model
     {
         parent::booted();
         static::deleting(function (AdminMenu $model) {
-            $model->roles()->detach();
-            $model->permissions()->detach();
+            
         });
     }
 
@@ -104,24 +102,6 @@ class AdminMenu extends Model
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
-    }
-
-    /**
-     * 角色
-     */
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(AdminRole::class, 'admin_role_menus', 'menu_id', 'role_id')
-            ->withTimestamps();
-    }
-
-    /**
-     * 权限
-     */
-    public function permissions(): BelongsToMany
-    {
-        return $this->belongsToMany(AdminPermission::class, 'admin_permission_menus', 'menu_id', 'permission_id')
-            ->withTimestamps();
     }
 
     /**
@@ -168,7 +148,7 @@ class AdminMenu extends Model
      */
     public static function getKeys(array $ids): array
     {
-        $cacheKey = 'admin_menu_keys:'.md5(implode(',', $ids));
+        $cacheKey = 'admin.menu.keys:'.md5(implode(',', $ids));
         if (($keys = Cache::get($cacheKey)) == null) {
             $keys = self::query()->whereIn('id', $ids)->pluck('key')->toArray();
             Cache::set($cacheKey, $keys, 3600);

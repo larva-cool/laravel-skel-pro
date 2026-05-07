@@ -13,6 +13,7 @@ use App\Http\Resources\Admin\RoleResource;
 use App\Models\Admin\AdminRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 /**
  * 角色管理
@@ -35,7 +36,7 @@ class RoleController extends AbstractController
     public function index(Request $request)
     {
         if ($request->expectsJson()) {
-            $items = AdminRole::query()->orderBy('id')->paginate(per_page($request, 15));
+            $items = Role::query()->orderBy('id')->paginate(per_page($request, 15));
 
             return RoleResource::collection($items);
         }
@@ -48,7 +49,7 @@ class RoleController extends AbstractController
      */
     public function select(): JsonResponse
     {
-        $items = AdminRole::query()->select(['id as value', 'name'])->orderBy('id')->get();
+        $items = Role::query()->select(['id as value', 'name'])->orderBy('id')->get();
 
         return response()->json($items);
     }
@@ -66,7 +67,7 @@ class RoleController extends AbstractController
      */
     public function store(StoreAdminRoleRequest $request)
     {
-        AdminRole::create($request->validated());
+        Role::create($request->validated());
 
         return $this->success(trans('system.create_success'));
     }
@@ -74,7 +75,7 @@ class RoleController extends AbstractController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(AdminRole $role)
+    public function edit(Role $role)
     {
         return view('admin.role.edit', [
             'item' => $role,
@@ -85,7 +86,7 @@ class RoleController extends AbstractController
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreAdminRoleRequest $request, AdminRole $role)
+    public function update(StoreAdminRoleRequest $request, Role $role)
     {
         $role->update($request->validated());
 
@@ -95,7 +96,7 @@ class RoleController extends AbstractController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(AdminRole $role): JsonResponse
+    public function destroy(Role $role): JsonResponse
     {
         if ($role->id == 1) {
             return $this->fail(trans('system.default_role_cannot_delete'));

@@ -5,8 +5,8 @@
 
 declare(strict_types=1);
 
+use App\Models\System\Permission;
 use Spatie\Permission\DefaultTeamResolver;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 return [
@@ -171,11 +171,9 @@ return [
     'display_role_in_exception' => false,
 
     /*
-     * By default wildcard permission lookups are disabled.
-     * See documentation to understand supported syntax.
+     * 权限通配符检索
      */
-
-    'enable_wildcard_permission' => false,
+    'enable_wildcard_permission' => true,
 
     /*
      * The class to use for interpreting wildcard permissions.
@@ -183,7 +181,7 @@ return [
      */
     // 'wildcard_permission' => Spatie\Permission\WildcardPermission::class,
 
-    /* Cache-specific settings */
+    /* 缓存设置 */
 
     'cache' => [
 
@@ -195,9 +193,8 @@ return [
         'expiration_time' => DateInterval::createFromDateString('24 hours'),
 
         /*
-         * The cache key used to store all permissions.
+         * 存储所有权限的缓存键。
          */
-
         'key' => 'permission.cache',
 
         /*
