@@ -42,6 +42,7 @@ return new class extends Migration
             $table->string('title', 255)->comment('标题');
             $table->string('icon', 255)->nullable()->comment('图标');
             $table->string('href', 255)->nullable()->comment('url');
+            $table->string('permission_name')->nullable()->comment('权限名称');
             $table->unsignedTinyInteger('type')->comment('类型');
             $table->unsignedInteger('order')->default(0)->comment('排序');
             $table->timestamps();

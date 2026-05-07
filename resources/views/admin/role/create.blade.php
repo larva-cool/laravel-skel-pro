@@ -15,13 +15,6 @@
                 </div>
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label required">描述</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="desc" value="" class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
                     <label class="layui-form-label">权限</label>
                     <div class="layui-input-block">
                         <div name="rules" id="rules" value=""></div>

@@ -30,8 +30,6 @@ class StoreAdminRoleRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'desc' => ['nullable', 'string', 'max:255'],
-            'rules' => ['nullable', 'string'],
         ];
     }
 }

@@ -54,9 +54,6 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             'auth.session',
-            'role', // 角色检查
-            'permission',// 权限检查
-            'role_or_permission'//角色权限检查
             // \App\Http\Middleware\RecordAdminLog::class, // 操作日志记录（未来可扩展）
         ]);
         // Configure the CSRF token validation middleware.

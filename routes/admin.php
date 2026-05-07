@@ -19,7 +19,7 @@ Route::group(['prefix' => 'auth'], function (Illuminate\Contracts\Routing\Regist
  * Ajax
  */
 Route::group(['prefix' => 'api','as'=>'api.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
-    $registrar->get('left-menus', [\App\Http\Controllers\Admin\ApiController::class, 'leftMenus'])->name('left-menus');
+
     $registrar->get('permission', [\App\Http\Controllers\Admin\ApiController::class, 'permission'])->name('permission');
 });
 
@@ -49,6 +49,7 @@ Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class, ['
 
 // 菜单管理
 Route::get('menus/select', [\App\Http\Controllers\Admin\MenuController::class, 'menuSelect'])->name('menus.select');
+Route::get('menus/left-menus', [\App\Http\Controllers\Admin\MenuController::class, 'leftMenus'])->name('menus.left-menus');
 Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class, ['names' => 'menus'])->except(['show']);
 
 // 系统设置

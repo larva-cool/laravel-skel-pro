@@ -37,7 +37,6 @@
             let cols = [
                 {title: '角色ID', field: 'id', align: 'center', width: 100},
                 {title: '角色名称', field: 'name', align: 'center'},
-                {title: '角色描述', field: 'desc', align: 'left'},
                 {title: "创建时间", field: "created_at",},
                 {title: "更新时间", field: "updated_at",},
                 {

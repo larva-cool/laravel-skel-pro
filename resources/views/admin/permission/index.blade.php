@@ -27,72 +27,28 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'jquery', 'common', 'treeTable'], function () {
-            let treeTable = layui.treeTable;
+        layui.use(['table', 'jquery', 'common', 'table'], function () {
+            let table = layui.table;
             let $ = layui.jquery;
             let common = layui.common;
 
             let cols = [
-                {title: '权限名称', field: 'name'},
+                {title: '权限名称', field: 'display_name'},
                 {title: "权限ID", field: "id", hide: true,},
-                {title: '权限标识', field: 'slug', align: 'left'},
+                {title: '权限标识', field: 'name', align: 'left'},
                 {title: "创建时间", field: "created_at",},
                 {title: "更新时间", field: "updated_at",},
                 {title: "操作", toolbar: "#table-bar", align: "center", fixed: "right", width: 195,},
             ];
 
-            // 渲染
-            treeTable.render({
+            table.render({
                 elem: '#data-table',
-                url: '{{route('admin.permissions.index')}}', // 此处为静态模拟数据，实际使用时需换成真实接口
-                tree: {
-                    customName: {
-                        isParent: 'is_parent',
-                        name: 'name',
-                        pid: 'parent_id',
-                    },
-                    // 异步加载子节点
-                    async: {
-                        enable: true,
-                        autoParam: ["parent_id=id"]
-                    },
-                    view: {
-                        expandAllDefault: true,
-                    }
-                },
+                url: "{{route('admin.permissions.index')}}",
                 cols: [cols],
-                page: true,
-                limit: 500,
-                limits: [50,100,150,200,500],
                 toolbar: "#table-toolbar",
-                defaultToolbar: [{
-                    title: "刷新",
-                    layEvent: "refresh",
-                    icon: "layui-icon-refresh",
-                }, "filter", "print", "exports"],
-                loading: true, // 显示加载状态
-                text: {
-                    none: '暂无数据' // 无数据时的提示文本
-                },
-                request: {
-                    pageName: 'page', // 页码参数名
-                    limitName: 'per_page', // 每页数据条数参数名
-                },
-                dataType: 'json',
-                headers: {
-                    Accept: 'application/json'
-                },
-                parseData: function (res) { // 自定义数据解析
-                    return {
-                        "code": 0, // 解析接口状态
-                        "msg": 'ok', // 解析提示文本
-                        "count": res.meta.total, // 解析数据长度
-                        "data": res.data // 解析数据列表
-                    };
-                }
             });
 
-            treeTable.on('tool(data-table)', function (obj) {
+            table.on('tool(data-table)', function (obj) {
                 if (obj.event === 'remove') {
                     layer.confirm('确定要删除该权限吗？', {icon: 3, title: '提示'}, function (index) {
                         let loading = layer.load();
@@ -126,7 +82,7 @@
                 }
             });
 
-            treeTable.on('toolbar(data-table)', function (obj) {
+            table.on('toolbar(data-table)', function (obj) {
                 if (obj.event === 'create') {
                     layer.open({
                         type: 2,
@@ -135,7 +91,7 @@
                         area: [common.isMobile() ? "100%" : "650px", common.isMobile() ? "100%" : "650px"],
                         content: "{{route('admin.permissions.create')}}",
                         end: function (index) {
-                            treeTable.reload('data-table');
+                            table.reload('data-table');
                         }
                     });
                 }

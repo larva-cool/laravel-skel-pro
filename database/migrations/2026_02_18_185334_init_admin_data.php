@@ -38,12 +38,22 @@ return new class extends Migration
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
         // 权限管理
         Permission::create(['name' => 'permissions.*', 'display_name' => '权限管理', 'guard_name'=>'admin']);
+        Permission::create(['name' => 'permissions.index', 'display_name' => '权限列表', 'guard_name'=>'admin']);
         Permission::create(['name' => 'permissions.create', 'display_name' => '创建权限', 'guard_name'=>'admin']);
         Permission::create(['name' => 'permissions.edit', 'display_name' => '修改权限', 'guard_name'=>'admin']);
         Permission::create(['name' => 'permissions.delete', 'display_name' => '删除权限', 'guard_name'=>'admin']);
 
+        // 菜单管理
+        Permission::create(['name' => 'menus.*', 'display_name' => '菜单管理', 'guard_name'=>'admin']);
+        Permission::create(['name' => 'menus.index', 'display_name' => '菜单列表', 'guard_name'=>'admin']);
+        Permission::create(['name' => 'menus.create', 'display_name' => '创建菜单', 'guard_name'=>'admin']);
+        Permission::create(['name' => 'menus.edit', 'display_name' => '修改菜单', 'guard_name'=>'admin']);
+        Permission::create(['name' => 'menus.delete', 'display_name' => '删除菜单', 'guard_name'=>'admin']);
+        $adminRole->givePermissionTo(['menus.*','menus.create','menus.edit','menus.delete']);
+
         // 配置管理
         Permission::create(['name' => 'settings.*', 'display_name' => '配置管理', 'guard_name'=>'admin']);
+        Permission::create(['name' => 'settings.index', 'display_name' => '配置列表', 'guard_name'=>'admin']);
         Permission::create(['name' => 'settings.create', 'display_name' => '创建配置', 'guard_name'=>'admin']);
         Permission::create(['name' => 'settings.edit', 'display_name' => '修改配置', 'guard_name'=>'admin']);
         Permission::create(['name' => 'settings.delete', 'display_name' => '删除配置', 'guard_name'=>'admin']);

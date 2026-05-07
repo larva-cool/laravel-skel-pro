@@ -11,7 +11,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\Admin\Admin\StoreAdminMenuRequest;
 use App\Http\Requests\Admin\Admin\UpdateAdminMenuRequest;
 use App\Http\Resources\Admin\MenuResource;
+use App\Models\Admin\Admin;
 use App\Models\Admin\AdminMenu;
+use App\Support\TreeHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -28,6 +30,7 @@ class MenuController extends AbstractController
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('permission:menus.index|menus.create', ['guard' => 'admin']);
     }
 
     /**
@@ -64,10 +67,7 @@ class MenuController extends AbstractController
      */
     public function store(StoreAdminMenuRequest $request): JsonResponse
     {
-        $menu = AdminMenu::create($request->safe()->except('roles'));
-        if ($request->roles) {
-            $menu->roles()->attach($request->roles);
-        }
+        AdminMenu::create($request->validated());
 
         return $this->success(trans('system.create_success'));
     }
@@ -87,10 +87,7 @@ class MenuController extends AbstractController
      */
     public function update(UpdateAdminMenuRequest $request, AdminMenu $menu)
     {
-        $menu->update($request->safe()->except('roles'));
-        if ($request->roles) {
-            $menu->roles()->attach($request->roles);
-        }
+        $menu->update($request->validated());
 
         return $this->success(trans('system.update_success'));
     }
@@ -111,5 +108,44 @@ class MenuController extends AbstractController
     public function menuSelect(Request $request): array
     {
         return AdminMenu::getTreeForXmSelect();
+    }
+
+    /**
+     * 获取后台左侧菜单列表
+     */
+    public function leftMenus(Request $request): JsonResponse
+    {
+        /** @var Admin $user */
+        $user = $request->user();
+        $permissions = $user->getAllPermissions()->pluck('name')->toArray();
+
+        // 获取所有菜单
+        $menus = AdminMenu::query();
+        // 筛选出有权限的菜单
+        if (!in_array('all_menu_access', $permissions)) {
+            $menus->where(function ($query) use ($permissions) {
+                $query->whereNull('permission_name')
+                    ->orWhereIn('permission_name', $permissions);
+            });
+        }
+        $items = $menus->orderByDesc('order')->orderBy('id')->get()->toArray();
+
+        $formattedItems = [];
+        foreach ($items as $item) {
+            $item['parent_id'] = (int) $item['parent_id'];
+            $item['name'] = $item['title'];
+            $item['value'] = $item['id'];
+            $item['icon'] = $item['icon'] ? "layui-icon {$item['icon']}" : '';
+            $formattedItems[] = $item;
+        }
+
+        $tree = new TreeHelper($formattedItems);
+        $treeItems = $tree->getTree();
+
+        if (!app()->environment('production')) {
+            $treeItems = array_merge($treeItems, AdminMenu::getDefaultMenus());
+        }
+
+        return response()->json($treeItems);
     }
 }

@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Cache;
  * @property string $title 菜单名称
  * @property string $icon 图标
  * @property string $href 目标页面
+ * @property string $permission_name 权限名称
  * @property int $type 菜单类型 0目录，1菜单
  * @property int $order 排序
  *
@@ -45,7 +46,7 @@ class AdminMenu extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'id', 'parent_id', 'title', 'icon', 'href', 'type', 'order',
+        'id', 'parent_id', 'title', 'icon', 'href', 'permission_name', 'type', 'order',
     ];
 
     /**
@@ -70,6 +71,7 @@ class AdminMenu extends Model
             'title' => 'string',
             'icon' => 'string',
             'href' => 'string',
+            'permission_name' => 'string',
             'type' => 'integer',
             'order' => 'integer',
             'created_at' => 'datetime',
@@ -84,7 +86,7 @@ class AdminMenu extends Model
     {
         parent::booted();
         static::deleting(function (AdminMenu $model) {
-            
+
         });
     }
 
@@ -244,22 +246,5 @@ class AdminMenu extends Model
         }
 
         return $items;
-    }
-
-    public static function getLeftMenus(): array
-    {
-        // 读取所有菜单
-        $items = AdminMenu::query()->orderByDesc('order')->orderBy('id')->get()->toArray();
-
-        $formattedItems = [];
-        foreach ($items as $item) {
-            $item['parent_id'] = (int) $item['parent_id'];
-            $item['name'] = $item['title'];
-            $item['value'] = $item['id'];
-            $item['icon'] = $item['icon'] ? "layui-icon {$item['icon']}" : '';
-            $formattedItems[] = $item;
-        }
-
-        return $formattedItems;
     }
 }

@@ -8,14 +8,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Admin;
 
-use App\Models\Admin\AdminPermission;
+use App\Models\System\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * 权限资源
  *
- * @mixin AdminPermission
+ * @mixin Permission
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */
@@ -31,9 +31,8 @@ class PermissionResource extends JsonResource
         return [
             'id' => $this->id,
             'value' => $this->id,
+            'display_name' => $this->display_name,
             'name' => $this->name,
-            'slug' => $this->slug,
-            'is_parent' => $this->children_count > 0,
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
             'edit_url' => route('admin.permissions.edit', $this->id),
