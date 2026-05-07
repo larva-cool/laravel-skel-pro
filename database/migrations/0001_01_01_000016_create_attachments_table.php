@@ -19,7 +19,7 @@ return new class extends Migration
     {
         Schema::create('attachments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->index()->comment('用户ID');
+            $table->unsignedBigInteger('user_id')->nullable()->index()->comment('用户ID');
             $table->string('storage')->nullable()->comment('存储驱动');
             $table->string('origin_name')->comment('原始文件名');
             $table->string('file_name')->nullable()->comment('新文件名');

@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * This is NOT a freeware, use is subject to license terms.
+ */
+
+declare(strict_types=1);
+
+namespace App\Http\Requests\Admin\Attachment;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+/**
+ * 附件搜索
+ *
+ * @property string $keyword 搜索关键词
+ * @property array $created_at 最后登录时间
+ * @property string $field 排序字段
+ * @property string $order 排序方式
+ *
+ * @author Tongle Xu <xutongle@msn.com>
+ */
+class SearchAttachmentRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'keyword' => 'nullable|string|max:255',
+            'created_at' => 'nullable|array',
+            'created_at.*' => 'nullable|date',
+            'field' => 'nullable|string|max:255',
+            'order' => 'nullable|string|max:255',
+        ];
+    }
+}

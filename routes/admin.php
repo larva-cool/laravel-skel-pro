@@ -55,6 +55,9 @@ Route::resource('dicts', \App\Http\Controllers\Admin\DictController::class, ['na
 Route::get('areas/select', [\App\Http\Controllers\Admin\AreaController::class, 'select'])->name('areas.select');
 Route::resource('areas', \App\Http\Controllers\Admin\AreaController::class, ['names' => 'areas'])->except(['show']);
 
+// 附件管理
+Route::resource('attachments', \App\Http\Controllers\Admin\AttachmentController::class, ['names' => 'attachments'])->except(['edit', 'show']);
+
 // 文件上传
 //Route::post('uploader/tinymce', [\App\Http\Controllers\Admin\UploaderController::class, 'tinymce'])->name('uploader.tinymce');
 //Route::post('uploader/aieditor-file', [\App\Http\Controllers\Admin\UploaderController::class, 'aiEditorFile'])->name('uploader.aieditor-file');
