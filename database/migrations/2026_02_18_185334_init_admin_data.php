@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
@@ -11,7 +12,8 @@ use App\Models\Admin\AdminRole;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Hash;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */

@@ -30,6 +30,7 @@
         "maatwebsite/excel": "^3.1",
         "overtrue/easy-sms": "^3.2",
         "predis/predis": "^3.4",
+        "spatie/laravel-permission": "^6.25",
         "zhuzhichao/ip-location-zh": "^2.4"
     },
     "require-dev": {

@@ -279,6 +279,7 @@ class AdminMenu extends Model
             $item['icon'] = $item['icon'] ? "layui-icon {$item['icon']}" : '';
             $formattedItems[] = $item;
         }
+
         return $formattedItems;
     }
 }

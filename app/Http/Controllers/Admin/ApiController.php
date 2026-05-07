@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
@@ -45,7 +46,7 @@ class ApiController extends AbstractController
         $tree = new TreeHelper($formattedItems);
         $tree_items = $tree->getTree();
         // 检查用户是否是超管，超管加载所有菜单
-        if (!$user->isAdministrator()) {
+        if (! $user->isAdministrator()) {
             // 删除无权限的菜单
         }
         // 超级管理员权限为 *
@@ -55,7 +56,7 @@ class ApiController extends AbstractController
         //        PermissionHelper::removeNotContain($tree_items, 'type', $types);
         //        $menus = PermissionHelper::emptyFilter(TreeHelper::arrayValues($tree_items));
         $menus = $tree_items;
-        if (!app()->environment('production')) {
+        if (! app()->environment('production')) {
             $menus = array_merge($menus, AdminMenu::getDefaultMenus());
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
@@ -30,7 +31,7 @@ class AdminHelper
 
             $methods = array_map('strtoupper', explode(',', $methods));
 
-            if (!empty($methods) && !in_array($request->method(), $methods)) {
+            if (! empty($methods) && ! in_array($request->method(), $methods)) {
                 return false;
             }
         }
@@ -40,7 +41,7 @@ class AdminHelper
             return true;
         }
 
-        if (!Str::contains($path, '*')) {
+        if (! Str::contains($path, '*')) {
             return $path === $current;
         }
 
@@ -59,8 +60,6 @@ class AdminHelper
 
     /**
      * 获取API 路由名称
-     * @param  string  $route
-     * @return string
      */
     public static function getApiRouteName(string $route = ''): string
     {
