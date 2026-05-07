@@ -15,16 +15,22 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+// 清理模型 凌晨 2 点
+Schedule::command('model:prune')->dailyAt('2:00')->onOneServer();
+
+// 统计相关
+// 队列健康指标 5分钟一次
+Schedule::command('horizon:snapshot')->everyFiveMinutes()->onOneServer();
 // 用户统计 每天夜里1点开始
 Schedule::job(new StatUserJob)->dailyAt('1:00')->onOneServer();
 
-// 清理模型 0 点
-Schedule::command('model:prune')->daily()->onOneServer();
 
-// 队列健康指标 5分钟
-Schedule::command('horizon:snapshot')->everyFiveMinutes()->onOneServer();
+
 
 if (! app()->isProduction()) {
     // 0 点
     Schedule::command('telescope:prune --hours=24')->daily()->onOneServer();
 }
+
+// 每月 1 号凌晨 00:00 执行
+Schedule::command('db:create-partition')->monthly();

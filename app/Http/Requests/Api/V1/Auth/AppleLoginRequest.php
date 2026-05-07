@@ -45,7 +45,7 @@ class AppleLoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate(): User
+    public function authenticate(): ?User
     {
         $response = Http::post('https://appleid.apple.com/auth/token', [
             'client_id' => config('services.apple.client_id'),

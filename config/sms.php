@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * This is NOT a freeware, use is subject to license terms.
+ */
+
+declare(strict_types=1);
+
 return [
     // HTTP 请求的超时时间（秒）
     'timeout' => 5.0,

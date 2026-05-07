@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1\Auth;
 
+use App\Models\User;
 use App\Rules\PhoneRule;
 use App\Rules\SmsCaptchaRule;
 use App\Support\UserHelper;
@@ -41,7 +42,7 @@ class PhoneLoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate()
+    public function authenticate(): ?User
     {
         $user = UserHelper::findOrCreatePhone($this->string('phone')->toString());
         if (! $user) {

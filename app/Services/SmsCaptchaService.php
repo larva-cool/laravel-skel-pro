@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Facades\Sms;
 use App\Models\System\PhoneCode;
 use App\Sms\VerifyCodeMessage;
 use Illuminate\Support\Facades\Log;
@@ -109,7 +110,7 @@ class SmsCaptchaService
             $verifyCode = $this->getVerifyCode(true);
             if (! app()->environment('local', 'testing')) {// 生产环境才会发送
                 try {
-                    sms()->send($this->phone, new VerifyCodeMessage([
+                    Sms::send($this->phone, new VerifyCodeMessage([
                         'code' => $verifyCode,
                         'duration' => $this->duration,
                         'scene' => $this->scene,

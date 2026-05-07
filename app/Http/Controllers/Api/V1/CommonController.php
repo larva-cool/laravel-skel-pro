@@ -128,8 +128,6 @@ class CommonController extends Controller
      */
     public function sourceTypes(): JsonResponse
     {
-        $maps = Relation::morphMap();
-
-        return response()->json(array_keys($maps));
+        return response()->json(source_types());
     }
 }

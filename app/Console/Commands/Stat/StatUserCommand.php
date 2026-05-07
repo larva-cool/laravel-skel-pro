@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Stat;
 
 use App\Jobs\User\StatUserJob;
 use Carbon\Carbon;

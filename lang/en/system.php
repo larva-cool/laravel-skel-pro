@@ -13,4 +13,10 @@ return [
     'create_success' => 'Create successful',
     'update_success' => 'Update successful',
     'delete_success' => 'Delete successful',
+    'last_admin_cant_delete' => 'Last admin cannot be deleted',
+    'collection_success' => 'Collection successful',
+    'collection_cancel_success' => 'Collection cancel successful',
+    'like_exist' => 'Liked',
+    'like_success' => 'Like successful',
+    'like_cancel_success' => 'Like cancel successful',
 ];

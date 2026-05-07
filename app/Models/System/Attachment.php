@@ -96,6 +96,10 @@ class Attachment extends Model
     {
         return Attribute::make(
             get: function (?string $value, $attributes) {
+                if (! isset($attributes['file_path'])) {
+                    return '';
+                }
+                
                 if (URL::isValidUrl($attributes['file_path'])) {
                     return $attributes['file_path'];
                 }

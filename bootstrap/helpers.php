@@ -48,6 +48,17 @@ if (! function_exists('get_morph_maps')) {
     }
 }
 
+/**
+ * 获取源类型
+ */
+if (!function_exists('source_types')) {
+    function source_types(): array
+    {
+        $maps = Relation::morphMap();
+        return array_keys($maps);
+    }
+}
+
 if (! function_exists('cpu_count')) {
     /**
      * Get cpu count

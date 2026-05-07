@@ -13,10 +13,14 @@ use App\Models\User;
 use App\Services\WechatService;
 use App\Support\UserHelper;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 /**
  * 微信公众号登录请求
+ *
+ * @property-read string $device 设备名称
+ * @property-read string $code 微信回调的Code
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -38,17 +42,23 @@ class WechatMpLoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate(): User
+    public function authenticate(): ?User
     {
         $oauth = (new WechatService)->getOAuth();
-        $wUser = $oauth->userFromCode($this->code);
+        try {
+            $wUser = $oauth->userFromCode($this->code);
+        } catch (\Exception  $e) {
+            Log::warning($e->getMessage(), $e->getTrace());
+            validation_exception('code', trans('system.server_busy'));
+        }
         $user = UserHelper::findByOpenid(SocialProvider::WECHAT_MP, $wUser->getId());
         if (! $user) {
-            validation_exception('phone', trans('auth.account_does_not_exist'));
+            Log::warning('登录失败，该用户未注册：'.$wUser->getId());
+            validation_exception('code', trans('auth.account_does_not_exist'));
         }
         if ($user->isFrozen()) {// 禁止掉的用户不允许登录
             $user->tokens()->delete();
-            validation_exception('account', trans('user.blocked'));
+            validation_exception('code', trans('user.blocked'));
         }
 
         return $user;
