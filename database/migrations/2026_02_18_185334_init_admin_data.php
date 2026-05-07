@@ -44,7 +44,7 @@ return new class extends Migration
 
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
-        
+
         Permission::create(['name' => 'pulse', 'display_name' => 'Pulse', 'guard_name' => 'admin']);
         Permission::create(['name' => 'telescope', 'display_name' => 'Telescope', 'guard_name' => 'admin']);
         Permission::create(['name' => 'horizon', 'display_name' => 'Horizon', 'guard_name' => 'admin']);
@@ -115,6 +115,20 @@ return new class extends Migration
         Permission::create(['name' => 'users.edit', 'display_name' => '修改用户', 'guard_name' => 'admin']);
         Permission::create(['name' => 'users.delete', 'display_name' => '删除用户', 'guard_name' => 'admin']);
         $adminRole->givePermissionTo(['users.*']);
+
+        // 协议管理
+        Permission::create(['name' => 'agreements.*', 'display_name' => '协议管理', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'agreements.create', 'display_name' => '创建协议', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'agreements.edit', 'display_name' => '修改协议', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'agreements.delete', 'display_name' => '删除协议', 'guard_name' => 'admin']);
+        $adminRole->givePermissionTo(['agreements.*']);
+
+        // 公告管理
+        Permission::create(['name' => 'announcements.*', 'display_name' => '公告管理', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'announcements.create', 'display_name' => '创建公告', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'announcements.edit', 'display_name' => '修改公告', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'announcements.delete', 'display_name' => '删除公告', 'guard_name' => 'admin']);
+        $adminRole->givePermissionTo(['announcements.*']);
 
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
     }

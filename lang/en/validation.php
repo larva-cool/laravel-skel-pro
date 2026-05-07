@@ -233,6 +233,8 @@ return [
         'user_id' => 'User ID',
         'username' => 'Username',
         'verify_code' => 'Verify Code',
+        'effective_start_time' => 'Effective Start Time',
+        'effective_end_time' => 'Effective Start Time'
     ],
 
 ];

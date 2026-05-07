@@ -68,9 +68,8 @@ Route::post('uploader/aieditor-image', [\App\Http\Controllers\Admin\UploaderCont
 Route::resource('agreements', \App\Http\Controllers\Admin\AgreementController::class, ['names' => 'agreements'])->except(['show']);
 
 // 公告管理
-//Route::get('announcements/data', [\App\Http\Controllers\Admin\AnnouncementController::class, 'data'])->name('admin.announcements.data');
-//Route::post('announcements/status', [\App\Http\Controllers\Admin\AnnouncementController::class, 'updateStatus'])->name('admin.announcements.status');
-//Route::resource('announcements', \App\Http\Controllers\Admin\AnnouncementController::class, ['names' => 'admin.announcements'])->except(['show']);
+Route::post('announcements/status', [\App\Http\Controllers\Admin\AnnouncementController::class, 'updateStatus'])->name('announcements.status');
+Route::resource('announcements', \App\Http\Controllers\Admin\AnnouncementController::class, ['names' => 'announcements'])->except(['show']);
 
 // 用户组管理
 Route::get('user_groups/select', [\App\Http\Controllers\Admin\UserGroupController::class, 'select'])->name('user_groups.select');
