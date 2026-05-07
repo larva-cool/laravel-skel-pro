@@ -22,14 +22,10 @@ Route::get('account', [\App\Http\Controllers\Admin\IndexController::class, 'acco
 Route::get('config', [\App\Http\Controllers\Admin\IndexController::class, 'config'])->name('config');
 Route::get('dashboard', [\App\Http\Controllers\Admin\IndexController::class, 'dashboard'])->name('dashboard');
 
-// 角色管理
+// RBAC
 Route::get('roles/select', [\App\Http\Controllers\Admin\RoleController::class, 'select'])->name('roles.select');
 Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class, ['names' => 'roles'])->except(['show']);
-
-// 权限管理
 Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class, ['names' => 'permissions'])->except(['show']);
-
-// 菜单管理
 Route::get('menus/select', [\App\Http\Controllers\Admin\MenuController::class, 'menuSelect'])->name('menus.select');
 Route::get('menus/left-menus', [\App\Http\Controllers\Admin\MenuController::class, 'leftMenus'])->name('menus.left-menus');
 Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class, ['names' => 'menus'])->except(['show']);

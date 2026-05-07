@@ -14,7 +14,6 @@ use App\Models\User;
 use App\Models\User\LoginHistory;
 use App\Support\UserHelper;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -43,7 +42,6 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon $created_at 注册时间
  * @property Carbon $updated_at 最后更新时间
  * @property Carbon|null $deleted_at 删除时间
- * @property Collection<int, AdminRole> $roles 关联的角色模型
  * @property User $user 关联的用户模型
  * @property-read string $avatar 头像URL（来自关联的User模型）
  *
