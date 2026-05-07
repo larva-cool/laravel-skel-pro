@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Admin\Admin;
 use App\Models\PersonalAccessToken;
 use App\Services\SettingManagerService;
 use Illuminate\Auth\Middleware\Authenticate;
@@ -59,7 +60,17 @@ class AppServiceProvider extends ServiceProvider
         // Implicitly grant "Super Admin" role all permissions
         // This works in the app by using gate-related functions like auth()->user->can() and @can()
         Gate::before(function ($user, $ability) {
-            return $user->hasRole('Super Admin') ? true : null;
+            if ($user instanceof Admin) {
+                return $user->hasRole('Super Admin') ? true : null;
+            }
+            return null;
+        });
+        Gate::define('viewPulse', function ($user = null) {
+            if ($user instanceof Admin) {
+                return $user->hasRole('Super Admin') || $user->hasPermissionTo('pulse');
+            }
+
+            return false;
         });
     }
 }
