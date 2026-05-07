@@ -15,9 +15,9 @@
                 </div>
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label">权限</label>
+                    <label class="layui-form-label">Guard</label>
                     <div class="layui-input-block">
-                        <div name="rules" id="rules" value=""></div>
+                        <input type="text" name="guard_name" value="admin" required lay-verify="required" class="layui-input">
                     </div>
                 </div>
             </div>
@@ -41,33 +41,11 @@
 @push('scripts')
     <script>
         // 字段 权限 rules
-        layui.use(["form", "xmSelect", "popup"], function () {
+        layui.use(["form",  "popup"], function () {
             let $ = layui.$;
-            let xmSelect = layui.xmSelect;
             let popup = layui.popup;
             let form = layui.form;
 
-            $.ajax({
-                url: "{{route('admin.menus.select')}}",
-                dataType: "json",
-                success: function (res) {
-                    let value = $("#rules").attr("value");
-                    let initValue = value ? value.split(",") : [];
-                    xmSelect.render({
-                        el: "#rules",
-                        name: "rules",
-                        initValue: initValue,
-                        data: res,
-                        autoRow: true,
-                        tree: {
-                            "show": true,
-                            strict: false,
-                            expandedKeys: true,
-                        },
-                        toolbar: {show: true, list: ["ALL", "CLEAR", "REVERSE"]},
-                    })
-                }
-            });
             //提交事件
             form.on("submit(save)", function (data) {
                 let loading = layer.load();

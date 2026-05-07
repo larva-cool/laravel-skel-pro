@@ -65,7 +65,7 @@ class RoleController extends AbstractController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAdminRoleRequest $request)
+    public function store(StoreAdminRoleRequest $request): JsonResponse
     {
         Role::create($request->validated());
 
@@ -86,7 +86,7 @@ class RoleController extends AbstractController
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreAdminRoleRequest $request, Role $role)
+    public function update(StoreAdminRoleRequest $request, Role $role): JsonResponse
     {
         $role->update($request->validated());
 
@@ -98,7 +98,7 @@ class RoleController extends AbstractController
      */
     public function destroy(Role $role): JsonResponse
     {
-        if ($role->id == 1) {
+        if ($role->name == 'Super Admin') {
             return $this->fail(trans('system.default_role_cannot_delete'));
         }
         $role->delete();

@@ -19,7 +19,6 @@ Route::group(['prefix' => 'auth'], function (Illuminate\Contracts\Routing\Regist
  * Ajax
  */
 Route::group(['prefix' => 'api','as'=>'api.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
-
     $registrar->get('permission', [\App\Http\Controllers\Admin\ApiController::class, 'permission'])->name('permission');
 });
 
@@ -35,9 +34,12 @@ Route::get('roles/select', [\App\Http\Controllers\Admin\RoleController::class, '
 Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class, ['names' => 'roles'])->except(['show']);
 
 // 权限管理
-Route::get('permissions/routes', [\App\Http\Controllers\Admin\PermissionController::class, 'getRoutes'])->name('permissions.routes');
-Route::get('permissions/select', [\App\Http\Controllers\Admin\PermissionController::class, 'select'])->name('permissions.select');
 Route::resource('permissions', \App\Http\Controllers\Admin\PermissionController::class, ['names' => 'permissions'])->except(['show']);
+
+// 菜单管理
+Route::get('menus/select', [\App\Http\Controllers\Admin\MenuController::class, 'menuSelect'])->name('menus.select');
+Route::get('menus/left-menus', [\App\Http\Controllers\Admin\MenuController::class, 'leftMenus'])->name('menus.left-menus');
+Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class, ['names' => 'menus'])->except(['show']);
 
 // 管理员管理
 Route::get('admins/person', [\App\Http\Controllers\Admin\AdminController::class, 'person'])->name('admins.person');
@@ -46,11 +48,6 @@ Route::post('admins/password', [\App\Http\Controllers\Admin\AdminController::cla
 Route::post('admins/status', [\App\Http\Controllers\Admin\AdminController::class, 'updateStatus'])->name('admins.status');
 Route::post('admins/avatar/{admin}', [\App\Http\Controllers\Admin\AdminController::class, 'updateAvatar'])->name('admins.avatar');
 Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class, ['names' => 'admins'])->except(['show']);
-
-// 菜单管理
-Route::get('menus/select', [\App\Http\Controllers\Admin\MenuController::class, 'menuSelect'])->name('menus.select');
-Route::get('menus/left-menus', [\App\Http\Controllers\Admin\MenuController::class, 'leftMenus'])->name('menus.left-menus');
-Route::resource('menus', \App\Http\Controllers\Admin\MenuController::class, ['names' => 'menus'])->except(['show']);
 
 // 系统设置
 Route::get('system-config', [\App\Http\Controllers\Admin\SettingController::class, 'config'])->name('system-config');

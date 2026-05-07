@@ -47,7 +47,8 @@ return new class extends Migration
             $table->unsignedInteger('order')->default(0)->comment('排序');
             $table->timestamps();
             // 核心索引：树形菜单查询（全覆盖、不回表、不排序）
-            $table->index(['parent_id', 'order', 'id'], 'idx_admin_menus_parent_id');
+            $table->index(['parent_id',  'order', 'id'], 'idx_admin_menus_parent_id');
+            $table->index(['permission_name', 'order', 'id'], 'idx_admin_leftmenus');
 
             $table->comment('管理员菜单表');
         });

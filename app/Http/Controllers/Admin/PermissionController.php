@@ -46,14 +46,6 @@ class PermissionController extends AbstractController
     }
 
     /**
-     * 菜单 Select
-     */
-    public function select(Request $request): array
-    {
-        return AdminPermission::getTreeForXmSelect();
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create()
