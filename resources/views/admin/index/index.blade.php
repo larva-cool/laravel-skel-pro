@@ -38,7 +38,7 @@
         <!-- 顶 部 右 侧 菜 单 -->
         <ul class="layui-nav layui-layout-right">
             @can('pulse')<li class="layui-nav-item layui-hide-xs" permission="admin.pulse"><a href="/admin/pulse" target="_blank">Pulse</a></li>@endcan
-            @can('telescope')<li class="layui-nav-item layui-hide-xs" permission="admin.telescope"><a href="/admin/telescope" target="_blank">Telescope</a></li>@endcan
+            @can('telescope') @if(config('app.debug'))<li class="layui-nav-item layui-hide-xs" permission="admin.telescope"><a href="/admin/telescope" target="_blank">Telescope</a></li>@endif @endcan
             @can('horizon')<li class="layui-nav-item layui-hide-xs" permission="admin.horizon"><a href="/admin/horizon" target="_blank">Horizon</a></li>@endcan
             <li class="layui-nav-item layui-hide-xs"><a href="#" class="menuSearch layui-icon layui-icon-search"></a>
             </li>
