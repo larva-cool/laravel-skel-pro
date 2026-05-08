@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Models\Admin\Admin;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 
@@ -33,11 +32,7 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewHorizon', function ($user = null) {
-            if ($user instanceof Admin) {
-                return $user->hasRole('Super Admin') || $user->hasPermissionTo('horizon');
-            }
-
-            return false;
+            return $user->hasRole('Super Admin') || $user->hasPermissionTo('horizon');
         });
     }
 }

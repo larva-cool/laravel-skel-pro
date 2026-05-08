@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
             return new SettingManagerService;
         });
         // telescope 配置
-        if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
+        if ($this->app->hasDebugModeEnabled() && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }

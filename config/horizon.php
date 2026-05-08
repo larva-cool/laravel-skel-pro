@@ -1,4 +1,9 @@
 <?php
+/**
+ * This is NOT a freeware, use is subject to license terms.
+ */
+
+declare(strict_types=1);
 
 use Illuminate\Support\Str;
 
@@ -41,7 +46,7 @@ return [
     |
     */
 
-    'path' => env('HORIZON_PATH', 'horizon'),
+    'path' => env('HORIZON_PATH', 'admin/horizon'),
 
     /*
     |--------------------------------------------------------------------------
@@ -83,7 +88,10 @@ return [
     |
     */
 
-    'middleware' => ['web'],
+    'middleware' => [
+        'web',
+        'auth:admin'
+    ],
 
     /*
     |--------------------------------------------------------------------------
