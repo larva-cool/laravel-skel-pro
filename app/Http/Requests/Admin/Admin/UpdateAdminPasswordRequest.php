@@ -12,6 +12,12 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
+/**
+ * @property string $old_password
+ * @property string $new_password
+ *
+ * @author Tongle Xu <xutongle@gmail.com>
+ */
 class UpdateAdminPasswordRequest extends FormRequest
 {
     /**
@@ -32,7 +38,7 @@ class UpdateAdminPasswordRequest extends FormRequest
         return [
             'old_password' => ['required', 'string', 'min:6', 'current_password:admin'],
             'new_password' => [
-                'required', 'string', 'min:6', Password::min(8)->uncompromised(),
+                'required', 'string', 'min:6', Password::min(6)->uncompromised(),
             ],
             'new_password_confirm' => 'required|string|min:6|same:new_password',
         ];
