@@ -36,7 +36,7 @@ class UpdateAdminMenuRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'parent_id' => ['nullable', 'max:255'],
-            'href' => ['nullable', 'string', 'max:255'],
+            'href' => ['nullable', 'string', 'max:1000'],
             'permission_name' => ['nullable', 'string', 'max:255'],
             'icon' => ['nullable', 'string', 'max:255'],
             'type' => ['required', 'integer', 'min:0', 'max:2'],
