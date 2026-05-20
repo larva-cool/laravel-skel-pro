@@ -6,26 +6,16 @@
 
 declare(strict_types=1);
 
-use App\Jobs\User\StatUserJob;
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
-
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
 
 // 清理模型 凌晨 2 点
 Schedule::command('model:prune')->dailyAt('2:00')->onOneServer();
 
 // 统计相关
+Schedule::command('app:stat')->dailyAt('1:00')->onOneServer();// 系统统计 每天夜里1点开始
+
 // 队列健康指标 5分钟一次
 Schedule::command('horizon:snapshot')->everyFiveMinutes()->onOneServer();
-// 用户统计 每天夜里1点开始
-Schedule::job(new StatUserJob)->dailyAt('1:00')->onOneServer();
-
-
-
 
 if (! app()->isProduction()) {
     // 0 点
