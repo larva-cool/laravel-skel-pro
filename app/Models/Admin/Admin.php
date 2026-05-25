@@ -13,6 +13,7 @@ use App\Models\Traits;
 use App\Models\User;
 use App\Models\User\LoginHistory;
 use App\Support\UserHelper;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -166,5 +169,16 @@ class Admin extends Authenticatable
     {
         return $this->morphMany(LoginHistory::class, 'user')
             ->latest('login_at');
+    }
+
+    /**
+     * 重置用户密码
+     */
+    public function resetPassword(string $password): void
+    {
+        $this->password = $password;
+        $this->setRememberToken(Str::random(60));
+        $this->saveQuietly();
+        Event::dispatch(new PasswordReset($this));
     }
 }

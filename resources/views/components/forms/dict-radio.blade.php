@@ -1,3 +1,3 @@
-<div>
-    <!-- Because you are alive, everything is possible. - Thich Nhat Hanh -->
-</div>
+@foreach($items as $key=>$val)
+    <input type="radio" name="{{ $name }}" id="{{ $filter }}-radio" value="{{$key}}" title="{{$val}}" @checked($key == $selected)>
+@endforeach

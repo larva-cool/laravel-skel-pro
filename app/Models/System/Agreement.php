@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace App\Models\System;
 
 use App\Enum\StatusSwitch;
-use App\Models\Agreement\AgreementRead;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;

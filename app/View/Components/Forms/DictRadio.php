@@ -21,8 +21,6 @@ class DictRadio extends Component
 
     public $selected;
 
-    public string $placeholder;
-
     public array $items = [];
 
     /**

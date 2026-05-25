@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Facades\Upload;
 use App\Models\System\Attachment;
-use App\Services\UploadService;
 
 /**
  * 附件模型观察者
@@ -21,10 +21,7 @@ class AttachmentObserver
     /**
      * Handle the Attachment "created" event.
      */
-    public function created(Attachment $attachment): void
-    {
-        //
-    }
+    public function created(Attachment $attachment): void {}
 
     /**
      * Handle the Attachment "updated" event.
@@ -39,6 +36,6 @@ class AttachmentObserver
      */
     public function deleted(Attachment $attachment): void
     {
-        UploadService::getInstance()->destroy($attachment->file_path);
+        Upload::destroy($attachment->file_path);
     }
 }

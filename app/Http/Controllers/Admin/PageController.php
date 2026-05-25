@@ -8,8 +8,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\Page\StorePageRequest;
-use App\Http\Requests\Admin\Page\UpdatePageRequest;
 use App\Http\Resources\Admin\PageResource;
 use App\Models\System\Page;
 use Illuminate\Http\JsonResponse;
@@ -44,6 +42,7 @@ class PageController extends AbstractController
 
             return PageResource::collection($items);
         }
+
         return view('admin.page.index');
     }
 
@@ -58,9 +57,14 @@ class PageController extends AbstractController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePageRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
-        Page::create($request->validated());
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'desc' => 'nullable|string|max:255',
+            'content' => 'required|string',
+        ]);
+        Page::create($validated);
 
         return $this->success(trans('system.create_success'));
     }
@@ -79,9 +83,14 @@ class PageController extends AbstractController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePageRequest $request, Page $page): JsonResponse
+    public function update(Request $request, Page $page): JsonResponse
     {
-        $page->update($request->validated());
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'desc' => 'nullable|string|max:255',
+            'content' => 'required|string',
+        ]);
+        $page->update($validated);
 
         return $this->success(trans('system.update_success'));
     }

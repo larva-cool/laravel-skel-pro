@@ -55,13 +55,13 @@ class StoreAnnouncementRequest extends FormRequest
                 'nullable',
                 // 当 effective_time_type 为 1 时才验证 required 规则
                 'required_if:effective_time_type,1',
-                'before:effective_end_time'
+                'before:effective_end_time',
             ],
             'effective_end_time' => [
                 'nullable',
                 // 当 effective_time_type 为 1 时才验证 required 规则
                 'required_if:effective_time_type,1',
-                'after:effective_start_time'
+                'after:effective_start_time',
             ],
         ];
     }

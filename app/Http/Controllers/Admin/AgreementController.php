@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enum\DictCode;
 use App\Http\Requests\Admin\Agreement\StoreAgreementRequest;
 use App\Http\Requests\Admin\Agreement\UpdateAgreementRequest;
 use App\Http\Resources\Admin\AgreementResource;
@@ -46,6 +45,7 @@ class AgreementController extends AbstractController
 
             return AgreementResource::collection($items);
         }
+
         return view('admin.agreement.index');
     }
 

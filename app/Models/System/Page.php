@@ -40,7 +40,7 @@ class Page extends Model
     protected $fillable = [
         'title', 'desc', 'content',
     ];
-    
+
     /**
      * Get the attributes that should be cast.
      *

@@ -46,6 +46,7 @@ class AnnouncementController extends AbstractController
 
             return AnnouncementResource::collection($items);
         }
+
         return view('admin.announcement.index');
     }
 

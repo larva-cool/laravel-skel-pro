@@ -111,6 +111,7 @@ class AdminController extends AbstractController
         /** @var Admin $admin */
         $admin = $request->user('admin');
         $admin->resetPassword($request->new_password);
+
         return $this->success(trans('system.update_success'));
     }
 

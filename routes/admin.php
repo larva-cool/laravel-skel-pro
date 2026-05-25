@@ -79,6 +79,9 @@ Route::resource('user_groups', \App\Http\Controllers\Admin\UserGroupController::
 Route::post('users/status', [\App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.status');
 Route::resource('users', \App\Http\Controllers\Admin\UserController::class, ['names' => 'users']);
 
+// 金币记录
+Route::get('coins', [\App\Http\Controllers\Admin\CoinTradeController::class, 'index'])->name('coins.index');
+Route::get('points', [\App\Http\Controllers\Admin\PointTradeController::class, 'index'])->name('points.index');
 // 单页管理
 Route::resource('pages', \App\Http\Controllers\Admin\PageController::class, ['names' => 'pages'])->except(['show']);
 

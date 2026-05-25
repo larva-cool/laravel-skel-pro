@@ -52,10 +52,11 @@ class AttachmentController extends AbstractController
             }
 
             // 获取分页数据
-            $items = $query->paginate(per_page($request,15));
+            $items = $query->paginate(per_page($request, 15));
 
             return AttachmentResource::collection($items);
         }
+
         return view('admin.attachment.index');
     }
 

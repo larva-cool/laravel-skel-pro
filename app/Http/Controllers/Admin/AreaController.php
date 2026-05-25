@@ -8,8 +8,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\Area\StoreAreaRequest;
-use App\Http\Requests\Admin\Area\UpdateAreaRequest;
 use App\Http\Resources\Admin\AreaResource;
 use App\Models\System\Area;
 use Illuminate\Http\JsonResponse;
@@ -85,9 +83,16 @@ class AreaController extends AbstractController
     /**
      * 添加菜单
      */
-    public function store(StoreAreaRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
-        Area::create($request->validated());
+        $validated = $request->validate([
+            'parent_id' => ['nullable', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
+            'area_code' => ['nullable', 'integer'],
+            'city_code' => ['nullable', 'string', 'regex:/^0\d{2,3}$/'],
+            'order' => ['nullable', 'integer', 'min:0'],
+        ]);
+        Area::create($validated);
 
         return $this->success(trans('system.create_success'));
     }
@@ -105,9 +110,16 @@ class AreaController extends AbstractController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAreaRequest $request, Area $area)
+    public function update(Request $request, Area $area): JsonResponse
     {
-        $area->update($request->validated());
+        $validated = $request->validate([
+            'parent_id' => ['nullable', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
+            'area_code' => ['nullable', 'integer'],
+            'city_code' => ['nullable', 'string', 'regex:/^0\d{2,3}$/'],
+            'order' => ['nullable', 'integer', 'min:0'],
+        ]);
+        $area->update($validated);
 
         return $this->success(trans('system.update_success'));
     }
