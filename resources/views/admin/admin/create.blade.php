@@ -67,39 +67,11 @@
 
 @push('scripts')
     <script>
-        // 字段 角色 roles
-        layui.use(["jquery", "xmSelect", "popup", "formPlus"], function () {
-            let $ = layui.$;
-            let xmSelect = layui.xmSelect;
-            let popup = layui.popup;
+        layui.use(["formPlus"], function () {
             let formPlus = layui.formPlus;
-
-            $.ajax({
-                url: "{{route('admin.roles.select')}}",
-                type: "GET",
-                dataType: "json",
-                success: function (res) {
-                    xmSelect.render({
-                        el: "#roles",
-                        name: "roles",
-                        tips: '请选择角色',
-                        empty: '呀, 没有数据呢',
-                        height: 'auto',
-                        data: res,
-                        layVerify: "required",
-                        toolbar: {show: true, list: ["ALL", "CLEAR", "REVERSE"]},
-                    });
-                },
-                error: function (xhr, status, error) {
-                    popup.failure(xhr.responseJSON.message);
-                }
-            });
-
+            formPlus.select("{{route('admin.roles.select')}}", "roles", "请选择角色");
             //提交事件
             formPlus.save("{{route('admin.admins.store')}}",'save');
         });
-
-
     </script>
-
 @endpush

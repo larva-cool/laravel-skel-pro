@@ -72,29 +72,28 @@
         let $ = layui.$;
         let popup = layui.popup;
 
-        form.on("submit(save)", function(data) {
-            let loading = layer.load();
-            data.field.content = window.contentBody;
-            $.ajax({
-                url: "{{route('admin.announcements.store')}}"
-                , type: "POST"
-                , dataType: "json"
-                , data: data.field
-                , success: function(res) {
-                    popup.success(res.message, function() {
-                        parent.layer.close(parent.layer.getFrameIndex(window.name));
-                    });
-                }
-                , error: function(xhr, status, error) {
-                    popup.failure(xhr.responseJSON.message);
-                },
-                complete: function() {
-                    layer.close(loading);
-                }
+            form.on("submit(save)", function(data) {
+                let loading = layer.load();
+                data.field.content = window.contentBody;
+                $.ajax({
+                    url: "{{ route('admin.announcements.store') }}",
+                    type: "POST",
+                    dataType: "json",
+                    data: data.field,
+                    success: function(res) {
+                        popup.success(res.message, function() {
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        popup.failure(xhr.responseJSON.message);
+                    },
+                    complete: function() {
+                        layer.close(loading);
+                    }
+                });
+                return false;
             });
-            return false;
         });
-    });
-
-</script>
+    </script>
 @endpush
