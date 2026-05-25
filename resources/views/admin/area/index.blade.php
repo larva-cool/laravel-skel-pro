@@ -42,125 +42,85 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['treeTable', 'jquery', 'common', 'util'], function () {
+        layui.use(['treeTable', 'jquery', 'common', 'util', 'tablePlus'], function() {
             let treeTable = layui.treeTable;
-            let $ = layui.jquery;
-            let common = layui.common;
-            let cols = [
-                {title: "地区名称", field: "name",},
-                {title: "主键", field: "id", hide: true,},
-                {title: "城市区号", field: "city_code",},
-                {title: "地区编码", field: "area_code",},
-                {title: "纬度", field: "lat",},
-                {title: "经度", field: "lng",},
-                {title: "创建时间", field: "created_at", hide: true,},
-                {title: "更新时间", field: "updated_at", hide: true,},
-                {title: "排序", field: "order", width: 80,},
-                {title: "操作", toolbar: "#table-bar", align: "center", fixed: "right", width: 150,}
+            let tablePlus = layui.tablePlus;
+            let cols = [{
+                    title: "地区名称",
+                    field: "name",
+                },
+                {
+                    title: "主键",
+                    field: "id",
+                    hide: true,
+                },
+                {
+                    title: "城市区号",
+                    field: "city_code",
+                },
+                {
+                    title: "地区编码",
+                    field: "area_code",
+                },
+                {
+                    title: "纬度",
+                    field: "lat",
+                },
+                {
+                    title: "经度",
+                    field: "lng",
+                },
+                {
+                    title: "创建时间",
+                    field: "created_at",
+                    hide: true,
+                },
+                {
+                    title: "更新时间",
+                    field: "updated_at",
+                    hide: true,
+                },
+                {
+                    title: "排序",
+                    field: "order",
+                    width: 80,
+                },
+                {
+                    title: "操作",
+                    toolbar: "#table-bar",
+                    align: "center",
+                    fixed: "right",
+                    width: 150,
+                }
             ];
             // 渲染
-            treeTable.render({
+            let tableIns = tablePlus.renderTree({
                 elem: '#data-table',
-                url: '{{route('admin.areas.index')}}', // 此处为静态模拟数据，实际使用时需换成真实接口
-                tree: {
-                    customName: {
-                        isParent: 'is_parent',
-                        name: 'name',
-                        pid: 'parent_id',
-                    },
-                    // 异步加载子节点
-                    async: {
-                        enable: true,
-                        autoParam: ["parent_id=id"]
-                    },
-                    view: {
-                        expandAllDefault: false,
-                    }
-                },
+                url: '{{ route('admin.areas.index') }}', // 此处为静态模拟数据，实际使用时需换成真实接口
                 cols: [cols],
-                page: true,
-                limit: 50,
-                limits: [50,100,150,200],
                 toolbar: "#table-toolbar",
-                defaultToolbar: [{
-                    title: "刷新",
-                    layEvent: "refresh",
-                    icon: "layui-icon-refresh",
-                }, "filter", "print", "exports"],
-                loading: true, // 显示加载状态
-                text: {
-                    none: '暂无数据' // 无数据时的提示文本
-                },
-                request: {
-                    pageName: 'page', // 页码参数名
-                    limitName: 'per_page', // 每页数据条数参数名
-                },
-                dataType: 'json',
-                headers: {
-                    Accept: 'application/json'
-                },
-                parseData: function (res) { // 自定义数据解析
-                    return {
-                        "code": 0, // 解析接口状态
-                        "msg": 'ok', // 解析提示文本
-                        "count": res.meta.total, // 解析数据长度
-                        "data": res.data // 解析数据列表
-                    };
-                }
             });
+
             // 添加 批量删除 刷新事件
-            treeTable.on("toolbar(data-table)", function (obj) {
+            treeTable.on("toolbar(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === "add") {
-                    layer.open({
-                        type: 2,
-                        title: "新增地区",
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "520px", common.isMobile() ? "100%" : "520px"],
-                        content: "{{route('admin.areas.create')}}",
-                        end: function () {
-                            treeTable.reload('data-table');
-                        }
-                    });
-                } else if(obj.event === 'expandAll') {
+                    tablePlus.createRow("{{ route('admin.areas.create') }}", obj, '新增地区', ["500px",
+                        "520px"
+                    ]);
+                } else if (obj.event === 'expandAll') {
                     treeTable.expandAll('data-table', true);
-                } else if(obj.event === 'foldAll') {
+                } else if (obj.event === 'foldAll') {
                     treeTable.expandAll('data-table', false);
-                } else if (obj.event === "refresh") {
-                    treeTable.reload('data-table');
                 }
             });
             // 删除或编辑行事件
-            treeTable.on("tool(data-table)", function (obj) {
+            treeTable.on("tool(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === "remove") {
-                    layer.confirm('确定要删除该地区吗？', {icon: 3, title: '提示'}, function (index) {
-                        let loading = layer.load();
-                        $.ajax({
-                            url: obj.data.delete_url,
-                            dataType: 'json',
-                            type: 'delete',
-                            success: function (res) {
-                                layer.close(loading);
-                                layer.msg(res.message, {icon: 1, time: 1000}, function () {
-                                    obj.del();
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                layer.close(loading);
-                                layui.popup.failure(xhr.responseJSON.message);
-                            }
-                        })
-                    });
+                    tablePlus.deleteRow(obj.data.delete_url, obj, '确定要删除该地区吗？');
                 } else if (obj.event === "edit") {
-                    layer.open({
-                        type: 2,
-                        title: "修改地区",
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "520px", common.isMobile() ? "100%" : "520px"],
-                        content: obj.data.edit_url,
-                        end: function () {
-                            treeTable.reload('data-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_url, obj, '修改地区', ["500px",
+                        "520px"
+                    ]);
                 }
             });
         });

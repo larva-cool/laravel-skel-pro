@@ -38,57 +38,71 @@
             let $ = layui.jquery;
             let tablePlus = layui.tablePlus;
 
-            let cols = [
-                {title: 'ID', field: 'id', align: 'center', width: 100},
-                {title: '标题', field: 'title', align: 'center'},
-                {title: '类型', field: 'type', align: 'left'},
-                {title: '状态', field: 'status', align: 'left'},
-                {title: '排序', field: 'order', align: 'left'},
-                {title: "创建时间", field: "created_at",},
-                {title: "更新时间", field: "updated_at",},
-                {title: "操作", toolbar: "#table-bar", align: "center", fixed: "right", width: 195,},
+            let cols = [{
+                    title: 'ID',
+                    field: 'id',
+                    align: 'center',
+                    width: 100
+                },
+                {
+                    title: '标题',
+                    field: 'title',
+                    align: 'center'
+                },
+                {
+                    title: '类型',
+                    field: 'type',
+                    align: 'left'
+                },
+                {
+                    title: '状态',
+                    field: 'status',
+                    align: 'left'
+                },
+                {
+                    title: '排序',
+                    field: 'order',
+                    align: 'left'
+                },
+                {
+                    title: "创建时间",
+                    field: "created_at",
+                },
+                {
+                    title: "更新时间",
+                    field: "updated_at",
+                },
+                {
+                    title: "操作",
+                    toolbar: "#table-bar",
+                    align: "center",
+                    fixed: "right",
+                    width: 195,
+                },
             ];
 
-            table.render({
-                elem: '#data-table'
-                , url: "{{route('admin.agreements.index')}}"
-                , cols: [cols]
-                , toolbar: "#table-toolbar"
-
+            let tableIns = tablePlus.render({
+                elem: '#data-table',
+                url: "{{ route('admin.agreements.index') }}",
+                cols: [cols],
+                toolbar: "#table-toolbar"
             });
 
-            table.on('tool(data-table)', function (obj) {
+            table.on("tool(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'remove') {
                     tablePlus.deleteRow(obj.data.delete_url, obj);
                 } else if (obj.event === 'edit') {
-                    layer.open({
-                        type: 2
-                        , title: '修改协议'
-                        , shade: 0.1
-                        , area: ["85%", "85%"]
-                        , content: obj.data.edit_url
-                        , end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_url, obj, '修改协议', ["85%", "85%"]);
                 }
             });
 
-            table.on('toolbar(data-table)', function (obj) {
+            table.on("toolbar(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'create') {
-                    layer.open({
-                        type: 2
-                        , title: '新增协议'
-                        , shade: 0.1
-                        , area: ["85%", "85%"]
-                        , content: "{{route('admin.agreements.create')}}"
-                        , end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.createRow("{{ route('admin.agreements.create') }}", obj, '新增协议', ["85%",
+                        "85%"
+                    ]);
                 }
             });
         });
-
     </script>
 @endpush

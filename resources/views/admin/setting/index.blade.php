@@ -33,20 +33,53 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'jquery', 'form', 'popup', 'common', 'util'], function () {
+        layui.use(['table', 'jquery', 'form', 'popup', 'common', 'util', 'tablePlus'], function() {
             let table = layui.table;
             let $ = layui.jquery;
             let common = layui.common;
+            let tablePlus = layui.tablePlus;
 
-            let cols = [
-                {title: 'ID', field: 'id', align: 'center', width: 100},
-                {title: '名称', field: 'name', align: 'center'},
-                {title: '配置项', field: 'key', align: 'left'},
-                {title: '配置值', field: 'value', align: 'left', width: 200},
-                {title: '值类型', field: 'cast_type', align: 'left'},
-                {title: '排序', field: 'order', align: 'left'},
-                {title: '备注', field: 'remark', align: 'left'},
-                {title: "更新时间", field: "updated_at",},
+            let cols = [{
+                    title: 'ID',
+                    field: 'id',
+                    align: 'center',
+                    width: 100
+                },
+                {
+                    title: '名称',
+                    field: 'name',
+                    align: 'center'
+                },
+                {
+                    title: '配置项',
+                    field: 'key',
+                    align: 'left'
+                },
+                {
+                    title: '配置值',
+                    field: 'value',
+                    align: 'left',
+                    width: 200
+                },
+                {
+                    title: '值类型',
+                    field: 'cast_type',
+                    align: 'left'
+                },
+                {
+                    title: '排序',
+                    field: 'order',
+                    align: 'left'
+                },
+                {
+                    title: '备注',
+                    field: 'remark',
+                    align: 'left'
+                },
+                {
+                    title: "更新时间",
+                    field: "updated_at",
+                },
                 {
                     title: "操作",
                     toolbar: "#table-bar",
@@ -56,59 +89,26 @@
                 },
             ];
 
-            table.render({
+            let tableIns = tablePlus.render({
                 elem: '#data-table',
-                url: "{{route('admin.settings.index')}}",
+                url: "{{ route('admin.settings.index') }}",
                 cols: [cols],
                 toolbar: "#table-toolbar",
             });
 
-            table.on('tool(data-table)', function (obj) {
+            table.on("tool(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'remove') {
-                    layer.confirm('确定要删除该配置项吗？', {icon: 3, title: '提示'}, function (index) {
-                        let loading = layer.load();
-                        $.ajax({
-                            url: obj.data.delete_url,
-                            dataType: 'json',
-                            type: 'delete',
-                            success: function (res) {
-                                layer.close(loading);
-                                layer.msg('删除成功！', {icon: 1, time: 1000}, function () {
-                                    obj.del();
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                layer.close(loading);
-                                layui.popup.failure(xhr.responseJSON.message);
-                            }
-                        })
-                    });
+                    tablePlus.deleteRow(obj.data.delete_url, obj, '确定要删除该配置项吗？');
                 } else if (obj.event === 'edit') {
-                    layer.open({
-                        type: 2,
-                        title: '修改配置项',
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "750px", common.isMobile() ? "100%" : "550px"],
-                        content: obj.data.edit_url,
-                        end: function (index) {
-                            table.reloadData('data-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_url, obj, '修改配置项', ["750px", "550px"]);
                 }
             });
 
-            table.on('toolbar(data-table)', function (obj) {
+            table.on("toolbar(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'create') {
-                    layer.open({
-                        type: 2,
-                        title: '新增配置项',
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "750px", common.isMobile() ? "100%" : "550px"],
-                        content: "{{route('admin.settings.create')}}",
-                        end: function (index) {
-                            table.reloadData('data-table');
-                        }
-                    });
+                    tablePlus.createRow("{{ route('admin.settings.create') }}", obj, "新增配置项", ["750px",
+                        "550px"
+                    ]);
                 }
             });
         });

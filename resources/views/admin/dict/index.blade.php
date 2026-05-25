@@ -14,15 +14,11 @@
                                 <div class="layui-input-inline">
                                     <input type="text" name="name" placeholder="" class="layui-input">
                                 </div>
-                                <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit
-                                        lay-filter="dict-type-query">
-                                    <i class="layui-icon layui-icon-search"></i>
-                                    查询
+                                <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="table-query">
+                                    <i class="layui-icon layui-icon-search"></i>查询
                                 </button>
-                                <button type="reset" class="pear-btn pear-btn-md" lay-submit
-                                        lay-filter="dict-type-reset">
-                                    <i class="layui-icon layui-icon-refresh"></i>
-                                    重置
+                                <button type="reset" class="pear-btn pear-btn-md" lay-submit lay-filter="table-reset">
+                                    <i class="layui-icon layui-icon-refresh"></i>重置
                                 </button>
                             </div>
                         </form>
@@ -32,7 +28,7 @@
             <div class="layui-col-md6">
                 <div class="layui-card">
                     <div class="layui-card-body">
-                        <table id="dict-type-table" lay-filter="dict-type-table"></table>
+                        <table id="data-table" lay-filter="data-table"></table>
                     </div>
                 </div>
             </div>
@@ -40,12 +36,11 @@
                 <div class="layui-card">
                     <div class="layui-card-body">
                         <svg class="empty" style="margin-top: 50px;margin-left: 220px;margin-bottom: 80px;" width="184"
-                             height="152"
-                             viewBox="0 0 184 152" xmlns="http://www.w3.org/2000/svg">
+                            height="152" viewBox="0 0 184 152" xmlns="http://www.w3.org/2000/svg">
                             <g fill="none" fillRule="evenodd">
                                 <g transform="translate(24 31.67)">
                                     <ellipse fillOpacity=".8" fill="#F5F5F7" cx="67.797" cy="106.89" rx="67.797"
-                                             ry="12.668"></ellipse>
+                                        ry="12.668"></ellipse>
                                     <path
                                         d="M122.034 69.674L98.109 40.229c-1.148-1.386-2.826-2.225-4.593-2.225h-51.44c-1.766 0-3.444.839-4.592 2.225L13.56 69.674v15.383h108.475V69.674z"
                                         fill="#AEB8C2"></path>
@@ -74,7 +69,7 @@
             </div>
         </div>
     </div>
-    <script type="text/html" id="dict-type-toolbar">
+    <script type="text/html" id="table-toolbar">
         @can('dicts.create')
         <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
             <i class="layui-icon layui-icon-add-1"></i>
@@ -83,7 +78,7 @@
         @endcan
     </script>
 
-    <script type="text/html" id="dict-type-bar">
+    <script type="text/html" id="table-bar">
         @can('dicts.edit')
         <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit">
             <i class="layui-icon layui-icon-edit"></i>
@@ -131,26 +126,69 @@
     <script>
         layui.use(['table', 'form', 'jquery', 'popup','common', 'tablePlus'], function () {
             let table = layui.table;
-            let form = layui.form;
             let $ = layui.jquery;
-            let popup = layui.popup;
-            let common = layui.common;
             let tablePlus = layui.tablePlus;
             let parentId;
-            let cols = [
-                {title: '字典名称', field: 'name', align: 'center', width: 120},
-                {title: '描述', field: 'description', align: 'center'},
-                {title: '字典编码', field: 'code', align: 'center',},
-                {title: "字典状态", field: "status", templet: function (d) {return tablePlus.statusSwitch('{{route('admin.dicts.status')}}', d, "status");}, width: 90,},
-                {title: '操作', toolbar: '#dict-type-bar', align: 'center', width: 190}
+            let cols = [{
+                    title: '字典名称',
+                    field: 'name',
+                    align: 'center',
+                    width: 120
+                },
+                {
+                    title: '描述',
+                    field: 'description',
+                    align: 'center'
+                },
+                {
+                    title: '字典编码',
+                    field: 'code',
+                    align: 'center',
+                },
+                {
+                    title: "字典状态",
+                    field: "status",
+                    templet: function(d) {
+                        return tablePlus.statusSwitch('{{ route('admin.dicts.status') }}', d, "status");
+                    },
+                    width: 90,
+                },
+                {
+                    title: '操作',
+                    toolbar: '#table-bar',
+                    align: 'center',
+                    width: 190
+                }
             ];
             let dataCols = [
-                [
-                    {type: 'checkbox'},
-                    {title: '标签', field: 'name', align: 'center', width: 120},
-                    {title: '对应值', field: 'code', align: 'center'},
-                    {title: "状态", field: "status", templet: function (d) {return tablePlus.statusSwitch('{{route('admin.dicts.status')}}', d, "status");}, width: 90,},
-                    {title: '操作', toolbar: '#dict-data-bar', align: 'center', width: 180}
+                [{
+                        type: 'checkbox'
+                    },
+                    {
+                        title: '标签',
+                        field: 'name',
+                        align: 'center',
+                        width: 120
+                    },
+                    {
+                        title: '对应值',
+                        field: 'code',
+                        align: 'center'
+                    },
+                    {
+                        title: "状态",
+                        field: "status",
+                        templet: function(d) {
+                            return tablePlus.statusSwitch('{{ route('admin.dicts.status') }}', d, "status");
+                        },
+                        width: 90,
+                    },
+                    {
+                        title: '操作',
+                        toolbar: '#dict-data-bar',
+                        align: 'center',
+                        width: 180
+                    }
                 ]
             ];
             let renderData = function (id) {
@@ -162,164 +200,47 @@
                     where: {
                         parent_id: id
                     },
-                    height: 'full-148',
                     cols: dataCols,
                     toolbar: '#dict-data-toolbar',
                 });
             }
             table.render({
-                elem: '#dict-type-table',
-                url: "{{route('admin.dicts.index')}}",
+                elem: '#data-table',
+                url: "{{ route('admin.dicts.index') }}",
                 cols: [cols],
                 height: 'full-148',
-                toolbar: '#dict-type-toolbar',
+                toolbar: '#table-toolbar',
             });
-            table.on('tool(dict-type-table)', function (obj) {
+            table.on('tool(data-table)', function(obj) {
                 if (obj.event === 'remove') {
-                    layer.confirm('确定要删除吗？', {icon: 3, title: '提示'}, function (index) {
-                        let loading = layer.load();
-                        $.ajax({
-                            url: obj.data.delete_url,
-                            dataType: 'json',
-                            type: 'delete',
-                            success: function (res) {
-                                if(res.code === 0) {
-                                    layer.msg(res.message, {icon: 1, time: 1000}, function () {
-                                        obj.del();
-                                    });
-                                } else {
-                                    layer.msg(res.message, {icon: 2, time: 1000});
-                                }
-                            },
-                            error: function (xhr, status, error) {
-                                layui.popup.failure(xhr.responseJSON.message);
-                            },
-                            complete: function() {
-                                layer.close(loading);
-                            }
-                        })
-                    });
+                    tablePlus.deleteRow(obj.data.delete_url, obj, '确定要删除吗？');
                 } else if (obj.event === 'edit') {
-                    layer.open({
-                        type: 2,
-                        title: '修改',
-                        shade: 0.1,
-                        area: ['500px', '400px'],
-                        content: obj.data.edit_url,
-                        end: function (index) {
-                            table.reload('dict-type-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_url, obj, '修改', ['500px', '400px']);
                 } else if (obj.event === 'details') {
                     renderData(obj.data['id']);
                 }
             });
 
-            table.on('toolbar(dict-type-table)', function (obj) {
+            table.on('toolbar(data-table)', function(obj) {
                 if (obj.event === 'add') {
-                    layer.open({
-                        type: 2,
-                        title: '新增',
-                        shade: 0.1,
-                        area: ['500px', '400px'],
-                        content: "{{route('admin.dicts.create')}}",
-                        end: function (index) {
-                            table.reload('dict-type-table');
-                        }
-                    });
+                    tablePlus.createRow("{{ route('admin.dicts.create') }}", obj, '新增', ['500px', '400px']);
                 }
             });
 
-            form.on('submit(dict-type-query)', function (data) {
-                table.reload('dict-type-table', {
-                    where: data.field
-                })
-                return false;
-            });
-            // 表格顶部搜索重置事件
-            form.on("submit(dict-type-reset)", function (data) {
-                table.reload("dict-type-table", {where: []})
-            });
-
-            table.on('tool(dict-data-table)', function (obj) {
+            table.on('tool(dict-data-table)', function(obj) {
                 if (obj.event === 'remove') {
-                    layer.confirm('确定要删除吗？', {icon: 3, title: '提示'}, function (index) {
-                        let loading = layer.load();
-                        $.ajax({
-                            url: obj.data.delete_url,
-                            dataType: 'json',
-                            type: 'delete',
-                            success: function (res) {
-                                layer.msg('删除成功！', {icon: 1, time: 1000}, function () {
-                                    obj.del();
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                layui.popup.failure(xhr.responseJSON.message);
-                            },
-                            complete: function() {
-                                layer.close(loading);
-                            }
-                        })
-                    });
+                    tablePlus.deleteRow(obj.data.delete_url, obj, '确定要删除吗？');
                 } else if (obj.event === 'edit') {
-                    layer.open({
-                        type: 2,
-                        title: '修改',
-                        shade: 0.1,
-                        area: ['500px', '400px'],
-                        content: obj.data.edit_data_url,
-                        end: function (index) {
-                            table.reloadData('dict-data-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_data_url, obj, '修改', ['500px', '400px']);
                 }
             });
 
-            table.on('toolbar(dict-data-table)', function (obj) {
+            table.on('toolbar(dict-data-table)', function(obj) {
                 if (obj.event === 'add') {
-                    layer.open({
-                        type: 2,
-                        title: '新增',
-                        shade: 0.1,
-                        area: ['500px', '400px'],
-                        content: "{{route('admin.dicts.create_data')}}?parent_id=" + parentId,
-                        end: function (index) {
-                            table.reload('dict-data-table');
-                        }
-                    });
+                    tablePlus.createRow("{{ route('admin.dicts.create_data') }}?parent_id=" + parentId, obj,
+                        '新增', ['500px', '400px']);
                 } else if (obj.event === 'batchRemove') {
-                    let checkIds = common.checkField(obj, "id");
-                    if (checkIds === "") {
-                        popup.warning("未选中数据");
-                        return false;
-                    }
-                    let data = {};
-                    data["ids"] = checkIds.split(",");
-                    layer.confirm("确定删除选中?", {
-                        icon: 3,
-                        title: "提示"
-                    }, function(index) {
-                        layer.close(index);
-                        let loading = layer.load();
-                        $.ajax({
-                            url: "{{route('admin.dicts.batch_destroy')}}",
-                            data: data,
-                            dataType: "json",
-                            type: "post",
-                            success: function(res) {
-                                layui.popup.success(res.message, function (){
-                                    table.reloadData('dict-data-table');
-                                })
-                            },
-                            error: function (xhr, status, error) {
-                                layui.popup.failure(xhr.responseJSON.message);
-                            },
-                            complete: function() {
-                                layer.close(loading);
-                            }
-                        })
-                    });
+                    tablePlus.batchDeleteRow("{{ route('admin.dicts.batch_destroy') }}", obj, '确定删除选中?');
                 }
             });
         })

@@ -18,8 +18,7 @@ layui.config({
     echarts: "echarts",          // 数据图表组件
     echartsTheme: "echartsTheme",// 数据图表主题
     encrypt: "encrypt",		     // 数据加密组件
-    select: "select",	         // 下拉多选组件
-    xmSelect: "xm-select",	     // 下拉多选组件 //变更
+    xmSelect: "xm-select",	     // 下拉多选组件
     drawer: "drawer",	         // 抽屉弹层组件
     notice: "notice",	         // 消息提示组件
     step: "step",		         // 分布表单组件
@@ -49,13 +48,16 @@ layui.config({
     cascader: "cascader/cascader", //级联组件
     labelSelector: "label-selector/labelSelector",//多选组件
     tablePlus: "tablePlus",         // 表格扩展组件
+    formPlus: "formPlus",           // 表单扩展组件
     tableSelect: "tableSelect",   //下拉表格数据选择器
-}).use(['layer', 'theme', 'table'], function () {
+}).use(['layer', 'theme', 'form', 'table', 'tablePlus'], function () {
     layui.theme.changeTheme(window, false);
     layui.table.set({
+        elem: '#data-table',
+        toolbar: '#table-toolbar',
         page: true,
         limit: 15, // 每页显示的数量
-        limits: [15, 20, 30, 50, 100, 150, 200, 300, 500],
+        limits: [15, 20, 30, 50, 100],
         skin: 'line',
         loading: true,
         cellMinWidth: 80,
@@ -66,9 +68,6 @@ layui.config({
             onClick: function (obj) { // 点击事件 - 2.9.12+
                 layui.table.reloadData(obj.config.id, {
                     where: obj.config.where,
-                    page: {
-                        page: obj.config.page.curr || 1,
-                    }
                 });
             }
         }, 'filter', 'print', 'exports'],
@@ -95,5 +94,31 @@ layui.config({
             console.log(e, msg);
             console.log(e.responseJSON);
         }
+    });
+    // 设置 排序事件
+    layui.table.on("sort(data-table)", function (obj) {
+        var config = obj.config; // 当前表格配置（包含最新查询条件）
+        var params = {};
+        if (config.where) {
+            for (var key in config.where) {
+                params[key] = config.where[key];
+            }
+        }
+        params.sortField = obj.field;
+        params.sortOrder = obj.type;
+        layui.table.reload("data-table", {
+            initSort: obj,
+            scrollPos: "fixed",
+            where: params,
+        });
+    });
+    // 表格顶部搜索事件
+    layui.form.on("submit(table-query)", function (data) {
+        layui.table.reloadData("data-table", { page: { curr: 1 }, where: data.field });
+        return false;
+    });
+    // 表格顶部搜索重置事件
+    layui.form.on("submit(table-reset)", function (data) {
+        layui.table.reloadData("data-table", { page: { curr: 1 }, where: [] });
     });
 });

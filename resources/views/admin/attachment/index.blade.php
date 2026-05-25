@@ -93,92 +93,89 @@
             let common = layui.common;
             let tablePlus = layui.tablePlus;
             // 表头参数
-            let cols = [
-                {title: "ID", field: "id", width: 100, sort: true,},
-                {title: "上传用户ID", field: "user_id", hide: true,},
-                {title: "上传用户", field: "user_name",},
-                {title: "存储", field: "storage",},
-                {title: "原始文件名", field: "origin_name",},
-                {title: "文件名", field: "file_name",},
+            let cols = [{
+                    title: "ID",
+                    field: "id",
+                    width: 100,
+                    sort: true,
+                },
+                {
+                    title: "上传用户ID",
+                    field: "user_id",
+                    hide: true,
+                },
+                {
+                    title: "上传用户",
+                    field: "user_name",
+                },
+                {
+                    title: "存储",
+                    field: "storage",
+                },
+                {
+                    title: "原始文件名",
+                    field: "origin_name",
+                },
+                {
+                    title: "文件名",
+                    field: "file_name",
+                },
                 {
                     title: "文件Url",
                     field: "file_url",
-                    templet: function (d) {
-                        return tablePlus.image(d['file_url'],32,32);
+                    templet: function(d) {
+                        return tablePlus.image(d['file_url'], 32, 32);
                     },
                     width: 90,
                 },
-                {title: "文件大小", field: "file_size",},
-                {title: "文件类型", field: "mime_type",},
-                {title: "上传时间", field: "created_at",},
-                {title: "更新时间", field: "updated_at", hide: true,},
-                {title: "操作", toolbar: "#table-bar", align: "center", fixed: "right", width: 150,}
+                {
+                    title: "文件大小",
+                    field: "file_size",
+                },
+                {
+                    title: "文件类型",
+                    field: "mime_type",
+                },
+                {
+                    title: "上传时间",
+                    field: "created_at",
+                },
+                {
+                    title: "更新时间",
+                    field: "updated_at",
+                    hide: true,
+                },
+                {
+                    title: "操作",
+                    toolbar: "#table-bar",
+                    align: "center",
+                    fixed: "right",
+                    width: 150,
+                }
             ];
 
-            table.render({
+            let tableIns = tablePlus.render({
                 elem: '#data-table',
-                url: "{{route('admin.attachments.index')}}",
+                url: "{{ route('admin.attachments.index') }}",
                 cols: [cols],
                 toolbar: "#table-toolbar"
             });
 
-            // 表格排序事件
-            table.on("sort(data-table)", function (obj) {
-                table.reload("data-table", {
-                    initSort: obj,
-                    scrollPos: "fixed",
-                    where: {
-                        field: obj.field,
-                        order: obj.type
-                    }
-                });
-            });
-
             // 表格顶部工具栏事件
-            table.on("toolbar(data-table)", function (obj) {
+            table.on("toolbar(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === "create") {
-                    layer.open({
-                        type: 2,
-                        title: "上传文件",
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "550px", common.isMobile() ? "100%" : "550px"],
-                        content: "{{route('admin.attachments.create')}}",
-                        end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.createRow("{{ route('admin.attachments.create') }}", obj, '上传文件', ["500px",
+                        "550px"
+                    ]);
                 }
             });
 
             // 编辑或删除行事件
-            table.on("tool(data-table)", function (obj) {
+            table.on("tool(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === "remove") {
                     tablePlus.deleteRow(obj.data.delete_url, obj);
-                } else if (obj.event === "edit") {
-                    layer.open({
-                        type: 2,
-                        title: '修改',
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "550px", common.isMobile() ? "100%" : "550px"],
-                        content: obj.data.edit_url,
-                        end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
                 }
             });
-
-            // 表格顶部搜索事件
-            form.on("submit(table-query)", function (data) {
-                table.reload("data-table", {page: {page: 1}, where: data.field})
-                return false;
-            });
-
-            // 表格顶部搜索重置事件
-            form.on("submit(table-reset)", function (data) {
-                table.reload("data-table", {where: []})
-            });
-
         });
     </script>
 @endpush

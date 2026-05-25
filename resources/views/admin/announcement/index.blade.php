@@ -35,9 +35,17 @@
             let tablePlus = layui.tablePlus;
             let util = layui.util;
 
-            let cols = [
-                {title: 'ID', field: 'id', align: 'center', width: 100},
-                {title: '标题', field: 'title', align: 'center'},
+            let cols = [{
+                    title: 'ID',
+                    field: 'id',
+                    align: 'center',
+                    width: 100
+                },
+                {
+                    title: '标题',
+                    field: 'title',
+                    align: 'center'
+                },
                 {
                     title: "范围",
                     field: "coverage",
@@ -54,16 +62,22 @@
                 {
                     title: "状态",
                     field: "status",
-                    templet: function (d) {
-                        return tablePlus.statusSwitch('{{route('admin.announcements.status')}}', d, "status");
+                    templet: function(d) {
+                        return tablePlus.statusSwitch('{{ route('admin.announcements.status') }}', d,
+                            "status");
                     },
                     width: 90,
                 },
-                {title: '阅读次数', field: 'read_count', align: 'center', width: 100},
+                {
+                    title: '阅读次数',
+                    field: 'read_count',
+                    align: 'center',
+                    width: 100
+                },
                 {
                     title: "生效时间",
                     field: "effective_time_type",
-                    templet: function (d) {
+                    templet: function(d) {
                         if (d.effective_time_type == 0) {
                             return "永久生效";
                         } else if (d.effective_time_type == 1) {
@@ -72,51 +86,49 @@
                     },
                     width: 400,
                 },
-                {title: "创建时间", field: "created_at", width: 190},
-                {title: "更新时间", field: "updated_at", width: 190},
-                {title: "操作", toolbar: "#table-bar", align: "center", fixed: "right", width: 195,},
+                {
+                    title: "创建时间",
+                    field: "created_at",
+                    width: 190
+                },
+                {
+                    title: "更新时间",
+                    field: "updated_at",
+                    width: 190
+                },
+                {
+                    title: "操作",
+                    toolbar: "#table-bar",
+                    align: "center",
+                    fixed: "right",
+                    width: 195,
+                },
             ];
 
-            table.render({
-                elem: '#data-table'
-                , url: "{{route('admin.announcements.index')}}"
-                , cols: [cols]
-                , toolbar: "#table-toolbar"
-
+            let tableIns = tablePlus.render({
+                elem: '#data-table',
+                url: "{{ route('admin.announcements.index') }}",
+                cols: [cols],
+                toolbar: "#table-toolbar"
             });
 
-            table.on('tool(data-table)', function (obj) {
+            table.on("tool(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'remove') {
                     tablePlus.deleteRow(obj.data.delete_url, obj);
                 } else if (obj.event === 'edit') {
-                    layer.open({
-                        type: 2
-                        , title: '修改公告'
-                        , shade: 0.1
-                        , area: ["85%", "85%"]
-                        , content: obj.data.edit_url
-                        , end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_url, obj, '修改公告', ["85%",
+                        "85%"
+                    ]);
                 }
             });
 
-            table.on('toolbar(data-table)', function (obj) {
+            table.on("toolbar(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'create') {
-                    layer.open({
-                        type: 2
-                        , title: '新增公告'
-                        , shade: 0.1
-                        , area: ["85%", "85%"]
-                        , content: "{{route('admin.announcements.create')}}"
-                        , end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.createRow("{{ route('admin.announcements.create') }}", obj, '新增公告', ["85%",
+                        "85%"
+                    ]);
                 }
             });
         });
-
     </script>
 @endpush

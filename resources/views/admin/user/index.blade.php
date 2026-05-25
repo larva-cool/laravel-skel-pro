@@ -98,13 +98,12 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'form', 'jquery', 'popup', 'laydate', 'common', 'util'], function () {
+        layui.use(['table', 'form', 'jquery', 'laydate', 'common', 'tablePlus'], function() {
             let table = layui.table;
             let form = layui.form;
             let $ = layui.jquery;
-            let util = layui.util;
-            let popup = layui.popup;
             let laydate = layui.laydate;
+            let tablePlus = layui.tablePlus;
 
             // 字段 创建时间 created_at
             laydate.render({
@@ -112,56 +111,69 @@
                 range: ["#created_at-date-start", "#created_at-date-end"],
             });
             // 表头参数
-            let cols = [
-                {title: "ID", field: "id", width: 100, sort: true,},
-                {title: "用户名", field: "username",},
-                {title: "昵称", field: "name",},
-                {
-                    title: "头像", field: "avatar",
-                    templet: function (d) {
-                        return '<img src="' + encodeURI(d['avatar']) + '" style="max-width:32px;max-height:32px;" alt="" />'
-                    }, width: 90,
+            let cols = [{
+                    title: "ID",
+                    field: "id",
+                    width: 100,
+                    sort: true,
                 },
-                {title: "邮箱", field: "email",},
-                {title: "手机", field: "phone",},
-                {title: "登录时间", field: "last_login_at",},
-                {title: "最后活动", field: "last_active_at",},
-                {title: "金币", field: "available_coins"},
-                {title: "积分", field: "available_points", hide: true,},
-                {title: "创建时间", field: "created_at", hide: true,},
-                {title: "更新时间", field: "updated_at", hide: true,},
+                {
+                    title: "用户名",
+                    field: "username",
+                },
+                {
+                    title: "昵称",
+                    field: "name",
+                },
+                {
+                    title: "头像",
+                    field: "avatar",
+                    templet: function(d) {
+                        return '<img src="' + encodeURI(d['avatar']) +
+                            '" style="max-width:32px;max-height:32px;" alt="" />'
+                    },
+                    width: 90,
+                },
+                {
+                    title: "邮箱",
+                    field: "email",
+                },
+                {
+                    title: "手机",
+                    field: "phone",
+                },
+                {
+                    title: "登录时间",
+                    field: "last_login_at",
+                },
+                {
+                    title: "最后活动",
+                    field: "last_active_at",
+                },
+                {
+                    title: "金币",
+                    field: "available_coins"
+                },
+                {
+                    title: "积分",
+                    field: "available_points",
+                    hide: true,
+                },
+                {
+                    title: "创建时间",
+                    field: "created_at",
+                    hide: true,
+                },
+                {
+                    title: "更新时间",
+                    field: "updated_at",
+                    hide: true,
+                },
                 {
                     title: "状态",
                     field: "status",
-                    templet: function (d) {
-                        let field = "status";
-                        form.on("switch(" + field + ")", function (data) {
-                            let load = layer.load();
-                            $.ajax({
-                                url: "{{route('admin.users.status')}}",
-                                data: {
-                                    id: data.elem.value,
-                                    status: data.elem.checked ? 0 : 1,
-                                },
-                                dataType: "json",
-                                type: "post",
-                                success: function (res) {
-                                    layer.close(load);
-                                    return popup.success(res.message, function () {
-                                        table.reloadData('data-table');
-                                    });
-                                },
-                                error: function (xhr, status, error) {
-                                    layer.close(load);
-                                    return popup.failure(xhr.responseJSON.message, function () {
-                                        data.elem.checked = !data.elem.checked;
-                                        form.render();
-                                    });
-                                }
-                            })
-                        });
-                        let checked = d[field] === 0 ? "checked" : "";
-                        return '<input type="checkbox" title="可用|禁用" value="' + util.escape(d['id']) + '" lay-filter="' + util.escape(field) + '" lay-skin="switch" lay-text="' + util.escape('') + '" ' + checked + '/>';
+                    templet: function(d) {
+                        return tablePlus.statusSwitch("{{ route('admin.users.status') }}", d, "status");
                     },
                     width: 90,
                 },
@@ -174,85 +186,29 @@
                 }
             ];
 
-            table.render({
+            let tableIns = tablePlus.render({
                 elem: '#data-table',
-                url: "{{route('admin.users.index')}}",
+                url: "{{ route('admin.users.index') }}",
                 cols: [cols],
                 toolbar: "#table-toolbar",
             });
 
-            // 表格排序事件
-            table.on("sort(data-table)", function (obj) {
-                table.reload("data-table", {
-                    initSort: obj,
-                    scrollPos: "fixed",
-                    where: {
-                        field: obj.field,
-                        order: obj.type
-                    }
-                });
-            });
-
             // 表格顶部工具栏事件
-            table.on("toolbar(data-table)", function (obj) {
+            table.on("toolbar(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === "create") {
-                    layer.open({
-                        type: 2,
-                        title: "新增用户",
-                        shade: 0.1,
-                        area: ["550px", "450px"],
-                        content: "{{route('admin.users.create')}}",
-                        end: function (index) {
-                            table.reloadData('data-table');
-                        }
-                    });
+                    tablePlus.createRow("{{ route('admin.users.create') }}", obj, "新增用户", ["550px",
+                        "450px"
+                    ]);
                 }
             });
 
             // 编辑或删除行事件
-            table.on("tool(data-table)", function (obj) {
+            table.on("tool(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === "remove") {
-                    layer.confirm('确定要删除该用户吗？', {icon: 3, title: '提示'}, function (index) {
-                        let loading = layer.load();
-                        $.ajax({
-                            url: obj.data.delete_url,
-                            dataType: 'json',
-                            type: 'delete',
-                            success: function (res) {
-                                layer.close(loading);
-                                layer.msg(res.message, {icon: 1, time: 1000}, function () {
-                                    obj.del();
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                layer.close(loading);
-                                layui.popup.failure(xhr.responseJSON.message);
-                            }
-                        })
-                    });
+                    tablePlus.deleteRow(obj.data.delete_url, obj, '确定要删除该用户吗？');
                 } else if (obj.event === "edit") {
-                    layer.open({
-                        type: 2,
-                        title: '修改用户',
-                        shade: 0.1,
-                        area: ["850px", "850px"],
-                        content: obj.data.edit_url,
-                        end: function (index) {
-                            table.reloadData('data-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_url, obj, '修改用户', ["850px", "850px"]);
                 }
-            });
-
-            // 表格顶部搜索事件
-            form.on("submit(table-query)", function (data) {
-                table.reloadData("data-table", {page: {page: 1}, where: data.field})
-                return false;
-            });
-
-            // 表格顶部搜索重置事件
-            form.on("submit(table-reset)", function (data) {
-                table.reloadData("data-table", {where: []})
             });
         });
     </script>

@@ -32,17 +32,36 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'jquery', 'common'], function () {
+        layui.use(['table', 'jquery', 'common', 'tablePlus'], function() {
             let table = layui.table;
             let $ = layui.jquery;
             let common = layui.common;
+            let tablePlus = layui.tablePlus;
 
-            let cols = [
-                {title: 'ID', field: 'id', align: 'center', width: 100},
-                {title: '用户组名称', field: 'name', align: 'center'},
-                {title: '用户组描述', field: 'desc', align: 'center'},
-                {title: "创建时间", field: "created_at",},
-                {title: "更新时间", field: "updated_at",},
+            let cols = [{
+                    title: 'ID',
+                    field: 'id',
+                    align: 'center',
+                    width: 100
+                },
+                {
+                    title: '用户组名称',
+                    field: 'name',
+                    align: 'center'
+                },
+                {
+                    title: '用户组描述',
+                    field: 'desc',
+                    align: 'center'
+                },
+                {
+                    title: "创建时间",
+                    field: "created_at",
+                },
+                {
+                    title: "更新时间",
+                    field: "updated_at",
+                },
                 {
                     title: "操作",
                     toolbar: "#table-bar",
@@ -52,60 +71,26 @@
                 },
             ];
 
-            table.render({
+            let tableIns = tablePlus.render({
                 elem: '#data-table',
-                url: "{{route('admin.user_groups.index')}}",
+                url: "{{ route('admin.user_groups.index') }}",
                 cols: [cols],
                 toolbar: "#table-toolbar",
             });
 
-            table.on('tool(data-table)', function (obj) {
+            table.on("tool(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'remove') {
-                    layer.confirm('确定要删除该用户组吗？', {icon: 3, title: '提示'}, function (index) {
-                        let loading = layer.load();
-                        $.ajax({
-                            url: obj.data.delete_url,
-                            dataType: 'json',
-                            type: 'delete',
-                            success: function (res) {
-                                layer.msg(res.message, {icon: 1, time: 1000}, function () {
-                                    obj.del();
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                layui.popup.failure(xhr.responseJSON.message);
-                            },
-                            complete: function() {
-                                layer.close(loading);
-                            }
-                        })
-                    });
+                    tablePlus.deleteRow(obj.data.delete_url, obj, '确定要删除该用户组吗？');
                 } else if (obj.event === 'edit') {
-                    layer.open({
-                        type: 2,
-                        title: '修改用户组',
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "450px", common.isMobile() ? "100%" : "350px"],
-                        content: obj.data.edit_url,
-                        end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_url, obj, '修改用户组', ["450px", "350px"]);
                 }
             });
 
-            table.on('toolbar(data-table)', function (obj) {
+            table.on("toolbar(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'create') {
-                    layer.open({
-                        type: 2,
-                        title: '新增用户组',
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "450px", common.isMobile() ? "100%" : "350px"],
-                        content: "{{route('admin.user_groups.create')}}",
-                        end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.createRow("{{ route('admin.user_groups.create') }}", obj, "新增用户组", ["450px",
+                        "350px"
+                    ]);
                 }
             });
         });

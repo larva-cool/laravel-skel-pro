@@ -581,31 +581,10 @@
 @push('scripts')
     <script>
         //提交事件
-        layui.use(["form", "popup"], function() {
-            let form = layui.form;
-            let $ = layui.$;
-            let popup = layui.popup;
-            form.on("submit(save)", function(data) {
-                let loading = layer.load();
-                $.ajax({
-                    url: "{{ route('admin.settings.config.store') }}",
-                    type: "POST",
-                    dataType: "json",
-                    data: data.field,
-                    success: function(res) {
-                        popup.success(res.message, function() {
-                            parent.layer.close(parent.layer.getFrameIndex(window.name));
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        popup.failure(xhr.responseJSON.message);
-                    },
-                    complete: function() {
-                        layer.close(loading);
-                    }
-                });
-                return false;
-            });
+        layui.use(["form", "popup", "formPlus"], function() {
+            let formPlus = layui.formPlus;
+
+            formPlus.save("{{ route('admin.settings.config.store') }}",'save');
         });
     </script>
 @endpush

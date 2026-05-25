@@ -42,29 +42,50 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['treeTable', 'jquery', 'common', 'util'], function () {
+        layui.use(['treeTable', 'jquery', 'common', 'util', 'tablePlus'], function() {
             let treeTable = layui.treeTable;
             let $ = layui.jquery;
             let util = layui.util;
             let common = layui.common;
-            let cols = [
-                {title: "标题", field: "title",},
-                {title: "主键", field: "id", hide: true,},
-                {title: "权限标识", field: "permission_name"},
-                {title: "创建时间", field: "created_at", hide: true,},
-                {title: "更新时间", field: "updated_at", hide: true,},
-                {title: "url", field: "href",},
+            let tablePlus = layui.tablePlus;
+            let cols = [{
+                    title: "标题",
+                    field: "name",
+                },
+                {
+                    title: "主键",
+                    field: "id",
+                    hide: true,
+                },
+                {
+                    title: "权限标识",
+                    field: "permission_name"
+                },
+                {
+                    title: "创建时间",
+                    field: "created_at",
+                    hide: true,
+                },
+                {
+                    title: "更新时间",
+                    field: "updated_at",
+                    hide: true,
+                },
+                {
+                    title: "url",
+                    field: "href",
+                },
                 {
                     title: "类型",
                     field: "type",
                     width: 80,
-                    templet: function (d) {
+                    templet: function(d) {
                         let field = "type";
                         let value = d[field];
                         let css = {
                             "目录": "layui-bg-blue",
                             "菜单": "layui-bg-green",
-                        }[value];
+                        } [value];
                         return '<span class="layui-badge ' + css + '">' + util.escape(value) + '</span>';
                     }
                 },
@@ -82,108 +103,30 @@
                 }
             ];
             // 渲染
-            treeTable.render({
+            let tableIns = tablePlus.renderTree({
                 elem: '#data-table',
-                url: '{{route('admin.menus.index')}}', // 此处为静态模拟数据，实际使用时需换成真实接口
-                tree: {
-                    customName: {
-                        isParent: 'is_parent',
-                        name: 'title',
-                        pid: 'parent_id',
-                    },
-                    // 异步加载子节点
-                    async: {
-                        enable: true,
-                        autoParam: ["parent_id=id"]
-                    },
-                    view: {
-                        expandAllDefault: true,
-                    }
-                },
+                url: '{{ route('admin.menus.index') }}', // 此处为静态模拟数据，实际使用时需换成真实接口
                 cols: [cols],
-                page: true,
-                limit: 500,
-                limits: [50,100,150,200,500],
                 toolbar: "#table-toolbar",
-                defaultToolbar: [{
-                    title: "刷新",
-                    layEvent: "refresh",
-                    icon: "layui-icon-refresh",
-                }, "filter", "print", "exports"],
-                loading: true, // 显示加载状态
-                text: {
-                    none: '暂无数据' // 无数据时的提示文本
-                },
-                request: {
-                    pageName: 'page', // 页码参数名
-                    limitName: 'per_page', // 每页数据条数参数名
-                },
-                dataType: 'json',
-                headers: {
-                    Accept: 'application/json'
-                },
-                parseData: function (res) { // 自定义数据解析
-                    return {
-                        "code": 0, // 解析接口状态
-                        "msg": 'ok', // 解析提示文本
-                        "count": res.meta.total, // 解析数据长度
-                        "data": res.data // 解析数据列表
-                    };
-                }
-            });
+            }, true);
             // 添加 批量删除 刷新事件
-            treeTable.on("toolbar(data-table)", function (obj) {
+            treeTable.on("toolbar(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === "add") {
-                    layer.open({
-                        type: 2,
-                        title: "新增菜单",
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "520px", common.isMobile() ? "100%" : "520px"],
-                        content: "{{route('admin.menus.create')}}",
-                        end: function () {
-                            treeTable.reload('data-table');
-                        }
-                    });
-                } else if(obj.event === 'expandAll') {
+                    tablePlus.createRow("{{ route('admin.menus.create') }}", obj, "新增菜单", ["520px",
+                        "520px"
+                    ]);
+                } else if (obj.event === 'expandAll') {
                     treeTable.expandAll('data-table', true);
-                } else if(obj.event === 'foldAll') {
+                } else if (obj.event === 'foldAll') {
                     treeTable.expandAll('data-table', false);
-                } else if (obj.event === "refresh") {
-                    treeTable.reload('data-table');
                 }
             });
             // 删除或编辑行事件
-            treeTable.on("tool(data-table)", function (obj) {
+            treeTable.on("tool(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === "remove") {
-                    layer.confirm('确定要删除该菜单吗？', {icon: 3, title: '提示'}, function (index) {
-                        let loading = layer.load();
-                        $.ajax({
-                            url: obj.data.delete_url,
-                            dataType: 'json',
-                            type: 'delete',
-                            success: function (res) {
-                                layer.close(loading);
-                                layer.msg('删除成功！', {icon: 1, time: 1000}, function () {
-                                    obj.del();
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                layer.close(loading);
-                                layui.popup.failure(xhr.responseJSON.message);
-                            }
-                        })
-                    });
+                    tablePlus.removeRow(obj.data.delete_url, obj, "确定要删除该菜单吗？");
                 } else if (obj.event === "edit") {
-                    layer.open({
-                        type: 2,
-                        title: "修改菜单",
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "520px", common.isMobile() ? "100%" : "520px"],
-                        content: obj.data.edit_url,
-                        end: function () {
-                            treeTable.reload('data-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_url, obj, "修改菜单", ["520px", "520px"]);
                 }
             });
         });

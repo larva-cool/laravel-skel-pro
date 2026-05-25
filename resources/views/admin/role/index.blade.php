@@ -33,17 +33,36 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'jquery', 'common'], function () {
+        layui.use(['table', 'jquery', 'common', 'tablePlus'], function() {
             let table = layui.table;
             let $ = layui.jquery;
             let common = layui.common;
+            let tablePlus = layui.tablePlus;
 
-            let cols = [
-                {title: '角色ID', field: 'id', align: 'center', width: 100},
-                {title: '角色名称', field: 'name', align: 'center'},
-                {title: 'Guard', field: 'guard_name', align: 'center'},
-                {title: "创建时间", field: "created_at",},
-                {title: "更新时间", field: "updated_at",},
+            let cols = [{
+                    title: '角色ID',
+                    field: 'id',
+                    align: 'center',
+                    width: 100
+                },
+                {
+                    title: '角色名称',
+                    field: 'name',
+                    align: 'center'
+                },
+                {
+                    title: 'Guard',
+                    field: 'guard_name',
+                    align: 'center'
+                },
+                {
+                    title: "创建时间",
+                    field: "created_at",
+                },
+                {
+                    title: "更新时间",
+                    field: "updated_at",
+                },
                 {
                     title: "操作",
                     toolbar: "#table-bar",
@@ -53,59 +72,28 @@
                 },
             ];
 
-            table.render({
+            let tableIns = tablePlus.render({
                 elem: '#data-table',
-                url: "{{route('admin.roles.index')}}",
+                url: "{{ route('admin.roles.index') }}",
                 cols: [cols],
                 toolbar: "#table-toolbar",
             });
 
-            table.on('tool(data-table)', function (obj) {
+            table.on("tool(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'remove') {
-                    layer.confirm('确定要删除该角色吗？', {icon: 3, title: '提示'}, function (index) {
-                        let loading = layer.load();
-                        $.ajax({
-                            url: obj.data.delete_url,
-                            dataType: 'json',
-                            type: 'delete',
-                            success: function (res) {
-                                layer.close(loading);
-                                layer.msg('删除成功！', {icon: 1, time: 1000}, function () {
-                                    obj.del();
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                layer.close(loading);
-                                layui.popup.failure(xhr.responseJSON.message);
-                            }
-                        })
-                    });
+                    tablePlus.confirmDelete(obj.data.delete_url, obj, '确定要删除该角色吗？');
                 } else if (obj.event === 'edit') {
-                    layer.open({
-                        type: 2,
-                        title: '修改角色',
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "650px", common.isMobile() ? "100%" : "650px"],
-                        content: obj.data.edit_url,
-                        end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_url, obj, '修改角色', ["650px",
+                        "700px"
+                    ]);
                 }
             });
 
-            table.on('toolbar(data-table)', function (obj) {
+            table.on("toolbar(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'create') {
-                    layer.open({
-                        type: 2,
-                        title: '新增角色',
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "650px", common.isMobile() ? "100%" : "650px"],
-                        content: "{{route('admin.roles.create')}}",
-                        end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.createRow("{{ route('admin.roles.create') }}", obj, "新增角色", ["650px",
+                        "650px"
+                    ]);
                 }
             });
         });

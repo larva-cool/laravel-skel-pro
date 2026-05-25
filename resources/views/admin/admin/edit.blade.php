@@ -71,10 +71,10 @@
 @push('scripts')
     <script>
         // 字段 角色 roles
-        layui.use(["form", "popup", "xmSelect", "popup"], function() {
+        layui.use(["formPlus", "popup", "xmSelect", "popup"], function() {
             let $ = layui.$;
             let xmSelect = layui.xmSelect;
-            let form = layui.form;
+            let formPlus = layui.formPlus;
             let popup = layui.popup;
             $.ajax({
                 url: "{{ route('admin.roles.select') }}",
@@ -109,28 +109,7 @@
             });
 
             //提交事件
-            form.on("submit(save)", function(data) {
-                let loading = layer.load();
-                $.ajax({
-                    url: "{{ route('admin.admins.update', $item->id) }}",
-                    type: "POST",
-                    dataType: "json",
-                    data: data.field,
-                    success: function(res) {
-                        popup.success(res.message, function() {
-                            parent.layer.close(parent.layer.getFrameIndex(window.name));
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        popup.failure(xhr.responseJSON.message);
-                    },
-                    complete: function() {
-                        layer.close(loading);
-                    }
-                });
-
-                return false;
-            });
+            formPlus.save("{{ route('admin.admins.update', $item->id) }}", 'save');
         });
     </script>
 @endpush

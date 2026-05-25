@@ -68,11 +68,11 @@
 @push('scripts')
     <script>
         // 字段 角色 roles
-        layui.use(["jquery", "xmSelect", "form", "popup"], function () {
+        layui.use(["jquery", "xmSelect", "popup", "formPlus"], function () {
             let $ = layui.$;
             let xmSelect = layui.xmSelect;
-            let form = layui.form;
             let popup = layui.popup;
+            let formPlus = layui.formPlus;
 
             $.ajax({
                 url: "{{route('admin.roles.select')}}",
@@ -96,28 +96,7 @@
             });
 
             //提交事件
-            form.on("submit(save)", function (data) {
-                let loading = layer.load();
-                $.ajax({
-                    url: "{{route('admin.admins.store')}}",
-                    type: "POST",
-                    dataType: "json",
-                    data: data.field,
-                    success: function (res) {
-                        popup.success(res.message, function () {
-                            parent.layer.close(parent.layer.getFrameIndex(window.name));
-                        });
-                    },
-                    error: function (xhr, status, error) {
-                        popup.failure(xhr.responseJSON.message);
-                    },
-                    complete: function() {
-                        layer.close(loading);
-                    }
-                });
-
-                return false;
-            });
+            formPlus.save("{{route('admin.admins.store')}}",'save');
         });
 
 

@@ -33,74 +33,67 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'jquery', 'common', 'table'], function () {
+        layui.use(['table', 'jquery', 'common', 'table', 'tablePlus'], function() {
             let table = layui.table;
             let $ = layui.jquery;
             let common = layui.common;
+            let tablePlus = layui.tablePlus;
 
-            let cols = [
-                {title: "权限ID", field: "id", },
-                {title: '权限名称', field: 'display_name'},
-                {title: '权限标识', field: 'name', align: 'left'},
-                {title: 'Guard', field: 'guard_name', align: 'left'},
-                {title: "创建时间", field: "created_at",},
-                {title: "更新时间", field: "updated_at",},
-                {title: "操作", toolbar: "#table-bar", align: "center", fixed: "right", width: 195,},
+            let cols = [{
+                    title: "权限ID",
+                    field: "id",
+                },
+                {
+                    title: '权限名称',
+                    field: 'display_name'
+                },
+                {
+                    title: '权限标识',
+                    field: 'name',
+                    align: 'left'
+                },
+                {
+                    title: 'Guard',
+                    field: 'guard_name',
+                    align: 'left'
+                },
+                {
+                    title: "创建时间",
+                    field: "created_at",
+                },
+                {
+                    title: "更新时间",
+                    field: "updated_at",
+                },
+                {
+                    title: "操作",
+                    toolbar: "#table-bar",
+                    align: "center",
+                    fixed: "right",
+                    width: 195,
+                },
             ];
 
-            table.render({
+            let tableIns = tablePlus.render({
                 elem: '#data-table',
-                url: "{{route('admin.permissions.index')}}",
+                url: "{{ route('admin.permissions.index') }}",
                 cols: [cols],
                 toolbar: "#table-toolbar",
             });
 
-            table.on('tool(data-table)', function (obj) {
+            table.on("tool(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'remove') {
-                    layer.confirm('确定要删除该权限吗？', {icon: 3, title: '提示'}, function (index) {
-                        let loading = layer.load();
-                        $.ajax({
-                            url: obj.data.delete_url,
-                            dataType: 'json',
-                            type: 'delete',
-                            success: function (res) {
-                                layer.close(loading);
-                                layer.msg('删除成功！', {icon: 1, time: 1000}, function () {
-                                    obj.del();
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                layer.close(loading);
-                                layui.popup.failure(xhr.responseJSON.message);
-                            }
-                        })
-                    });
+                    tablePlus.removeRow(obj.data.delete_url, obj, "确定要删除该权限吗？");
                 } else if (obj.event === 'edit') {
-                    layer.open({
-                        type: 2,
-                        title: '修改权限',
-                        shade: 0.1,
-                        area: ["450px",  "450px"],
-                        content: obj.data.edit_url,
-                        end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.editRow(obj.data.edit_url, obj, "修改权限", ["450px", "450px"]);
                 }
             });
 
-            table.on('toolbar(data-table)', function (obj) {
+            table.on("toolbar(" + tableIns.config.id + ")", function(obj) {
                 if (obj.event === 'create') {
-                    layer.open({
-                        type: 2,
-                        title: '新增权限',
-                        shade: 0.1,
-                        area: [common.isMobile() ? "100%" : "450px", common.isMobile() ? "100%" : "450px"],
-                        content: "{{route('admin.permissions.create')}}",
-                        end: function (index) {
-                            table.reload('data-table');
-                        }
-                    });
+                    tablePlus.createRow("{{ route('admin.permissions.create') }}", obj, "新增权限", ["450px",
+                        "450px"
+                    ]);
                 }
             });
         });
