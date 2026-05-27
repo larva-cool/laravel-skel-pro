@@ -88,12 +88,10 @@
         });
         layui.use(['table', 'form', 'jquery', 'popup', 'common', 'util','tablePlus'], function () {
             let table = layui.table;
-            let form = layui.form;
-            let $ = layui.jquery;
-            let common = layui.common;
             let tablePlus = layui.tablePlus;
             // 表头参数
-            let cols = [{
+            let cols = [
+                {
                     title: "ID",
                     field: "id",
                     width: 100,

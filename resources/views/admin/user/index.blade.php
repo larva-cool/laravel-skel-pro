@@ -100,8 +100,6 @@
     <script>
         layui.use(['table', 'form', 'jquery', 'laydate', 'common', 'tablePlus'], function() {
             let table = layui.table;
-            let form = layui.form;
-            let $ = layui.jquery;
             let laydate = layui.laydate;
             let tablePlus = layui.tablePlus;
 
@@ -120,6 +118,7 @@
                 {
                     title: "用户名",
                     field: "username",
+                    hide: true,
                 },
                 {
                     title: "昵称",
@@ -137,6 +136,7 @@
                 {
                     title: "邮箱",
                     field: "email",
+                    hide: true,
                 },
                 {
                     title: "手机",
@@ -157,6 +157,21 @@
                 {
                     title: "积分",
                     field: "available_points",
+                    hide: true,
+                },
+                {
+                    title: "登录次数",
+                    field: "login_count",
+                    hide: true,
+                },
+                {
+                    title: "最后登录IP",
+                    field: "last_login_ip",
+                    hide: true,
+                },
+                {
+                    title: "最后登录时间",
+                    field: "last_login_at",
                     hide: true,
                 },
                 {

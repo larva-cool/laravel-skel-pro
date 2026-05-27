@@ -63,31 +63,19 @@
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">地区</label>
-                                <div class="layui-input-block" id="area"></div>
                                 <div class="layui-input-inline">
-                                    <select name="quiz1">
+                                    <select name="province_id" id="province" class="layui-select" lay-search lay-filter="province">
                                         <option value="">请选择省</option>
-                                        <option value="浙江" selected>浙江省</option>
-                                        <option value="你的工号">江西省</option>
-                                        <option value="你最喜欢的老师">福建省</option>
                                     </select>
                                 </div>
                                 <div class="layui-input-inline">
-                                    <select name="quiz2">
+                                    <select name="city_id" id="city" class="layui-select"  lay-search lay-filter="city">
                                         <option value="">请选择市</option>
-                                        <option value="杭州">杭州</option>
-                                        <option value="宁波" disabled>宁波</option>
-                                        <option value="温州">温州</option>
-                                        <option value="温州">台州</option>
-                                        <option value="温州">绍兴</option>
                                     </select>
                                 </div>
                                 <div class="layui-input-inline">
-                                    <select name="quiz3">
-                                        <option value="">请选择县/区</option>
-                                        <option value="西湖区">西湖区</option>
-                                        <option value="余杭区">余杭区</option>
-                                        <option value="拱墅区">临安市</option>
+                                    <select name="district_id" id="district" class="layui-select"  lay-search lay-filter="district">
+                                        <option value="">请选择区</option>
                                     </select>
                                 </div>
                             </div>
@@ -167,16 +155,23 @@
 @push('scripts')
     <script>
         // 字段 头像 avatar
-        layui.use(["form", "http", 'laydate', 'labelSelector'], function () {
+        layui.use(["form", "http", 'laydate', 'area'], function () {
             let form = layui.form;
             let http = layui.http;
             let laydate = layui.laydate;
-            let labelSelector = layui.labelSelector;
+            let area = layui.area;
 
-            labelSelector.render({
-                elem: "#area",
+            area.render({
+                prov_elem: '#province',
+                prov_filter: 'province',
+                prov_value:'{{$item->profile->province_id}}',
+                city_elem:'#city',
+                city_filter:'city',
+                city_value:'{{$item->profile->city_id}}',
+                area_elem:'#district',
+                area_filter:'district',
+                area_value:'{{$item->profile->district_id}}',
             });
-
             laydate.render({
                 elem: "#birthday",
                 type: 'date'

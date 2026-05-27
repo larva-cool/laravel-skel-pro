@@ -67,7 +67,7 @@ class AreaController extends AbstractController
      */
     public function children(Request $request)
     {
-        $items = Area::getAreas($request->id, ['id', 'name']);
+        $items = Area::getAreas($request->query('id'), ['id', 'name']);
 
         return response()->json($items);
     }

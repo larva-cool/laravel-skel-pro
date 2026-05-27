@@ -220,7 +220,7 @@ layui.define(['jquery', 'form', 'util', 'layer', 'table', 'treeTable', 'common',
             let opts = $.extend({
                 toolbar: '#table-toolbar',
                 page: true,
-                limit: 15, // 每页显示的数量
+                limit: 20, // 每页显示的数量
                 limits: [15, 20, 30, 50, 100],
                 skin: 'line',
                 loading: true,

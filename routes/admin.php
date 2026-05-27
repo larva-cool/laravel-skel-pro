@@ -53,6 +53,7 @@ Route::resource('dicts', \App\Http\Controllers\Admin\DictController::class, ['na
 
 // 地区管理
 Route::get('areas/select', [\App\Http\Controllers\Admin\AreaController::class, 'select'])->name('areas.select');
+Route::get('areas/children', [\App\Http\Controllers\Admin\AreaController::class, 'children'])->name('areas.children');
 Route::resource('areas', \App\Http\Controllers\Admin\AreaController::class, ['names' => 'areas'])->except(['show']);
 
 // 附件管理
