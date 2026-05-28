@@ -48,6 +48,9 @@ class UserController extends AbstractController
             if ($request->filled('last_login_at') && $request->last_login_at[0] && $request->last_login_at[1]) {
                 $query->whereBetween('last_login_at', $request->last_login_at);
             }
+            if ($request->filled('created_at') && $request->created_at[0] && $request->created_at[1]) {
+                $query->whereBetween('created_at', $request->created_at);
+            }
             // 动态排序
             if ($request->filled('field') && $request->filled('order')) {
                 $query->orderBy($request->field, $request->order);

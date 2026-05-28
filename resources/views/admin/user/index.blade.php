@@ -27,12 +27,12 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">登录时间</label>
                         <div class="layui-input-block">
-                            <div class="layui-input-block" id="created_at">
-                                <input type="text" autocomplete="off" name="last_login_at[]" id="created_at-date-start"
-                                       class="layui-input inline-block" placeholder="开始时间">
+                            <div class="layui-input-block" id="last_login_at">
+                                <input type="text" autocomplete="off" name="last_login_at[]" id="last_login_at-date-start"
+                                    class="layui-input inline-block" placeholder="开始时间">
                                 -
-                                <input type="text" autocomplete="off" name="last_login_at[]" id="created_at-date-end"
-                                       class="layui-input inline-block" placeholder="结束时间">
+                                <input type="text" autocomplete="off" name="last_login_at[]" id="last_login_at-date-end"
+                                    class="layui-input inline-block" placeholder="结束时间">
                             </div>
                         </div>
                     </div>
@@ -41,11 +41,11 @@
                         <label class="layui-form-label">注册时间</label>
                         <div class="layui-input-block">
                             <div class="layui-input-block" id="created_at">
-                                <input type="text" autocomplete="off" name="last_login_at[]" id="created_at-date-start"
-                                       class="layui-input inline-block" placeholder="开始时间">
+                                <input type="text" autocomplete="off" name="created_at[]" id="created_at-date-start"
+                                    class="layui-input inline-block" placeholder="开始时间">
                                 -
-                                <input type="text" autocomplete="off" name="last_login_at[]" id="created_at-date-end"
-                                       class="layui-input inline-block" placeholder="结束时间">
+                                <input type="text" autocomplete="off" name="created_at[]" id="created_at-date-end"
+                                    class="layui-input inline-block" placeholder="结束时间">
                             </div>
                         </div>
                     </div>
@@ -98,11 +98,16 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'form', 'jquery', 'laydate', 'common', 'tablePlus'], function() {
+        layui.use(['table', 'laydate', 'tablePlus'], function() {
             let table = layui.table;
             let laydate = layui.laydate;
             let tablePlus = layui.tablePlus;
 
+            // 字段 最后登录时间 last_login_at
+            laydate.render({
+                elem: "#last_login_at",
+                range: ["#last_login_at-date-start", "#last_login_at-date-end"],
+            });
             // 字段 创建时间 created_at
             laydate.render({
                 elem: "#created_at",

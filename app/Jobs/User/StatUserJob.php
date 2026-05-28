@@ -44,14 +44,26 @@ class StatUserJob implements ShouldQueue
      */
     public function handle(): void
     {
-        if (! UserStat::query()->whereDate('stat_date', $this->statDate)->exists()) {
+        if (! UserStat::query()->where('stat_date', $this->statDate)->exists()) {
             $totalCount = User::query()->count();
             $totalCoin = User::query()->sum('available_coins');
             $totalPoint = User::query()->sum('available_points');
-            $registerCount = User::query()->whereDate('created_at', $this->statDate)->count('id');
-            $activeUserCount = UserExtra::query()->whereDate('last_active_at', $this->statDate)->count();
-            $coinTradeCount = CoinTrade::query()->whereDate('created_at', $this->statDate)->count();
-            $pointTradeCount = PointTrade::query()->whereDate('created_at', $this->statDate)->count();
+            $registerCount = User::query()
+                ->where('created_at', '>=', $this->statDate.' 00:00:01')
+                ->where('created_at', '<=', $this->statDate.' 23:59:59')
+                ->count('id');
+            $activeUserCount = UserExtra::query()
+                ->where('last_active_at', '>=', $this->statDate.' 00:00:01')
+                ->where('last_active_at', '<=', $this->statDate.' 23:59:59')
+                ->count();
+            $coinTradeCount = CoinTrade::query()
+                ->where('created_at', '>=', $this->statDate.' 00:00:01')
+                ->where('created_at', '<=', $this->statDate.' 23:59:59')
+                ->count();
+            $pointTradeCount = PointTrade::query()
+                ->where('created_at', '>=', $this->statDate.' 00:00:01')
+                ->where('created_at', '<=', $this->statDate.' 23:59:59')
+                ->count();
             UserStat::create([
                 'stat_date' => $this->statDate,
                 'total_user_count' => $totalCount,
