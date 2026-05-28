@@ -89,7 +89,7 @@ class UserStat extends Model
      */
     public static function getRecentDaysRegistration(int|string $days): int
     {
-        return (int) self::query()->whereBetween('stat_date', [Carbon::now()->subDays((int) $days), Carbon::now()])->sum('new_user_count');
+        return (int) self::query()->whereBetween('stat_date', [Carbon::now()->subDays((int) $days)->format('Y-m-d'), Carbon::now()->format('Y-m-d')])->sum('new_user_count');
     }
 
     /**
@@ -98,11 +98,14 @@ class UserStat extends Model
     public static function getTodayRegistration(): int
     {
         /** @var UserStat $item */
-        $item = self::query()->whereDate('stat_date', Carbon::now())->first();
+        $item = self::query()->where('stat_date', Carbon::now()->format('Y-m-d'))->first();
         if ($item) {
             return $item->new_user_count;
         }
 
-        return User::query()->whereDate('created_at', Carbon::now())->count();
+        return User::query()
+            ->where('created_at', '>', Carbon::now()->format('Y-m-d 00:00:00'))
+            ->where('created_at', '<=', Carbon::now()->format('Y-m-d 23:59:59'))
+            ->count();
     }
 }

@@ -71,7 +71,7 @@ class IndexController extends AbstractController
             $date = date('Y-m-d', $now - 24 * 60 * 60 * $i);
             $day7Detail[substr($date, 5)] = User::query()
                 ->where('created_at', '>', "$date 00:00:00")
-                ->where('created_at', '<', "$date 23:59:59")
+                ->where('created_at', '<=', "$date 23:59:59")
                 ->count();
         }
 
