@@ -8,24 +8,26 @@ declare(strict_types=1);
 
 namespace App\Jobs\User;
 
+use App\Jobs\BaseJob;
 use App\Models\Coin\CoinTrade;
 use App\Models\Point\PointTrade;
 use App\Models\User;
 use App\Models\User\UserExtra;
 use App\Models\User\UserStat;
 use Carbon\Carbon;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
 
 /**
  * 用户统计任务
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */
-class StatUserJob implements ShouldQueue
+class StatUserJob extends BaseJob
 {
-    use Queueable;
 
+    /**
+     * 统计日期
+     * @var string
+     */
     protected string $statDate;
 
     /**

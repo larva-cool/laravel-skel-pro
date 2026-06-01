@@ -22,7 +22,7 @@ layui.define(['table', 'jquery', 'form'], function (exports) {
         opt.searchPlaceholder = opt.searchPlaceholder || '关键词搜索';
         opt.checkedKey = opt.checkedKey;
         opt.table.page = opt.table.page || true;
-        opt.table.height = opt.table.height || 315;
+        opt.table.height = opt.table.height || 350;
 
         elem.off('click').on('click', function (e) {
             e.stopPropagation();
@@ -34,8 +34,8 @@ layui.define(['table', 'jquery', 'form'], function (exports) {
             var t = elem.offset().top + elem.outerHeight() + "px";
             var l = elem.offset().left + "px";
             var tableName = "tableSelect_table_" + new Date().getTime();
-            var tableBox = '<div class="tableSelect layui-anim layui-anim-upbit" style="left:' + l + ';top:' + t + ';border: 1px solid #d2d2d2;background-color: #fff;box-shadow: 0 2px 4px rgba(0,0,0,.12);padding:10px 10px 0 10px;position: absolute;z-index:66666666;margin: 5px 0;border-radius: 2px;min-width:400px;">';
-            tableBox += '<div class="tableSelectBar">';
+            var tableBox = '<div class="tableSelect layui-anim layui-anim-upbit" style="left:' + l + ';top:' + t + ';border: 1px solid #d2d2d2;background-color: #fff;box-shadow: 0 2px 4px rgba(0,0,0,.12);padding:10px 10px 0 10px;position: absolute;z-index:66666666;margin: 5px 0;border-radius: 2px;min-width:450px;">';
+            tableBox += '<div class="tableSelectBar" style="margin-bottom: 10px;">';
             tableBox += '<form class="layui-form" action="" style="display:inline-block;">';
             tableBox += '<input style="display:inline-block;width:190px;height:30px;vertical-align:middle;margin-right:-1px;border: 1px solid #C9C9C9;" type="text" name="' + opt.searchKey + '" placeholder="' + opt.searchPlaceholder + '" autocomplete="off" class="layui-input"><button class="layui-btn layui-btn-sm layui-btn-primary tableSelect_btn_search" lay-submit lay-filter="tableSelect_btn_search"><i class="layui-icon layui-icon-search"></i></button>';
             tableBox += '</form>';
@@ -52,6 +52,25 @@ layui.define(['table', 'jquery', 'form'], function (exports) {
             //渲染TABLE
             opt.table.elem = "#" + tableName;
             opt.table.id = tableName;
+            opt.table.toolbar= false;
+            opt.table.limit= 5; // 每页显示的数量
+            opt.table.limits= [5, 10, 20];
+            opt.table.request= {
+                pageName: 'page', // 页码参数名
+                limitName: 'per_page', // 每页数据条数参数名
+            };
+            opt.table.dataType= 'json';
+            opt.table.headers= {
+                Accept: 'application/json'
+            };
+            opt.table.parseData= function (res) { // 自定义数据解析
+                return {
+                    "code": 0, // 解析接口状态
+                    "msg": 'ok', // 解析提示文本
+                    "count": res.meta.total, // 解析数据长度
+                    "data": res.data // 解析数据列表
+                };
+            };
             opt.table.done = function (res, curr, count) {
                 defaultChecked(res, curr, count);
                 setChecked(res, curr, count);
