@@ -52,6 +52,7 @@ class SettingController extends AbstractController
             if ($request->filled('field') && $request->filled('order')) {
                 $query->orderBy($request->field, $request->order);
             }
+            $query->orderByDesc('id');
             // 获取分页数据
             $items = $query->paginate(per_page($request, 15));
 
