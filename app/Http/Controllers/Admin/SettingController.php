@@ -132,17 +132,18 @@ class SettingController extends AbstractController
     public function storeConfig(StoreConfigRequest $request): JsonResponse
     {
         $input = Arr::dot($request->validated());
+        $updateTime = now();
         $items = [];
         foreach ($input as $key => $val) {
-            $items[] = ['key' => $key, 'value' => $val];
+            $items[] = ['key' => $key, 'value' => $val, 'updated_at' => $updateTime];
         }
         Setting::query()->upsert(
             $items,
             ['key'],
-            ['key', 'value'],
+            ['value', 'updated_at'],
         );
         settings()->all(true);
 
-        return $this->success('设置完成', $items);
+        return $this->success('设置完成');
     }
 }
