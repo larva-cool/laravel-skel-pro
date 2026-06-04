@@ -1,7 +1,10 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
+
+declare(strict_types=1);
 
 namespace App\Support;
 
@@ -16,27 +19,22 @@ class DateHelper
 {
     /**
      * 获取最近XX天的范围
-     * @param  int|string  $days
-     * @param  string  $format
-     * @return array
      */
     public static function getRecentDaysRange(int|string $days, string $format = 'Y-m-d H:i:s'): array
     {
         // 获取当前时间作为结束时间
         $endTime = Carbon::now()->endOfDay();
         // 计算开始时间
-        $startTime = $endTime->copy()->subDays((int)$days - 1)->startOfDay();
+        $startTime = $endTime->copy()->subDays((int) $days - 1)->startOfDay();
 
         return [
             'start' => $startTime->format($format),
-            'end' => $endTime->format($format)
+            'end' => $endTime->format($format),
         ];
     }
 
     /**
      * 获取本月开始和结束
-     * @param  string  $format
-     * @return array
      */
     public static function getThisMonthRange(string $format = 'Y-m-d'): array
     {
@@ -51,14 +49,14 @@ class DateHelper
 
         return [
             'start' => $thisMonthStart->format($format),
-            'end' => $thisMonthEnd->format($format)
+            'end' => $thisMonthEnd->format($format),
         ];
     }
 
     /**
      * 获取上月开始和结束
-     * @param  string  $format 返回的时间格式
-     * @return array
+     *
+     * @param  string  $format  返回的时间格式
      */
     public static function getLastMonthRange(string $format = 'Y-m-d'): array
     {
@@ -68,7 +66,7 @@ class DateHelper
 
         return [
             'start' => $lastMonthStart->format($format),
-            'end' => $lastMonthEnd->format($format)
+            'end' => $lastMonthEnd->format($format),
         ];
     }
 }
