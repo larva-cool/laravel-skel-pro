@@ -35,22 +35,22 @@ layui.define(["jquery", "form", "layer", "popup", "xmSelect"], function (exports
         },
         // 保存后关闭弹窗
         save: function (url, filter) {
-            form.on("submit(" +filter+ ")", function(data) {
+            form.on("submit(" + filter + ")", function (data) {
                 let loading = layer.load();
                 $.ajax({
                     url: url,
                     type: "POST",
                     dataType: "json",
                     data: data.field,
-                    success: function(res) {
-                        popup.success(res.message, function() {
+                    success: function (res) {
+                        popup.success(res.message, function () {
                             parent.layer.close(parent.layer.getFrameIndex(window.name));
                         });
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         popup.failure(xhr.responseJSON.message);
                     },
-                    complete: function() {
+                    complete: function () {
                         layer.close(loading);
                     }
                 });

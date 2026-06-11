@@ -18,9 +18,9 @@ enum UserStatus: int implements \JsonSerializable
     use HasLabel;
 
     // 用户状态
-    case STATUS_ACTIVE = 0; // 正常
-    case STATUS_FROZEN = 1; // 已冻结
-    case STATUS_NOT_ACTIVE = 2; // 未激活
+    case STATUS_NOT_ACTIVE = 0; // 未激活
+    case STATUS_ACTIVE = 1; // 正常
+    case STATUS_FROZEN = 2; // 已冻结
 
     /**
      * 获取用户状态标签

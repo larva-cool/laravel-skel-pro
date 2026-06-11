@@ -11,7 +11,7 @@ namespace App\Support;
 use Illuminate\Support\Carbon;
 
 /**
- * 时间日期助手
+ * 日期时间助手
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */

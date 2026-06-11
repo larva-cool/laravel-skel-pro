@@ -28,10 +28,10 @@
                         <div class="layui-input-block">
                             <div class="layui-input-block" id="created_at">
                                 <input type="text" autocomplete="off" name="last_login_at[]" id="created_at-date-start"
-                                       class="layui-input inline-block" placeholder="开始时间">
+                                    class="layui-input inline-block" placeholder="开始时间">
                                 -
                                 <input type="text" autocomplete="off" name="last_login_at[]" id="created_at-date-end"
-                                       class="layui-input inline-block" placeholder="结束时间">
+                                    class="layui-input inline-block" placeholder="结束时间">
                             </div>
                         </div>
                     </div>
@@ -80,13 +80,13 @@
 @push('scripts')
     <script>
         // 字段 创建时间 created_at
-        layui.use(["laydate"], function () {
+        layui.use(["laydate"], function() {
             layui.laydate.render({
                 elem: "#created_at",
                 range: ["#created_at-date-start", "#created_at-date-end"],
             });
         });
-        layui.use(['table', 'form', 'jquery', 'popup', 'common', 'util','tablePlus'], function () {
+        layui.use(['table', 'form', 'jquery', 'popup', 'common', 'util', 'tablePlus'], function() {
             let table = layui.table;
             let tablePlus = layui.tablePlus;
             // 表头参数

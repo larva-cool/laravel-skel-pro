@@ -152,7 +152,9 @@ return [
 
         Watchers\CommandWatcher::class => [
             'enabled' => env('TELESCOPE_COMMAND_WATCHER', true),
-            'ignore' => ['horizon:snapshot', 'optimize', 'storage:link', 'view:cache', 'route:cache', 'event:cache', 'config:cache'],
+            'ignore' => [
+                'horizon:snapshot', 'optimize', 'storage:link', 'view:cache', 'route:cache', 'event:cache', 'config:cache',
+            ],
         ],
 
         Watchers\DumpWatcher::class => [

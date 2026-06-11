@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Support\DateHelper;
 use Illuminate\Console\Command;
 
 class AppTestCommand extends Command
@@ -32,5 +33,8 @@ class AppTestCommand extends Command
     public function handle(): void
     {
         // Log::error('这是一条错误日志');
+
+        $res = DateHelper::getRecentDaysRange(7);
+        print_r($res);
     }
 }

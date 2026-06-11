@@ -1,7 +1,7 @@
 {
     "logo": {
         "title": "Laravel",
-        "image": "admin/images/logo.png"
+        "image": "/admin/admin/images/logo.png"
     },
     "menu": {
         "data": "admin/data/menu.json",
