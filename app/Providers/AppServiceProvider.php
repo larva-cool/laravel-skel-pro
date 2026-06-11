@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 
@@ -64,6 +65,11 @@ class AppServiceProvider extends ServiceProvider
                 return $user->hasRole('Super Admin') ? true : null;
             }
             return null;
+        });
+
+        // 定义 API 速率限制器
+        RateLimiter::for('api', function (object $request) {
+            return \Illuminate\Cache\RateLimiting\Limit::perMinute(60);
         });
     }
 }

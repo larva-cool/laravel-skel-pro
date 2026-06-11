@@ -32,11 +32,11 @@ class UserHelperTest extends TestCase
     #[TestDox('测试 create 方法创建用户')]
     public function test_create_method_creates_user()
     {
-        $user = UserHelper::create('testuser', '13800138000', 'test@example.com', 'password123');
+        $user = UserHelper::create('testuser', '13900139000', 'test@example.com', 'password123');
 
         $this->assertInstanceOf(User::class, $user);
         $this->assertEquals('testuser', $user->username);
-        $this->assertEquals('13800138000', $user->phone);
+        $this->assertEquals('13900139000', $user->phone);
         $this->assertEquals('test@example.com', $user->email);
         $this->assertNotNull($user->name);
         $this->assertEquals(UserStatus::STATUS_ACTIVE, $user->status);
@@ -46,10 +46,10 @@ class UserHelperTest extends TestCase
     #[TestDox('测试 createByPhone 方法通过手机创建用户')]
     public function test_create_by_phone_method_creates_user()
     {
-        $user = UserHelper::createByPhone('13800138000', 'password123');
+        $user = UserHelper::createByPhone('13900139001', 'password123');
 
         $this->assertInstanceOf(User::class, $user);
-        $this->assertEquals('13800138000', $user->phone);
+        $this->assertEquals('13900139001', $user->phone);
     }
 
     #[Test]
@@ -90,11 +90,11 @@ class UserHelperTest extends TestCase
     {
         // 由于 User::markPhoneAsVerified() 方法内部可能有问题，我们使用更简单的测试方法
         // 直接测试创建用户
-        $user = UserHelper::createByPhone('13800138000', 'password123');
+        $user = UserHelper::createByPhone('13900139002', 'password123');
 
         // 现在测试查找现有用户 - 这里我们直接测试逻辑，避免触发 markPhoneAsVerified
         $this->assertInstanceOf(User::class, $user);
-        $this->assertEquals('13800138000', $user->phone);
+        $this->assertEquals('13900139002', $user->phone);
     }
 
     #[Test]
@@ -126,7 +126,7 @@ class UserHelperTest extends TestCase
         $user = User::create([
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'phone' => '13800138000',
+            'phone' => '13900139003',
             'password' => 'password123',
             'name' => 'Test User',
             'status' => UserStatus::STATUS_ACTIVE->value,
@@ -137,7 +137,7 @@ class UserHelperTest extends TestCase
         $this->assertEquals($user->id, $userByEmail->id);
 
         // 测试通过手机号查找
-        $userByPhone = UserHelper::findForAccount('13800138000');
+        $userByPhone = UserHelper::findForAccount('13900139003');
         $this->assertEquals($user->id, $userByPhone->id);
 
         // 测试通过用户名查找

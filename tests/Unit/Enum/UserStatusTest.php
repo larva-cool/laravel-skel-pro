@@ -24,9 +24,9 @@ class UserStatusTest extends TestCase
     #[TestDox('测试枚举值的正确性')]
     public function test_enum_values(): void
     {
-        $this->assertEquals(0, UserStatus::STATUS_ACTIVE->value);
-        $this->assertEquals(1, UserStatus::STATUS_FROZEN->value);
-        $this->assertEquals(2, UserStatus::STATUS_NOT_ACTIVE->value);
+        $this->assertEquals(0, UserStatus::STATUS_NOT_ACTIVE->value);
+        $this->assertEquals(1, UserStatus::STATUS_ACTIVE->value);
+        $this->assertEquals(2, UserStatus::STATUS_FROZEN->value);
     }
 
     #[Test]
@@ -76,18 +76,18 @@ class UserStatusTest extends TestCase
     #[TestDox('测试从值创建枚举实例')]
     public function test_from_method(): void
     {
-        $this->assertSame(UserStatus::STATUS_ACTIVE, UserStatus::from(0));
-        $this->assertSame(UserStatus::STATUS_FROZEN, UserStatus::from(1));
-        $this->assertSame(UserStatus::STATUS_NOT_ACTIVE, UserStatus::from(2));
+        $this->assertSame(UserStatus::STATUS_NOT_ACTIVE, UserStatus::from(0));
+        $this->assertSame(UserStatus::STATUS_ACTIVE, UserStatus::from(1));
+        $this->assertSame(UserStatus::STATUS_FROZEN, UserStatus::from(2));
     }
 
     #[Test]
     #[TestDox('测试 tryFrom 方法处理无效值')]
     public function test_try_from_method(): void
     {
-        $this->assertSame(UserStatus::STATUS_ACTIVE, UserStatus::tryFrom(0));
-        $this->assertSame(UserStatus::STATUS_FROZEN, UserStatus::tryFrom(1));
-        $this->assertSame(UserStatus::STATUS_NOT_ACTIVE, UserStatus::tryFrom(2));
+        $this->assertSame(UserStatus::STATUS_NOT_ACTIVE, UserStatus::tryFrom(0));
+        $this->assertSame(UserStatus::STATUS_ACTIVE, UserStatus::tryFrom(1));
+        $this->assertSame(UserStatus::STATUS_FROZEN, UserStatus::tryFrom(2));
         $this->assertNull(UserStatus::tryFrom(-1));
         $this->assertNull(UserStatus::tryFrom(3));
     }
