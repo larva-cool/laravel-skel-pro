@@ -59,9 +59,9 @@ class StoreAdminRequest extends FormRequest
         return [
             'roles' => ['required', 'array'],
             'name' => ['nullable', 'string', 'max:255'],
-            'phone' => ['nullable', new PhoneRule, Rule::unique(Admin::class, 'phone')],
-            'username' => ['nullable', 'string', 'max:255', new UsernameRule, Rule::unique(Admin::class, 'username')],
-            'email' => ['required', 'string', 'email', Rule::unique(Admin::class, 'email')],
+            'phone' => ['nullable', new PhoneRule, Rule::unique(Admin::class)],
+            'username' => ['nullable', 'string', 'max:255', new UsernameRule, Rule::unique(Admin::class)],
+            'email' => ['required', 'string', 'email', Rule::unique(Admin::class)],
             'password' => ['required', Password::min(8)->uncompromised()],
         ];
     }
