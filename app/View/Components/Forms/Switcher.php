@@ -32,14 +32,17 @@ class Switcher extends Component
      */
     public StatusSwitch $value;
 
+    public string $title;
+
     /**
      * Create a new component instance.
      */
-    public function __construct($name = '', StatusSwitch $value = StatusSwitch::ENABLED)
+    public function __construct($name = '', StatusSwitch $value = StatusSwitch::ENABLED, string $title = '可用|停用')
     {
         $this->name = $name;
         $this->filter = sanitize_key($this->name);
         $this->value = $value;
+        $this->title = $title;
     }
 
     /**

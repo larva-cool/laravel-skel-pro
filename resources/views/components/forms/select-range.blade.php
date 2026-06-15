@@ -3,7 +3,7 @@
 @push('scripts')
 <script>
     layui.use(['jquery', 'slider'],function () {
-        var slider_{{ $filter }} = layui.slider;
+        let slider_{{ $filter }} = layui.slider;
         let $ = layui.jquery;
         // 渲染
         slider_{{ $filter }}.render({

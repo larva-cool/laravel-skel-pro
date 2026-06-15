@@ -4,8 +4,8 @@
 @push('scripts')
 <script>
     layui.use(['jquery', 'colorpicker'], function() {
-        var colorpicker_{{ $name }} = layui.colorpicker;
-        var $ = layui.jquery;
+        let colorpicker_{{ $name }} = layui.colorpicker;
+        let $ = layui.jquery;
         // 渲染
         colorpicker_{{ $name }}.render({ // eg1
             elem: '#ID-colorpicker-{{ $name }}', // 绑定元素

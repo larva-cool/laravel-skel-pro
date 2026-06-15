@@ -75,6 +75,15 @@ php artisan migrate --seed
 
 # 创建存储软链接
 php artisan storage:link
+
+# 同步模型索引设置
+php artisan scout:sync-index-settings
+
+# 导入模型索引
+php artisan scout:import "App\Models\User"
+
+# 删除模型索引
+php artisan scout:flush "App\Models\User"
 ```
 
 ## 目录结构

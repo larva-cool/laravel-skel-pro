@@ -27,19 +27,21 @@ class Select extends Component
     public array $selected;
 
     public string $placeholder;
+    protected bool $multiple;
 
     public array $items;
 
     /**
      * Create a new component instance.
      */
-    public function __construct($name = '', $selected = [], $placeholder = '', array|Collection $items = [])
+    public function __construct($name = '', string|array $value = [], $placeholder = '', array|Collection $items = [], $multiple = false)
     {
         $this->name = $name;
         $this->filter = sanitize_key($this->name);
-        $this->selected = $selected;
+        $this->selected = is_string($value) ? [$value] : $value;
         $this->placeholder = $placeholder;
         $this->items = $items instanceof Collection ? $items->toArray() : $items;
+        $this->multiple = $multiple;
     }
 
     /**

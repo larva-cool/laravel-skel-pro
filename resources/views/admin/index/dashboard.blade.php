@@ -145,9 +145,11 @@
         <div class="layui-row layui-col-space10">
             <div class="layui-col-md9">
                 <div class="layui-card">
+                    <div class="layui-card-header">最近注册</div>
                     <div class="layui-card-body">
                         <div class="layui-tab custom-tab layui-tab-brief" lay-filter="docDemoTabBrief">
-                            <div id="echarts-records" style="background-color:#ffffff;min-height:400px;padding: 10px"></div>
+                            <div id="echarts-records" style="background-color:#ffffff;min-height:400px;padding: 10px">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -162,26 +164,26 @@
                                 <col>
                             </colgroup>
                             <tbody>
-                            <tr>
-                                <td>Laravel版本</td>
-                                <td>{{$laravel_version}}</td>
-                            </tr>
-                            <tr>
-                                <td>运行环境</td>
-                                <td>{{$laravel_environment}}</td>
-                            </tr>
-                            <tr>
-                                <td>PHP版本</td>
-                                <td>{{$php_version}}</td>
-                            </tr>
-                            <tr>
-                                <td>MYSQL版本</td>
-                                <td>{{$mysql_version}}</td>
-                            </tr>
-                            <tr>
-                                <td>操作系统</td>
-                                <td>{{$os}}</td>
-                            </tr>
+                                <tr>
+                                    <td>Laravel版本</td>
+                                    <td>{{ $laravel_version }}</td>
+                                </tr>
+                                <tr>
+                                    <td>运行环境</td>
+                                    <td>{{ $laravel_environment }}</td>
+                                </tr>
+                                <tr>
+                                    <td>PHP版本</td>
+                                    <td>{{ $php_version }}</td>
+                                </tr>
+                                <tr>
+                                    <td>MYSQL版本</td>
+                                    <td>{{ $mysql_version }}</td>
+                                </tr>
+                                <tr>
+                                    <td>操作系统</td>
+                                    <td>{{ $os }}</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -194,29 +196,26 @@
 @push('scripts')
     <script>
         layui.use(['layer', 'echarts', 'element', 'count'], function() {
-            let $ = layui.jquery,
-                layer = layui.layer,
-                element = layui.element,
-                count = layui.count,
+            let count = layui.count,
                 echarts = layui.echarts;
 
             count.up("value1", {
                 time: 4000,
-                num: {{$today_user_count}},
+                num: {{ $today_user_count }},
                 bit: 0,
                 regulator: 50
             })
 
             count.up("value2", {
                 time: 4000,
-                num: {{$day7_user_count}},
+                num: {{ $day7_user_count }},
                 bit: 0,
                 regulator: 50
             })
 
             count.up("value3", {
                 time: 4000,
-                num: {{$day30_user_count}},
+                num: {{ $day30_user_count }},
                 bit: 0,
                 regulator: 50
             })
@@ -224,7 +223,7 @@
             count.up("value4", {
                 time: 4000,
                 bit: 0,
-                num: {{$user_count}},
+                num: {{ $user_count }},
                 regulator: 50
             })
 
@@ -266,7 +265,7 @@
                             opacity: .15
                         }
                     },
-                    data: {{ Illuminate\Support\Js::from(array_keys($day7_detail)) }}
+                    data: {{ Illuminate\Support\Js::from(array_keys($day30_detail)) }}
                 }, ],
                 yAxis: [{
                     type: 'value',
@@ -335,17 +334,14 @@
                         //}
                     },
                     smooth: true,
-                    data: <?=json_encode(array_values($day7_detail))?>
-                },]
-
+                    data: <?= json_encode(array_values($day30_detail)) ?>
+                }, ]
             };
             echartsRecords.setOption(option);
 
             window.onresize = function() {
                 echartsRecords.resize();
             }
-
         });
     </script>
 @endpush
-

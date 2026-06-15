@@ -6,10 +6,11 @@
 
 declare(strict_types=1);
 
+use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Support\Facades\Route;
 
 // 认证路由
-Route::group(['prefix' => 'auth'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
+Route::group(['prefix' => 'auth'], function (Registrar $registrar) {
     $registrar->get('login', [\App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('login');
     $registrar->post('login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login.auth');
     $registrar->post('logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');

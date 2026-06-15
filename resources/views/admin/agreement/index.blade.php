@@ -33,7 +33,7 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'jquery', 'form', 'popup', 'common', 'util', 'tablePlus'], function () {
+        layui.use(['table', 'jquery', 'form', 'popup', 'common', 'util', 'tablePlus'], function() {
             let table = layui.table;
             let $ = layui.jquery;
             let tablePlus = layui.tablePlus;

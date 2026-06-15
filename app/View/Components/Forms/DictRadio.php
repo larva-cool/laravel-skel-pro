@@ -39,6 +39,6 @@ class DictRadio extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.forms.dict-radio');
+        return view('components.forms.radio');
     }
 }

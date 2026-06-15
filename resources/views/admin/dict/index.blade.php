@@ -124,7 +124,7 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'form', 'jquery', 'popup','common', 'tablePlus'], function () {
+        layui.use(['table', 'form', 'jquery', 'popup', 'common', 'tablePlus'], function() {
             let table = layui.table;
             let $ = layui.jquery;
             let tablePlus = layui.tablePlus;
@@ -191,12 +191,12 @@
                     }
                 ]
             ];
-            let renderData = function (id) {
+            let renderData = function(id) {
                 parentId = id;
                 $(".empty").hide();
                 table.render({
                     elem: '#dict-data-table',
-                    url: "{{route('admin.dicts.index')}}",
+                    url: "{{ route('admin.dicts.index') }}",
                     where: {
                         parent_id: id
                     },
@@ -208,7 +208,7 @@
                 elem: '#data-table',
                 url: "{{ route('admin.dicts.index') }}",
                 cols: [cols],
-                height: 'full-148',
+                height: 'full-140',
                 toolbar: '#table-toolbar',
             });
             table.on('tool(data-table)', function(obj) {

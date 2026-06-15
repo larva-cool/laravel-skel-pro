@@ -1,4 +1,4 @@
-<select name="{{ $name }}" id="{{ $filter }}_select" lay-filter="{{ $filter }}-filter">
+<select name="{{ $name }}" id="{{ $filter }}_select" lay-filter="{{ $filter }}-filter" @if($multiple) multiple @endif>
     @if($placeholder)
         <option value="">{{$placeholder}}</option>
     @endif

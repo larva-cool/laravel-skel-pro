@@ -34,11 +34,10 @@
     <script>
         layui.use(['table', 'jquery', 'common', 'tablePlus'], function() {
             let table = layui.table;
-            let $ = layui.jquery;
-            let common = layui.common;
             let tablePlus = layui.tablePlus;
 
-            let cols = [{
+            let cols = [
+                {
                     title: 'ID',
                     field: 'id',
                     align: 'center',

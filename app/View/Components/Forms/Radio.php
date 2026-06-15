@@ -26,11 +26,11 @@ class Radio extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct($name = '', $selected = '', array|Collection $items = [])
+    public function __construct($name = '', $value = '', array|Collection $items = [])
     {
         $this->name = $name;
         $this->filter = sanitize_key($this->name);
-        $this->selected = $selected;
+        $this->selected = $value;
         $this->items = $items instanceof Collection ? $items->toArray() : $items;
     }
 

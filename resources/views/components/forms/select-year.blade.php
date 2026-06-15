@@ -2,14 +2,14 @@
 @push('scripts')
 <script>
     layui.use(['laydate'], function () {
-        var laydate = layui.laydate;
+        let laydate = layui.laydate;
         // 渲染
         laydate.render({
-            elem: '#ID-laydate-{{$filter}}'
-            ,format: 'yyyy'
-            ,type: 'year'
-            ,trigger: 'click'
-            ,value: '{{$value}}'
+            elem: '#ID-laydate-{{$filter}}',
+            format: 'yyyy',
+            type: 'year',
+            trigger: 'click',
+            value: '{{$value}}'
         });
     });
 </script>

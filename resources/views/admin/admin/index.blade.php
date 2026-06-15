@@ -22,10 +22,10 @@
                         <div class="layui-input-block">
                             <div class="layui-input-block" id="created_at">
                                 <input type="text" autocomplete="off" name="last_login_at[]" id="created_at-date-start"
-                                       class="layui-input inline-block" placeholder="开始时间">
+                                    class="layui-input inline-block" placeholder="开始时间">
                                 -
                                 <input type="text" autocomplete="off" name="last_login_at[]" id="created_at-date-end"
-                                       class="layui-input inline-block" placeholder="结束时间">
+                                    class="layui-input inline-block" placeholder="结束时间">
                             </div>
                         </div>
                     </div>

@@ -8,7 +8,6 @@
         <div class="layui-card">
             <div class="layui-card-body">
                 <form class="layui-form top-search-from">
-
                     <div class="layui-form-item">
                         <label class="layui-form-label">用户ID</label>
                         <div class="layui-input-block">
@@ -20,7 +19,7 @@
                         <label class="layui-form-label">关键词</label>
                         <div class="layui-input-block">
                             <input type="text" name="keyword" value="" class="layui-input"
-                                   placeholder="请输入搜索账号、邮箱、手机号">
+                                placeholder="请输入搜索账号、邮箱、手机号">
                         </div>
                     </div>
 

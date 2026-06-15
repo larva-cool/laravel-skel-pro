@@ -5,11 +5,11 @@
         var laydate = layui.laydate;
         // 渲染
         laydate.render({
-            elem: '#ID-laydate-{{$filter}}'
-            ,type:'time'
-            ,format: 'HH:mm:ss'
-            ,trigger: 'click'
-            ,value: '{{$value}}'
+            elem: '#ID-laydate-{{$filter}}',
+            type:'time',
+            format: 'HH:mm:ss',
+            trigger: 'click',
+            value: '{{$value}}'
         });
     });
 </script>

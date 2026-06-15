@@ -3,16 +3,16 @@
 @section('title', '页面管理')
 
 @section('content')
-<div class="pear-container">
-    <!-- 数据表格 -->
-    <div class="layui-card">
-        <div class="layui-card-body">
-            <table id="data-table" lay-filter="data-table"></table>
+    <div class="pear-container">
+        <!-- 数据表格 -->
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <table id="data-table" lay-filter="data-table"></table>
+            </div>
         </div>
-    </div>
 
-    <!-- 表格顶部工具栏 -->
-    <script type="text/html" id="table-toolbar">
+        <!-- 表格顶部工具栏 -->
+        <script type="text/html" id="table-toolbar">
         @can('pages.create')
         <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="create">
             <i class="layui-icon layui-icon-add-1"></i>新增
@@ -20,12 +20,12 @@
         @endcan
     </script>
 
-    <!-- 表格行工具栏 -->
-    <script type="text/html" id="table-bar">
+        <!-- 表格行工具栏 -->
+        <script type="text/html" id="table-bar">
         @can('pages.edit')<button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>@endcan
         @can('pages.delete')<button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>@endcan
     </script>
-</div>
+    </div>
 @endsection
 @push('scripts')
     <script>

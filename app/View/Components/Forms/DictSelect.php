@@ -24,21 +24,23 @@ class DictSelect extends Component
 
     public string $filter;
 
-    public $selected;
+    public array $selected;
 
     public string $placeholder;
+    protected bool $multiple;
 
     public array $items = [];
 
     /**
      * Create a new component instance.
      */
-    public function __construct($name = '', $selected = '', $type = '', $placeholder = '')
+    public function __construct($name = '', string|array $value = '', $type = '', $placeholder = '', $multiple = false)
     {
         $this->name = $name;
         $this->filter = sanitize_key($this->name);
-        $this->selected = $selected;
+        $this->selected = is_string($value) ? [$value] : $value;
         $this->placeholder = $placeholder;
+        $this->multiple = $multiple;
         $this->items = Dict::getOptions($type);
     }
 
@@ -47,6 +49,6 @@ class DictSelect extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.forms.dict-select');
+        return view('components.forms.select');
     }
 }

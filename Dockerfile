@@ -11,7 +11,8 @@ RUN mv .env.${ENV} /app/.env \
 
 RUN php artisan octane:install --server=frankenphp --force --silent
 
-VOLUME [ "/app/runtime/logs" ]
+VOLUME [ "/app/storage/app" ]
+VOLUME [ "/app/storage/logs" ]
 
 EXPOSE 8787/tcp
 

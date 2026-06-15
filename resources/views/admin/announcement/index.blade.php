@@ -29,7 +29,7 @@
 @endsection
 @push('scripts')
     <script>
-        layui.use(['table', 'jquery', 'form', 'popup', 'common', 'util', 'tablePlus'], function () {
+        layui.use(['table', 'jquery', 'form', 'popup', 'common', 'util', 'tablePlus'], function() {
             let table = layui.table;
             let $ = layui.jquery;
             let tablePlus = layui.tablePlus;
@@ -49,11 +49,11 @@
                 {
                     title: "范围",
                     field: "coverage",
-                    templet: function (d) {
+                    templet: function(d) {
                         let field = "coverage";
                         if (typeof d[field] == "undefined") return "";
                         let items = [];
-                        layui.each(d[field], function (k, v) {
+                        layui.each(d[field], function(k, v) {
                             items.push(v);
                         });
                         return util.escape(items.join(","));
