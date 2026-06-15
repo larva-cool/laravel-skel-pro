@@ -8,8 +8,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\User\StoreUserRequest;
-use App\Http\Requests\Admin\User\UpdateUserRequest;
 use App\Http\Requests\SwitchRequest;
 use App\Http\Resources\Admin\UserResource;
 use App\Models\User;

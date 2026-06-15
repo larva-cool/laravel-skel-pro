@@ -26,11 +26,11 @@ class DictRadio extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct($name = '', $selected = '', $type = '')
+    public function __construct($name = '', $type = '', $value = '')
     {
         $this->name = $name;
         $this->filter = sanitize_key($this->name);
-        $this->selected = $selected;
+        $this->selected = $value;
         $this->items = Dict::getOptions($type);
     }
 

@@ -65,14 +65,13 @@ class IndexController extends AbstractController
 
         }
 
-        $day7Detail = [];
+        $day30Detail = [];
         $now = time();
-        for ($i = 0; $i < 7; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             $date = date('Y-m-d', $now - 24 * 60 * 60 * $i);
-            $day7Detail[substr($date, 5)] = User::query()
-                ->where('created_at', '>', "$date 00:00:00")
-                ->where('created_at', '<=', "$date 23:59:59")
-                ->count();
+            $day30Detail[substr($date, 5)] = UserStat::query()
+                ->where('stat_date', $date)
+                ->sum('new_user_count');
         }
 
         return view('admin.index.dashboard', [
@@ -85,7 +84,7 @@ class IndexController extends AbstractController
             'mysql_version' => $mysqlVersion,
             'php_version' => PHP_VERSION,
             'os' => PHP_OS,
-            'day7_detail' => array_reverse($day7Detail),
+            'day30_detail' => array_reverse($day30Detail),
         ]);
     }
 

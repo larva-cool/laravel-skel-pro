@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace App\Enum;
 
 /**
- * 状态切换枚举
+ * 状态切换枚举 1开、0关
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */

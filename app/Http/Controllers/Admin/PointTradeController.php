@@ -2,6 +2,9 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
+
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Resources\Admin\PointTradeResource;
@@ -37,6 +40,7 @@ class PointTradeController extends AbstractController
 
             return PointTradeResource::collection($items);
         }
+
         return view('admin.point_trade.index');
     }
 }
