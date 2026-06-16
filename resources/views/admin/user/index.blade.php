@@ -147,7 +147,7 @@
                     field: "phone",
                 },
                 {
-                    title: "登录时间",
+                    title: "最后登录",
                     field: "last_login_at",
                 },
                 {
@@ -156,11 +156,13 @@
                 },
                 {
                     title: "金币",
-                    field: "available_coins"
+                    field: "available_coins",
+                    sort: true,
                 },
                 {
                     title: "积分",
                     field: "available_points",
+                    sort: true,
                     hide: true,
                 },
                 {
@@ -174,13 +176,9 @@
                     hide: true,
                 },
                 {
-                    title: "最后登录时间",
-                    field: "last_login_at",
-                    hide: true,
-                },
-                {
-                    title: "创建时间",
+                    title: "注册时间",
                     field: "created_at",
+                    sort: true,
                     hide: true,
                 },
                 {

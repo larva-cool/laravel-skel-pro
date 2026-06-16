@@ -5,17 +5,18 @@ layui.define(['jquery', 'form'], function (exports) {
     const MOD_NAME = 'area',
         $ = layui.jquery, form = layui.form;
 
-    function loadArea(id, selected, elem, placeholder) {
-        if (id === false) {
-            $(elem).html('<option value="">' + placeholder + '</option>');
-            form.render();
-        } else {
+    function loadArea(id, val, elem, placeholder) {
+         if (id === false) {
+             $(elem).html('<option value="">' + placeholder + '</option>');
+             form.render();
+         } else {
             $.getJSON('/admin/areas/children', {id: id}, function (res) {
                 let html = '<option value="">' + placeholder + '</option>';
                 for (let i = 0; i < res.length; i++) {
-                    if (res[i]['id'] === selected) {
+                    if (res[i]['id'] === val) {
                         html += '<option value="' + res[i]['id'] + '" selected>' + res[i]['name'] + '</option>';
                     } else {
+
                         html += '<option value="' + res[i]['id'] + '">' + res[i]['name'] + '</option>';
                     }
                 }
@@ -46,12 +47,12 @@ layui.define(['jquery', 'form'], function (exports) {
         opt.area_placeholder = opt.area_placeholder || '请选择区';
 
         // 加载
-        loadArea('', opt.prov_value, opt.prov_elem, opt.prov_placeholder);
+        loadArea('', parseInt(opt.prov_value), opt.prov_elem, opt.prov_placeholder);
         if (opt.city_elem && opt.city_value) {
-            loadArea(opt.prov_value, opt.city_value, opt.city_elem, opt.city_placeholder);
+            loadArea(parseInt(opt.prov_value), parseInt(opt.city_value), opt.city_elem, opt.city_placeholder);
         }
         if (opt.area_elem && opt.area_value) {
-            loadArea(opt.city_value, opt.area_value, opt.area_elem, opt.area_placeholder);
+            loadArea(parseInt(opt.city_value), parseInt(opt.area_value), opt.area_elem, opt.area_placeholder);
         }
         if (opt.prov_filter && opt.city_elem) {
             form.on('select(' + opt.prov_filter + ')', function (data) {

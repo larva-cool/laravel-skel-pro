@@ -8,9 +8,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\User\StoreUserRequest;
+use App\Http\Requests\Admin\User\UpdateUserRequest;
 use App\Http\Requests\SwitchRequest;
 use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
+use App\Models\User\Nickname;
+use App\Support\UserHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -39,22 +43,27 @@ class UserController extends AbstractController
         if ($request->expectsJson()) {
             // 基础查询
             $query = User::query()->with(['profile', 'extra']);
-
+            if ($request->filled('id')) {
+                $query->where('id', $request->id);
+            }
             if ($request->filled('keyword')) {
                 $query->whereAny(['name', 'username', 'email', 'phone'], 'like', '%'.$request->keyword.'%');
             }
             if ($request->filled('last_login_at') && $request->last_login_at[0] && $request->last_login_at[1]) {
-                $query->whereBetween('last_login_at', $request->last_login_at);
+                $query->whereHas('extra', function ($query) use ($request) {
+                    $query->whereBetween('last_login_at', $request->last_login_at);
+                });
             }
             if ($request->filled('created_at') && $request->created_at[0] && $request->created_at[1]) {
                 $query->whereBetween('created_at', $request->created_at);
             }
             // 动态排序
-            if ($request->filled('field') && $request->filled('order')) {
-                $query->orderBy($request->field, $request->order);
+            if ($request->filled('sortField') && $request->filled('sortOrder')) {
+                $query->orderBy($request->sortField, $request->sortOrder);
             }
             // 获取分页数据
-            $items = $query->orderByDesc('id')->paginate(per_page($request, 15));
+            $items = $query->orderByDesc('id')
+                ->paginate(per_page($request, 15));
 
             return UserResource::collection($items);
         }
@@ -73,9 +82,12 @@ class UserController extends AbstractController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUserRequest $request)
+    public function store(StoreUserRequest $request): JsonResponse
     {
-        User::create($request->validated());
+        $user = UserHelper::createByPhone($request->phone, $request->password);
+        $data = $request->safe()->only(['name', 'username', 'email']);
+        $data['name'] = $data['name'] ?: Nickname::getRandomNickname();
+        $user->update($data);
 
         return $this->success(trans('system.create_success'));
     }
@@ -94,9 +106,11 @@ class UserController extends AbstractController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $user->update($request->validated());
+        $user->update($request->safe()->except(['profile', 'extra']));
+        $user->profile->update($request->profile);
+        $user->extra->update($request->extra);
 
         return $this->success(trans('system.update_success'));
     }
@@ -115,7 +129,7 @@ class UserController extends AbstractController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy(User $user): JsonResponse
     {
         $user->delete();
 

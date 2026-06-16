@@ -8,40 +8,23 @@
         <div class="mainBox">
             <div class="main-container mr-5">
                 <div class="layui-form-item">
-                    <label class="layui-form-label required">用户名</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="username" value="" required lay-verify="required" class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label required">昵称</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="name" value="" required lay-verify="required" class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label required">密码</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="password" value="" required lay-verify="required" class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label required">邮箱</label>
-                    <div class="layui-input-block">
-                        <input type="text" name="email" value="" class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
                     <label class="layui-form-label required">手机</label>
                     <div class="layui-input-block">
                         <input type="text" name="phone" value="" class="layui-input">
                     </div>
                 </div>
-
+                <div class="layui-form-item">
+                    <label class="layui-form-label">昵称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" value="" class="layui-input" placeholder="留空随机生成">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">密码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="password" value="" class="layui-input" placeholder="留空无密码，仅可通过手机验证码登录。">
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -65,16 +48,28 @@
     <script>
         //提交事件
         layui.use(["form", "popup"], function () {
-            layui.form.on("submit(save)", function (data) {
-                layui.$.post("{{route('admin.users.store')}}", data.field)
-                    .then(function (data) {
-                        return layui.popup.success(data.message, function () {
+            let $ = layui.$;
+            let form = layui.form;
+            let popup = layui.popup;
+            form.on("submit(save)", function (data) {
+                let loading = layer.load();
+                $.ajax({
+                    url: "{{route('admin.users.store')}}",
+                    type: "POST",
+                    dataType: "json",
+                    data: data.field,
+                    success: function (res) {
+                        popup.success(res.message, function () {
                             parent.layer.close(parent.layer.getFrameIndex(window.name));
                         });
-                    })
-                    .catch(function (xhr, status, error) {
-                        layui.popup.failure(xhr.responseJSON.message);
-                    });
+                    },
+                    error: function (xhr, status, error) {
+                        popup.failure(xhr.responseJSON.message);
+                    },
+                    complete: function() {
+                        layer.close(loading);
+                    }
+                });
                 return false;
             });
         });

@@ -19,13 +19,13 @@
                         <div class="layui-tabs-item layui-show">
                             <div class="layui-form-item">
                                 <div class="layui-inline">
-                                    <label class="layui-form-label required">登录账号</label>
+                                    <label class="layui-form-label">登录账号</label>
                                     <div class="layui-input-block">
-                                        <input type="text" name="username" lay-verify="required" value="{{$item->username}}" placeholder="请输入登录账号" autocomplete="off" class="layui-input">
+                                        <input type="text" name="username" value="{{$item->username}}" placeholder="请输入登录账号" autocomplete="off" class="layui-input">
                                     </div>
                                 </div>
                                 <div class="layui-inline">
-                                    <label class="layui-form-label required">邮箱</label>
+                                    <label class="layui-form-label">邮箱</label>
                                     <div class="layui-input-inline">
                                         <input type="text" name="email" lay-verify="email" value="{{$item->email}}" placeholder="请输入登录邮箱" autocomplete="off" class="layui-input">
                                     </div>
@@ -49,32 +49,32 @@
                                 <div class="layui-inline">
                                     <label class="layui-form-label">生日</label>
                                     <div class="layui-input-inline">
-                                        <input type="text" name="profile[birthday]" lay-verify="date" placeholder="yyyy-MM-dd" id="birthday" value="{{$item->profile->birthday}}" class="layui-input">
+                                        <input type="text" name="profile[birthday]" lay-verify="date" placeholder="yyyy-MM-dd" id="birthday" value="{{$item->profile->birthday?->format('Y-m-d')}}" class="layui-input">
                                     </div>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">性别</label>
                                 <div class="layui-input-block">
-                                    <input type="radio" name="profile[gender]" value="1" title="男" @checked($item->profile->gender=1)>
-                                    <input type="radio" name="profile[gender]" value="2" title="女" @checked($item->profile->gender=2)>
-                                    <input type="radio" name="profile[gender]" value="0" title="保密" @checked($item->profile->gender=0)>
+                                    <input type="radio" name="profile[gender]" value="1" title="男" @checked($item->profile->gender==\App\Enum\Gender::GENDER_MALE)>
+                                    <input type="radio" name="profile[gender]" value="2" title="女" @checked($item->profile->gender==\App\Enum\Gender::GENDER_FEMALE)>
+                                    <input type="radio" name="profile[gender]" value="0" title="保密" @checked($item->profile->gender==\App\Enum\Gender::GENDER_UNKNOWN)>
                                 </div>
                             </div>
                             <div class="layui-form-item">
                                 <label class="layui-form-label">地区</label>
                                 <div class="layui-input-inline">
-                                    <select name="province_id" id="province" class="layui-select" lay-search lay-filter="province">
+                                    <select name="profile[province_id]" id="province" class="layui-select" lay-search lay-filter="province">
                                         <option value="">请选择省</option>
                                     </select>
                                 </div>
                                 <div class="layui-input-inline">
-                                    <select name="city_id" id="city" class="layui-select"  lay-search lay-filter="city">
+                                    <select name="profile[city_id]" id="city" class="layui-select"  lay-search lay-filter="city">
                                         <option value="">请选择市</option>
                                     </select>
                                 </div>
                                 <div class="layui-input-inline">
-                                    <select name="district_id" id="district" class="layui-select"  lay-search lay-filter="district">
+                                    <select name="profile[district_id]" id="district" class="layui-select"  lay-search lay-filter="district">
                                         <option value="">请选择区</option>
                                     </select>
                                 </div>
@@ -93,7 +93,7 @@
                             <div class="layui-form-item layui-form-text">
                                 <label class="layui-form-label">个人介绍</label>
                                 <div class="layui-input-block">
-                                    <textarea name="intro" placeholder="请输入内容" class="layui-textarea"></textarea>
+                                    <textarea name="profile[intro]" placeholder="请输入内容" class="layui-textarea"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -112,7 +112,7 @@
                                 <div class="layui-form-item layui-form-text">
                                     <label class="layui-form-label">个性签名</label>
                                     <div class="layui-input-block">
-                                        <textarea name="bio" placeholder="请输入内容" class="layui-textarea"></textarea>
+                                        <textarea name="profile[bio]" placeholder="请输入内容" class="layui-textarea"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -155,11 +155,12 @@
 @push('scripts')
     <script>
         // 字段 头像 avatar
-        layui.use(["form", "http", 'laydate', 'area'], function () {
+        layui.use(["form", "popup", 'laydate', 'area'], function () {
             let form = layui.form;
-            let http = layui.http;
             let laydate = layui.laydate;
             let area = layui.area;
+            let popup = layui.popup;
+            let $ = layui.$;
 
             area.render({
                 prov_elem: '#province',
@@ -179,8 +180,24 @@
 
             //提交事件
             form.on("submit(save)", function (data) {
-                console.log(data.field);
-                http.formPost("{{$update_url}}", data.field);
+                let loading = layer.load();
+                $.ajax({
+                    url: "{{$update_url}}",
+                    type: "POST",
+                    dataType: "json",
+                    data: data.field,
+                    success: function (res) {
+                        popup.success(res.message, function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        popup.failure(xhr.responseJSON.message);
+                    },
+                    complete: function() {
+                        layer.close(loading);
+                    }
+                });
                 return false;
             });
         });

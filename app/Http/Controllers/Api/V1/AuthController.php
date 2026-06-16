@@ -17,6 +17,7 @@ use App\Http\Requests\Api\V1\Auth\RefreshTokenRequest;
 use App\Http\Requests\Api\V1\Auth\ResetPasswordByPhoneRequest;
 use App\Http\Requests\Api\V1\Auth\WechatMpLoginRequest;
 use App\Http\Resources\Api\V1\TokenResource;
+use App\Http\Resources\Api\V1\UserDetailResource;
 use App\Jobs\User\DeleteAccessTokenJob;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -64,6 +65,7 @@ class AuthController extends Controller
         Event::dispatch(new Login($this->guard, $user, false));
         Event::dispatch(new LoginSucceeded($user, $request->ip(), $request->server('REMOTE_PORT'),
             $request->userAgent()));
+        $token['user'] = new UserDetailResource($user);
 
         return response()->json($token);
     }
@@ -79,6 +81,7 @@ class AuthController extends Controller
         Event::dispatch(new Login($this->guard, $user, false));
         Event::dispatch(new LoginSucceeded($user, $request->ip(), $request->server('REMOTE_PORT'),
             $request->userAgent()));
+        $token['user'] = new UserDetailResource($user);
 
         return response()->json($token);
     }
@@ -94,6 +97,7 @@ class AuthController extends Controller
         Event::dispatch(new Login($this->guard, $user, false));
         Event::dispatch(new LoginSucceeded($user, $request->ip(), $request->server('REMOTE_PORT'),
             $request->userAgent()));
+        $token['user'] = new UserDetailResource($user);
 
         return response()->json($token);
     }
@@ -109,6 +113,7 @@ class AuthController extends Controller
         Event::dispatch(new Login($this->guard, $user, false));
         Event::dispatch(new LoginSucceeded($user, $request->ip(), $request->server('REMOTE_PORT'),
             $request->userAgent()));
+        $token['user'] = new UserDetailResource($user);
 
         return response()->json($token);
     }
