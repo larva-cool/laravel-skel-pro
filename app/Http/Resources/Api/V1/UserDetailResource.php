@@ -36,6 +36,7 @@ class UserDetailResource extends JsonResource
             'name' => $this->name,
             'avatar' => $this->avatar,
             'is_vip' => $this->isVip(),
+            'is_password' => $this->hasPassword(),
             'available_points' => $this->available_points,
             'available_coins' => $this->available_coins,
             'gender' => $this->profile->gender,

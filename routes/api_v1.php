@@ -92,6 +92,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
         $registrar->get('invites', [\App\Http\Controllers\Api\V1\UserController::class, 'invites'])->name('invites'); // 获取邀请列表
         $registrar->get('points', [\App\Http\Controllers\Api\V1\UserController::class, 'points'])->name('points'); // 获取用户积分记录
         $registrar->get('coins', [\App\Http\Controllers\Api\V1\UserController::class, 'coins'])->name('coins'); // 获取用户金币记录
+        $registrar->put('address/{address}/default', [\App\Http\Controllers\Api\V1\User\AddressController::class, 'setDefault']); // 收货地址设为默认
         $registrar->apiResource('address', \App\Http\Controllers\Api\V1\User\AddressController::class); // 收货地址
         $registrar->delete('', [\App\Http\Controllers\Api\V1\UserController::class, 'destroy'])->name('destroy'); // 注销并删除自己的账户
     });

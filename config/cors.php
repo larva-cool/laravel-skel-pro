@@ -26,7 +26,7 @@ return [
 
     'allowed_origins' => ['*'],
 
-    'allowed_origins_patterns' => ['/^https?:\/\/.*\.laravel.com(:\d+)?$/'],
+    //'allowed_origins_patterns' => ['/^http?:\/\/localhost(:\d+)?$/', '/^https?:\/\/.*\.laravel.com(:\d+)?$/'],
 
     'allowed_headers' => ['*'],
 

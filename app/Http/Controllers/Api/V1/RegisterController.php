@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Register\CheckAccountRequest;
 use App\Http\Requests\Api\V1\Register\MailRegisterRequest;
 use App\Http\Requests\Api\V1\Register\PhoneRegisterRequest;
+use App\Http\Resources\Api\V1\UserDetailResource;
 use App\Models\User;
 use App\Support\UserHelper;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -77,6 +78,7 @@ class RegisterController extends Controller
         }
         // 创建 Token
         $token = $user->createDeviceToken($request->device);
+        $token['user'] = new UserDetailResource($user);
         Event::dispatch(new Registered($user));
         if ($request->invite_code) {
             Event::dispatch(new InviteRegistered($user, $request->invite_code));
@@ -100,6 +102,7 @@ class RegisterController extends Controller
         $user = UserHelper::createByPhone($request->phone, $request->password);
         // 创建 Token
         $token = $user->createDeviceToken($request->device);
+        $token['user'] = new UserDetailResource($user);
         Event::dispatch(new Registered($user));
         if ($request->invite_code) {
             Event::dispatch(new InviteRegistered($user, $request->invite_code));
