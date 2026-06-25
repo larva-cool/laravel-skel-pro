@@ -235,7 +235,7 @@ return [
         'username' => '用户名',
         'verify_code' => '验证码',
         'effective_start_time' => '生效开始时间',
-        'effective_end_time' => '生效结束时间'
+        'effective_end_time' => '生效结束时间',
     ],
 
 ];
