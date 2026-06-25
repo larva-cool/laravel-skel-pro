@@ -209,6 +209,7 @@ class UserHelper
      *
      * @param  User  $user  用户
      * @param  string  $inviteCode  邀请码
+     *
      * @throws \Throwable
      */
     public static function connectInvite(User $user, string $inviteCode): void

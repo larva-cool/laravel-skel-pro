@@ -134,8 +134,7 @@ class Admin extends Authenticatable
             $user = UserHelper::findOrCreatePhone($model->phone);
             $model->user_id = $user?->id;
         });
-        static::deleting(function (Admin $model) {
-        });
+        static::deleting(function (Admin $model) {});
     }
 
     /**

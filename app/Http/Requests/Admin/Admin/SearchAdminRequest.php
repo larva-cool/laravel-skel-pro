@@ -44,7 +44,7 @@ class SearchAdminRequest extends FormRequest
             'file_ext' => 'nullable|string|max:255',
             'last_login_at' => 'nullable|array',
             'last_login_at.*' => 'nullable|date',
-            'created_at'=> 'nullable|array',
+            'created_at' => 'nullable|array',
             'created_at.*' => 'nullable|date',
             'field' => 'nullable|string|max:255',
             'order' => 'nullable|string|max:255',

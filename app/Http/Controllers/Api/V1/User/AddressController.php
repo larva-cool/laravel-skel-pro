@@ -74,12 +74,11 @@ class AddressController extends Controller
 
     /**
      * 设为默认地址
-     * @param  Address  $address
-     * @return AddressResource
      */
     public function setDefault(Address $address): AddressResource
     {
         $address->markDefault();
+
         return new AddressResource($address);
     }
 

@@ -3,6 +3,8 @@
  * This is NOT a freeware, use is subject to license terms.
  */
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Resources\Admin\CoinTradeResource;
@@ -38,6 +40,7 @@ class CoinTradeController extends AbstractController
 
             return CoinTradeResource::collection($items);
         }
+
         return view('admin.coin_trade.index');
     }
 }

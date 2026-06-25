@@ -1,4 +1,9 @@
 <?php
+/**
+ * This is NOT a freeware, use is subject to license terms.
+ */
+
+declare(strict_types=1);
 
 namespace App\Console\Commands;
 
@@ -38,7 +43,6 @@ class StatCommand extends Command
         $date = Carbon::yesterday();
         $this->output->info("开始统计 {$date->toDateString()} 的用户注册数量和活跃数量。");
         StatUserJob::dispatch($date->toDateString());
-
 
     }
 }
