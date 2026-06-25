@@ -45,9 +45,9 @@ class UserExtraTest extends TestCase
 
         // 测试可填充字段
         $fillable = [
-            'referrer_id', 'last_login_ip', 'invite_registered_count', 'invite_code', 'reg_source',
-            'username_change_count', 'login_count', 'collection_count', 'first_signed_at', 'first_active_at',
-            'last_active_at', 'last_login_at', 'restore_data', 'settings', 'phone_verified_at', 'email_verified_at',
+            'referrer_id', 'invite_registered_count', 'invite_code', 'reg_source',
+            'username_change_count', 'collection_count', 'first_signed_at', 'first_active_at',
+            'restore_data', 'settings', 'phone_verified_at', 'email_verified_at',
         ];
         $this->assertEquals($fillable, $model->getFillable());
 
@@ -64,7 +64,6 @@ class UserExtraTest extends TestCase
         // 测试默认值
         $this->assertEquals(0, $model->invite_registered_count);
         $this->assertEquals(0, $model->username_change_count);
-        $this->assertEquals(0, $model->login_count);
     }
 
     #[Test]
@@ -78,18 +77,15 @@ class UserExtraTest extends TestCase
 
         $this->assertEquals('integer', $casts['user_id']);
         $this->assertEquals('integer', $casts['referrer_id']);
-        $this->assertEquals('string', $casts['last_login_ip']);
         $this->assertEquals('integer', $casts['invite_registered_count']);
         $this->assertEquals('string', $casts['invite_code']);
         $this->assertEquals('string', $casts['reg_source']);
         $this->assertEquals('integer', $casts['username_change_count']);
-        $this->assertEquals('integer', $casts['login_count']);
         $this->assertEquals(AsJson::class, $casts['restore_data']);
         $this->assertEquals(AsJson::class, $casts['settings']);
         $this->assertEquals('integer', $casts['collection_count']);
         $this->assertEquals('datetime', $casts['first_signed_at']);
-        $this->assertEquals('datetime', $casts['last_active_at']);
-        $this->assertEquals('datetime', $casts['last_login_at']);
+        $this->assertEquals('datetime', $casts['first_active_at']);
         $this->assertEquals('datetime', $casts['phone_verified_at']);
         $this->assertEquals('datetime', $casts['email_verified_at']);
     }
@@ -101,10 +97,8 @@ class UserExtraTest extends TestCase
         $userExtra = new UserExtra;
         $userExtra->forceFill([
             'user_id' => 1,
-            'last_login_ip' => '127.0.0.1',
             'first_signed_at' => Carbon::now(),
             'first_active_at' => Carbon::now(),
-            'last_active_at' => Carbon::now(),
         ]);
 
         // 初始状态邀请码应该为空
@@ -156,10 +150,8 @@ class UserExtraTest extends TestCase
             'user_id' => 1,
             'restore_data' => ['key' => 'value'],
             'settings' => ['theme' => 'dark'],
-            'last_login_ip' => '127.0.0.1',
             'first_signed_at' => Carbon::now(),
             'first_active_at' => Carbon::now(),
-            'last_active_at' => Carbon::now(),
         ]);
 
         $this->assertIsArray($userExtra->restore_data);
@@ -178,17 +170,12 @@ class UserExtraTest extends TestCase
             'user_id' => 1,
             'first_signed_at' => $now,
             'first_active_at' => $now,
-            'last_active_at' => $now,
-            'last_login_at' => $now,
             'phone_verified_at' => $now,
             'email_verified_at' => $now,
-            'last_login_ip' => '127.0.0.1',
         ]);
 
         $this->assertInstanceOf(Carbon::class, $userExtra->first_signed_at);
         $this->assertInstanceOf(Carbon::class, $userExtra->first_active_at);
-        $this->assertInstanceOf(Carbon::class, $userExtra->last_active_at);
-        $this->assertInstanceOf(Carbon::class, $userExtra->last_login_at);
         $this->assertInstanceOf(Carbon::class, $userExtra->phone_verified_at);
         $this->assertInstanceOf(Carbon::class, $userExtra->email_verified_at);
     }
@@ -202,20 +189,16 @@ class UserExtraTest extends TestCase
             'user_id' => 1,
             'referrer_id' => null,
             'reg_source' => null,
-            'last_login_at' => null,
             'phone_verified_at' => null,
             'email_verified_at' => null,
             'restore_data' => null,
             'settings' => null,
-            'last_login_ip' => '127.0.0.1',
             'first_signed_at' => Carbon::now(),
             'first_active_at' => Carbon::now(),
-            'last_active_at' => Carbon::now(),
         ]);
 
         $this->assertNull($userExtra->referrer_id);
         $this->assertNull($userExtra->reg_source);
-        $this->assertNull($userExtra->last_login_at);
         $this->assertNull($userExtra->phone_verified_at);
         $this->assertNull($userExtra->email_verified_at);
         // AsJson cast 会将 null 转换为空数组

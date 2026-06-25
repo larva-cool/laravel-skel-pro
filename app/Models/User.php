@@ -124,7 +124,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'group_id', 'username', 'email', 'phone', 'name', 'avatar', 'status', 'available_points', 'available_coins',
-        'socket_id', 'device_id', 'password', 'login_count', 'vip_expires_at', 'last_active_at', 'last_login_at', 'last_login_ip'
+        'socket_id', 'device_id', 'password', 'login_count', 'vip_expires_at', 'last_active_at', 'last_login_at', 'last_login_ip',
     ];
 
     /**
@@ -549,7 +549,7 @@ class User extends Authenticatable
      */
     public function resetAvatar(): bool
     {
-        if ($this->hasAvatar() && $this->getRawOriginal('avatar') != User::DEFAULT_AVATAR) {
+        if ($this->hasAvatar()) {
             try {
                 if (Storage::delete($this->getRawOriginal('avatar'))) {
                     $this->forceFill(['avatar' => null])->updateQuietly();

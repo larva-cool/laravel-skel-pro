@@ -51,7 +51,11 @@ class UserTest extends TestCase
             'device_id',
             'socket_id',
             'password',
+            'login_count',
             'vip_expires_at',
+            'last_active_at',
+            'last_login_at',
+            'last_login_ip',
         ], $fillable);
     }
 
@@ -76,7 +80,11 @@ class UserTest extends TestCase
             'socket_id' => 'string',
             'password' => 'hashed',
             'pay_password' => 'hashed',
+            'login_count' => 'integer',
+            'last_login_ip' => 'string',
             'vip_expires_at' => 'datetime',
+            'last_active_at' => 'datetime',
+            'last_login_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',
