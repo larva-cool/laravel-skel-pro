@@ -549,7 +549,8 @@ class User extends Authenticatable
      */
     public function resetAvatar(): bool
     {
-        if ($this->hasAvatar()) {
+        $defaultAvatar = settings('user.default_avatar');
+        if ($this->hasAvatar() && $this->getRawOriginal('avatar') !== $defaultAvatar) {
             try {
                 if (Storage::delete($this->getRawOriginal('avatar'))) {
                     $this->forceFill(['avatar' => null])->updateQuietly();
