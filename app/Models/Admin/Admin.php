@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Models\Admin;
 
-use App\Enum\StatusSwitch;
+use App\Enum\UserStatus;
 use App\Models\Traits;
 use App\Models\User;
 use App\Models\User\LoginHistory;
@@ -35,7 +35,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $email 邮件地址
  * @property string|null $phone 手机号
  * @property string $name 昵称
- * @property StatusSwitch $status 状态：1:active,0:frozen
+ * @property UserStatus $status 状态
  * @property string $socket_id Socket ID
  * @property string $password 密码哈希
  * @property string $remember_token 记住我 Token
@@ -88,7 +88,7 @@ class Admin extends Authenticatable
      * @var array
      */
     protected $attributes = [
-        'status' => StatusSwitch::ENABLED->value,
+        'status' => UserStatus::STATUS_ACTIVE->value,
     ];
 
     /**
@@ -114,7 +114,7 @@ class Admin extends Authenticatable
             'email' => 'string',
             'phone' => 'string',
             'name' => 'string',
-            'status' => StatusSwitch::class,
+            'status' => UserStatus::class,
             'socket_id' => 'string',
             'password' => 'hashed',
             'last_login_at' => 'datetime',
@@ -134,7 +134,8 @@ class Admin extends Authenticatable
             $user = UserHelper::findOrCreatePhone($model->phone);
             $model->user_id = $user?->id;
         });
-        static::deleting(function (Admin $model) {});
+        static::deleting(function (Admin $model) {
+        });
     }
 
     /**
@@ -169,6 +170,30 @@ class Admin extends Authenticatable
     {
         return $this->morphMany(LoginHistory::class, 'user')
             ->latest('login_at');
+    }
+
+    /**
+     * Mark the given user's active.
+     */
+    public function markActive(): bool
+    {
+        return $this->updateQuietly(['status' => UserStatus::STATUS_ACTIVE->value]);
+    }
+
+    /**
+     * Mark the given user's frozen.
+     */
+    public function markFrozen(): bool
+    {
+        return $this->updateQuietly(['status' => UserStatus::STATUS_FROZEN->value]);
+    }
+
+    /**
+     * Determine if the user has active.
+     */
+    public function isFrozen(): bool
+    {
+        return $this->status->isFrozen();
     }
 
     /**

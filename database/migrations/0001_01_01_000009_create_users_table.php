@@ -44,6 +44,8 @@ return new class extends Migration
             $table->string('pay_password')->nullable()->comment('支付密码');
             $table->rememberToken()->comment('记住我token');
             $table->dateTime('vip_expires_at')->nullable()->comment('VIP过期时间');
+            $table->timestamp('last_active_at')->nullable()->comment('最后活动时间');
+            $table->timestamp('last_login_at')->nullable()->comment('最后登录时间');
             $table->timestamps();
             $table->softDeletes()->comment('删除时间');
 
@@ -86,8 +88,6 @@ return new class extends Migration
             $table->unsignedBigInteger('login_count')->nullable()->default(0)->comment('登录次数');
             $table->timestamp('first_signed_at')->nullable()->comment('开始签到时间');
             $table->timestamp('first_active_at')->nullable()->comment('首次活动时间');
-            $table->timestamp('last_active_at')->nullable()->comment('最后活动时间');
-            $table->timestamp('last_login_at')->nullable()->comment('最后登录时间');
             $table->timestamp('phone_verified_at')->nullable()->comment('手机验证时间');
             $table->timestamp('email_verified_at')->nullable()->comment('邮件验证时间');
             $table->json('settings')->nullable()->comment('用户设置');

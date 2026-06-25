@@ -16,6 +16,7 @@ use Illuminate\Foundation\Http\FormRequest;
  *
  * @property string $keyword 搜索关键词
  * @property array $last_login_at 最后登录时间
+ * @property array $created_at 创建时间
  * @property string $field 排序字段
  * @property string $order 排序方式
  *
@@ -43,6 +44,8 @@ class SearchAdminRequest extends FormRequest
             'file_ext' => 'nullable|string|max:255',
             'last_login_at' => 'nullable|array',
             'last_login_at.*' => 'nullable|date',
+            'created_at'=> 'nullable|array',
+            'created_at.*' => 'nullable|date',
             'field' => 'nullable|string|max:255',
             'order' => 'nullable|string|max:255',
         ];

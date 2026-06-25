@@ -18,6 +18,7 @@ use Illuminate\Validation\Rules\Password;
 
 /**
  * 创建用户请求
+ *
  * @property-read string $phone
  * @property-read string $password
  *

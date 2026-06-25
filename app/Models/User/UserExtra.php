@@ -29,8 +29,6 @@ use Illuminate\Support\Str;
  * @property array|null $restore_data 恢复数据
  * @property Carbon $first_signed_at 首次签到时间
  * @property Carbon $first_active_at 首次活动时间
- * @property Carbon $last_active_at 最后活动时间
- * @property Carbon|null $last_login_at 最后登录时间
  * @property Carbon|null $phone_verified_at 手机号验证时间
  * @property Carbon|null $email_verified_at 邮箱验证时间
  *
@@ -77,8 +75,8 @@ class UserExtra extends Model
      */
     protected $fillable = [
         'referrer_id', 'last_login_ip', 'invite_registered_count', 'invite_code', 'reg_source', 'username_change_count',
-        'login_count', 'collection_count', 'first_signed_at', 'first_active_at', 'last_active_at', 'last_login_at',
-        'restore_data', 'settings', 'phone_verified_at', 'email_verified_at',
+        'login_count', 'collection_count', 'first_signed_at', 'first_active_at', 'restore_data', 'settings',
+        'phone_verified_at', 'email_verified_at',
     ];
 
     /**
@@ -121,8 +119,6 @@ class UserExtra extends Model
             'settings' => AsJson::class,
             'collection_count' => 'integer',
             'first_signed_at' => 'datetime',
-            'last_active_at' => 'datetime',
-            'last_login_at' => 'datetime',
             'phone_verified_at' => 'datetime',
             'email_verified_at' => 'datetime',
         ];

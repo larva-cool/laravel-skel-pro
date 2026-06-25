@@ -64,6 +64,7 @@ class AppServiceProvider extends ServiceProvider
             if ($user instanceof Admin) {
                 return $user->hasRole('Super Admin') ? true : null;
             }
+
             return null;
         });
 
