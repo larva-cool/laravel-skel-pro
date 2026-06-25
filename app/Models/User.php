@@ -503,7 +503,7 @@ class User extends Authenticatable
     /**
      * 验证支付密码是否正确
      */
-    public function verifyPayPassword($password): bool
+    public function verifyPayPassword(string $password): bool
     {
         return $this->pay_password && Hash::check($password, $this->pay_password);
     }
