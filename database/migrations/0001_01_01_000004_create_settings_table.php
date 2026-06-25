@@ -77,6 +77,7 @@ return new class extends Migration
             ['name' => '允许微信登录', 'key' => 'user.enable_wechat_login', 'value' => 1, 'cast_type' => SettingType::CAST_TYPE_BOOL, 'input_type' => SettingType::CAST_TYPE_BOOL],
             ['name' => '允许Apple登录', 'key' => 'user.enable_apple_login', 'value' => 1, 'cast_type' => SettingType::CAST_TYPE_BOOL, 'input_type' => SettingType::CAST_TYPE_BOOL],
             ['name' => '用户积分有效期', 'key' => 'user.point_expiration', 'value' => 365, 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
+            ['name' => '默认头像', 'key' => 'user.default_avatar', 'value' => 'img/avatar.png', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
 
             // 上传配置
             ['name' => '上传存储', 'key' => 'upload.storage', 'value' => config('filesystems.default'), 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],

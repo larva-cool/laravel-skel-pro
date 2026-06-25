@@ -209,6 +209,7 @@ class UserHelper
      *
      * @param  User  $user  用户
      * @param  string  $inviteCode  邀请码
+     * @throws \Throwable
      */
     public static function connectInvite(User $user, string $inviteCode): void
     {
@@ -267,7 +268,7 @@ class UserHelper
             return Storage::disk()->url($avatar);
         }
 
-        return asset(User::DEFAULT_AVATAR);
+        return asset(settings('user.default_avatar'));
     }
 
     /**

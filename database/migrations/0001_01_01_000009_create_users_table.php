@@ -43,6 +43,8 @@ return new class extends Migration
             $table->string('password')->nullable()->comment('密码');
             $table->string('pay_password')->nullable()->comment('支付密码');
             $table->rememberToken()->comment('记住我token');
+            $table->unsignedBigInteger('login_count')->nullable()->default(0)->comment('登录次数');
+            $table->ipAddress('last_login_ip')->nullable()->comment('最后登录IP地址');
             $table->dateTime('vip_expires_at')->nullable()->comment('VIP过期时间');
             $table->timestamp('last_active_at')->nullable()->comment('最后活动时间');
             $table->timestamp('last_login_at')->nullable()->comment('最后登录时间');
@@ -79,13 +81,11 @@ return new class extends Migration
         Schema::create('user_extras', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id')->primary()->comment('用户ID');
             $table->unsignedBigInteger('referrer_id')->nullable()->comment('推荐人UserID');
-            $table->ipAddress('last_login_ip')->nullable()->comment('最后登录IP地址');
             $table->unsignedInteger('invite_registered_count')->default(0)->nullable()->comment('邀请人数');
             $table->string('invite_code')->unique()->comment('邀请码');
             $table->string('reg_source')->nullable()->comment('注册来源');
             $table->unsignedTinyInteger('username_change_count')->default(0)->nullable()->comment('用户名修改次数');
             $table->unsignedBigInteger('collection_count')->nullable()->default(0)->comment('收藏数');
-            $table->unsignedBigInteger('login_count')->nullable()->default(0)->comment('登录次数');
             $table->timestamp('first_signed_at')->nullable()->comment('开始签到时间');
             $table->timestamp('first_active_at')->nullable()->comment('首次活动时间');
             $table->timestamp('phone_verified_at')->nullable()->comment('手机验证时间');

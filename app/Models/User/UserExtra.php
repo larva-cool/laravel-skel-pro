@@ -20,12 +20,10 @@ use Illuminate\Support\Str;
  *
  * @property int $user_id 用户ID
  * @property int|null $referrer_id 推荐人ID
- * @property string $last_login_ip 最后登录IP
  * @property int $invite_registered_count 邀请人数
  * @property string $invite_code 邀请码
  * @property string|null $reg_source 注册来源
  * @property int $username_change_count 用户名修改次数
- * @property int $login_count 登录次数
  * @property array|null $restore_data 恢复数据
  * @property Carbon $first_signed_at 首次签到时间
  * @property Carbon $first_active_at 首次活动时间
@@ -74,8 +72,8 @@ class UserExtra extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'referrer_id', 'last_login_ip', 'invite_registered_count', 'invite_code', 'reg_source', 'username_change_count',
-        'login_count', 'collection_count', 'first_signed_at', 'first_active_at', 'restore_data', 'settings',
+        'referrer_id', 'invite_registered_count', 'invite_code', 'reg_source', 'username_change_count',
+        'collection_count', 'first_signed_at', 'first_active_at', 'restore_data', 'settings',
         'phone_verified_at', 'email_verified_at',
     ];
 

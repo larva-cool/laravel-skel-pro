@@ -10,7 +10,6 @@ namespace App\Models\User;
 
 use App\Events\User\TodayFirstLogged;
 use App\Models\Model;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
@@ -103,17 +102,10 @@ class LoginHistory extends Model
             }
         });
         static::created(function (LoginHistory $model) {
-            if ($model->user instanceof User) {
-                $model->user->extra->increment('login_count', 1, [
-                    'last_login_ip' => $model->ip,
-                    'last_login_at' => $model->login_at,
-                ]);
-            } else {
-                $model->user->increment('login_count', 1, [
-                    'last_login_ip' => $model->ip,
-                    'last_login_at' => $model->login_at,
-                ]);
-            }
+            $model->user->increment('login_count', 1, [
+                'last_login_ip' => $model->ip,
+                'last_login_at' => $model->login_at,
+            ]);
             if (static::isTodayLogged($model->user_id, $model->user_type)) {// 当天首次登录
                 Event::dispatch(new TodayFirstLogged($model));
             }
