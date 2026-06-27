@@ -180,6 +180,8 @@ return [
     */
     'username' => 'The :attribute field format is invalid.',
     'phone' => 'The :attribute field format is invalid.',
+    'verify_code' => 'The :attribute field format is invalid.',
+    'pay_password' => 'The :attribute field format is invalid.',
 
     /*
     |--------------------------------------------------------------------------
@@ -233,6 +235,7 @@ return [
         'user_id' => 'User ID',
         'username' => 'Username',
         'verify_code' => 'Verify Code',
+        'pay_password' => 'Pay Password',
         'effective_start_time' => 'Effective Start Time',
         'effective_end_time' => 'Effective Start Time',
     ],

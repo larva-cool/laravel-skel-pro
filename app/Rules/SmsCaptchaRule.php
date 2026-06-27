@@ -76,7 +76,7 @@ class SmsCaptchaRule implements DataAwareRule, ValidationRule
             $service->setFixedVerifyCode('123456');
         }
         if (! $service->validate($value, false)) {
-            $fail('validation.verify_code')->translate();
+            $fail('verify_code');
         }
     }
 }

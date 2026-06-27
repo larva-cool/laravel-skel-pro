@@ -181,6 +181,7 @@ return [
     'username' => ':attribute格式不正确，请重新输入。',
     'phone' => ':attribute不正确，请重新输入。',
     'verify_code' => ':attribute不正确，请重新输入。',
+    'pay_password' => ':attribute不正确，请重新输入。',
 
     /*
     |--------------------------------------------------------------------------
@@ -234,6 +235,7 @@ return [
         'user_id' => '用户ID',
         'username' => '用户名',
         'verify_code' => '验证码',
+        'pay_password' => '支付密码',
         'effective_start_time' => '生效开始时间',
         'effective_end_time' => '生效结束时间',
     ],
