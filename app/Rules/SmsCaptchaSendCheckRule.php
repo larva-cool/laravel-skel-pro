@@ -48,11 +48,11 @@ class SmsCaptchaSendCheckRule implements ValidationRule
         }
         // 一个IP地址每小时最多发送 20
         if ($verifyCode->getIpSendCount() > settings('sms_captcha.ip_count', 20)) {
-            $fail('validation.custom.phone.sms_captcha_send_check');
+            $fail('validation.custom.phone.sms_captcha_send_check')->translate();
         }
         // 一个手机号码每小时最多发送 10条
         if ($verifyCode->getPhoneSendCount() > settings('sms_captcha.phone_count', 10)) {
-            $fail('validation.custom.phone.sms_captcha_send_check');
+            $fail('validation.custom.phone.sms_captcha_send_check')->translate();
         }
     }
 }

@@ -234,6 +234,7 @@ return [
         'phone' => 'Phone',
         'user_id' => 'User ID',
         'username' => 'Username',
+        'device' => 'Device',
         'verify_code' => 'Verify Code',
         'pay_password' => 'Pay Password',
         'effective_start_time' => 'Effective Start Time',
