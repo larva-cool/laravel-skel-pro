@@ -15,6 +15,12 @@
                 "apifox-mcp-server@latest",
                 "--site-id=5455708"
             ]
+        },
+        "playwright": {
+            "command": "npx",
+            "args": [
+                "@playwright/mcp@latest"
+            ]
         }
     }
 }
