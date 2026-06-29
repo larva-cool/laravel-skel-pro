@@ -3,7 +3,7 @@
 @section('title', '字典管理')
 
 @section('content')
-<form class="layui-form" method="POST" action="{{ route('admin.dicts.stoer_data') }}">
+<form class="layui-form" method="POST" action="{{ route('admin.dicts.store_data') }}">
     @csrf
     <input type="hidden" name="parent_id" value="{{$parent_id}}">
     <div class="mainBox">
@@ -63,7 +63,7 @@
         form.on("submit(save)", function (data) {
             let loading = layer.load();
             $.ajax({
-                url: "{{route('admin.dicts.stoer_data')}}",
+                url: "{{route('admin.dicts.store_data')}}",
                 type: "POST",
                 dataType: "json",
                 data: data.field,

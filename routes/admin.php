@@ -46,7 +46,7 @@ Route::resource('settings', \App\Http\Controllers\Admin\SettingController::class
 
 // 字典管理
 Route::post('dicts/status', [\App\Http\Controllers\Admin\DictController::class, 'updateStatus'])->name('dicts.status');
-Route::post('dicts/store_data', [\App\Http\Controllers\Admin\DictController::class, 'storeData'])->name('dicts.stoer_data');
+Route::post('dicts/store_data', [\App\Http\Controllers\Admin\DictController::class, 'storeData'])->name('dicts.store_data');
 Route::post('dicts/batch_destroy', [\App\Http\Controllers\Admin\DictController::class, 'batchDestroy'])->name('dicts.batch_destroy');
 Route::get('dicts/create_data', [\App\Http\Controllers\Admin\DictController::class, 'createData'])->name('dicts.create_data');
 Route::get('dicts/edit_data/{dict}', [\App\Http\Controllers\Admin\DictController::class, 'editData'])->name('dicts.edit_data');
