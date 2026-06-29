@@ -235,6 +235,7 @@ return [
         'user_id' => '用户ID',
         'username' => '用户名',
         'device' => '设备',
+        'id_card' => '身份证号',
         'verify_code' => '验证码',
         'pay_password' => '支付密码',
         'effective_start_time' => '生效开始时间',

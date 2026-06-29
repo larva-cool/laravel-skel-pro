@@ -235,6 +235,7 @@ return [
         'user_id' => 'User ID',
         'username' => 'Username',
         'device' => 'Device',
+        'id_card' => 'ID Card Number',
         'verify_code' => 'Verify Code',
         'pay_password' => 'Pay Password',
         'effective_start_time' => 'Effective Start Time',
