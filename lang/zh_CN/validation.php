@@ -235,11 +235,15 @@ return [
         'user_id' => '用户ID',
         'username' => '用户名',
         'device' => '设备',
+        'real_name' => '真实姓名',
         'id_card' => '身份证号',
         'verify_code' => '验证码',
         'pay_password' => '支付密码',
+        'amount' => '金额',
+        'status' => '状态',
         'effective_start_time' => '生效开始时间',
         'effective_end_time' => '生效结束时间',
+        'remark' => '备注',
     ],
 
 ];
