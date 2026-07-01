@@ -20,6 +20,21 @@ use Tests\TestCase;
 class NameRuleTest extends TestCase
 {
     /**
+     * 创建一个模拟的 $fail 闭包，返回带有 translate() 方法的对象
+     */
+    protected function createFailClosure(bool &$failCalled): \Closure
+    {
+        return function () use (&$failCalled) {
+            $failCalled = true;
+
+            return new class
+            {
+                public function translate(): void {}
+            };
+        };
+    }
+
+    /**
      * 测试有效输入
      */
     #[Test]
@@ -27,7 +42,6 @@ class NameRuleTest extends TestCase
     public function test_valid_inputs()
     {
         $rule = new NameRule;
-        $failCalled = false;
 
         // 测试有效的用户名
         $validInputs = [
@@ -44,9 +58,7 @@ class NameRuleTest extends TestCase
 
         foreach ($validInputs as $input) {
             $failCalled = false;
-            $fail = function () use (&$failCalled) {
-                $failCalled = true;
-            };
+            $fail = $this->createFailClosure($failCalled);
 
             $rule->validate('name', $input, $fail);
             $this->assertFalse($failCalled, "输入 '$input' 应该是有效的");
@@ -61,7 +73,6 @@ class NameRuleTest extends TestCase
     public function test_invalid_inputs()
     {
         $rule = new NameRule;
-        $failCalled = false;
 
         // 测试无效的用户名
         $invalidInputs = [
@@ -76,9 +87,7 @@ class NameRuleTest extends TestCase
 
         foreach ($invalidInputs as $input) {
             $failCalled = false;
-            $fail = function () use (&$failCalled) {
-                $failCalled = true;
-            };
+            $fail = $this->createFailClosure($failCalled);
 
             $rule->validate('name', $input, $fail);
             $this->assertTrue($failCalled, "输入 '$input' 应该是无效的");
@@ -93,11 +102,9 @@ class NameRuleTest extends TestCase
     public function test_non_scalar_inputs()
     {
         $rule = new NameRule;
-        $failCalled = false;
 
         // 测试非标量输入
         $nonScalarInputs = [
-            [],
             [],
             new \stdClass,
             null,
@@ -105,9 +112,7 @@ class NameRuleTest extends TestCase
 
         foreach ($nonScalarInputs as $input) {
             $failCalled = false;
-            $fail = function () use (&$failCalled) {
-                $failCalled = true;
-            };
+            $fail = $this->createFailClosure($failCalled);
 
             $rule->validate('name', $input, $fail);
             $this->assertTrue($failCalled, '非标量输入应该是无效的');

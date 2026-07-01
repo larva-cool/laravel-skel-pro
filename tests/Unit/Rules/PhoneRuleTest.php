@@ -20,6 +20,21 @@ use Tests\TestCase;
 class PhoneRuleTest extends TestCase
 {
     /**
+     * 创建一个模拟的 $fail 闭包，返回带有 translate() 方法的对象
+     */
+    protected function createFailClosure(bool &$failCalled): \Closure
+    {
+        return function () use (&$failCalled) {
+            $failCalled = true;
+
+            return new class
+            {
+                public function translate(): void {}
+            };
+        };
+    }
+
+    /**
      * 测试有效手机号码
      */
     #[Test]
@@ -27,7 +42,6 @@ class PhoneRuleTest extends TestCase
     public function test_valid_phone_numbers()
     {
         $rule = new PhoneRule;
-        $failCalled = false;
 
         // 测试有效的手机号码
         $validPhones = [
@@ -77,9 +91,7 @@ class PhoneRuleTest extends TestCase
 
         foreach ($validPhones as $phone) {
             $failCalled = false;
-            $fail = function () use (&$failCalled) {
-                $failCalled = true;
-            };
+            $fail = $this->createFailClosure($failCalled);
 
             $rule->validate('phone', $phone, $fail);
             $this->assertFalse($failCalled, "手机号码 '$phone' 应该是有效的");
@@ -94,7 +106,6 @@ class PhoneRuleTest extends TestCase
     public function test_invalid_phone_numbers()
     {
         $rule = new PhoneRule;
-        $failCalled = false;
 
         // 测试无效的手机号码
         $invalidPhones = [
@@ -109,9 +120,7 @@ class PhoneRuleTest extends TestCase
 
         foreach ($invalidPhones as $phone) {
             $failCalled = false;
-            $fail = function () use (&$failCalled) {
-                $failCalled = true;
-            };
+            $fail = $this->createFailClosure($failCalled);
 
             $rule->validate('phone', $phone, $fail);
             $this->assertTrue($failCalled, "手机号码 '$phone' 应该是无效的");
@@ -126,11 +135,9 @@ class PhoneRuleTest extends TestCase
     public function test_non_scalar_inputs()
     {
         $rule = new PhoneRule;
-        $failCalled = false;
 
         // 测试非标量输入
         $nonScalarInputs = [
-            [],
             [],
             new \stdClass,
             null,
@@ -138,9 +145,7 @@ class PhoneRuleTest extends TestCase
 
         foreach ($nonScalarInputs as $input) {
             $failCalled = false;
-            $fail = function () use (&$failCalled) {
-                $failCalled = true;
-            };
+            $fail = $this->createFailClosure($failCalled);
 
             $rule->validate('phone', $input, $fail);
             $this->assertTrue($failCalled, '非标量输入应该是无效的');

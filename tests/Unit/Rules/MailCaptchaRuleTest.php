@@ -23,6 +23,21 @@ class MailCaptchaRuleTest extends TestCase
     use RefreshDatabase;
 
     /**
+     * 创建一个模拟的 $fail 闭包，返回带有 translate() 方法的对象
+     */
+    protected function createFailClosure(bool &$failCalled): \Closure
+    {
+        return function () use (&$failCalled) {
+            $failCalled = true;
+
+            return new class
+            {
+                public function translate(): void {}
+            };
+        };
+    }
+
+    /**
      * 测试 setUp
      */
     protected function setUp(): void
@@ -102,9 +117,7 @@ class MailCaptchaRuleTest extends TestCase
 
         // 模拟 fail 回调
         $failCalled = false;
-        $failCallback = function () use (&$failCalled) {
-            $failCalled = true;
-        };
+        $failCallback = $this->createFailClosure($failCalled);
 
         // 验证成功的情况（使用测试环境的固定验证码）
         $this->app->detectEnvironment(function () {
@@ -136,9 +149,7 @@ class MailCaptchaRuleTest extends TestCase
 
         // 模拟 fail 回调
         $failCalled = false;
-        $failCallback = function () use (&$failCalled) {
-            $failCalled = true;
-        };
+        $failCallback = $this->createFailClosure($failCalled);
 
         // 验证失败的情况（使用测试环境的固定验证码）
         $this->app->detectEnvironment(function () {
@@ -170,9 +181,7 @@ class MailCaptchaRuleTest extends TestCase
 
         // 模拟 fail 回调
         $failCalled = false;
-        $failCallback = function () use (&$failCalled) {
-            $failCalled = true;
-        };
+        $failCallback = $this->createFailClosure($failCalled);
 
         // 验证不区分大小写的情况（使用测试环境的固定验证码）
         $this->app->detectEnvironment(function () {
@@ -204,9 +213,7 @@ class MailCaptchaRuleTest extends TestCase
 
         // 模拟 fail 回调
         $failCalled = false;
-        $failCallback = function () use (&$failCalled) {
-            $failCalled = true;
-        };
+        $failCallback = $this->createFailClosure($failCalled);
 
         // 验证失败的情况（使用测试环境的固定验证码）
         $this->app->detectEnvironment(function () {
