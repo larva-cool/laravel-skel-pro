@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V1;
 
+use App\Enum\ReviewStatus;
 use App\Http\Controllers\Api\V1\LikeController;
+use App\Models\Content\Comment;
 use App\Models\Content\Like;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -37,6 +39,20 @@ class LikeControllerTest extends TestCase
         $this->otherUser = User::factory()->create();
     }
 
+    /**
+     * 创建一个用于被点赞的评论
+     */
+    protected function createComment(array $overrides = []): Comment
+    {
+        return Comment::create(array_merge([
+            'user_id' => $this->otherUser->id,
+            'source_id' => 1,
+            'source_type' => 'comment',
+            'content' => '待被点赞的评论',
+            'status' => ReviewStatus::APPROVED,
+        ], $overrides));
+    }
+
     #[Test]
     #[TestDox('测试未认证用户无法访问点赞端点')]
     public function test_authentication_required()
@@ -50,17 +66,20 @@ class LikeControllerTest extends TestCase
     #[TestDox('测试获取我的点赞列表')]
     public function test_index_returns_own_likes()
     {
+        $comment1 = $this->createComment();
+        $comment2 = $this->createComment();
+
         // 我的点赞
         Like::create([
             'user_id' => $this->user->id,
-            'source_id' => 100,
+            'source_id' => $comment1->id,
             'source_type' => 'comment',
         ]);
 
         // 别人的点赞
         Like::create([
             'user_id' => $this->otherUser->id,
-            'source_id' => 101,
+            'source_id' => $comment2->id,
             'source_type' => 'comment',
         ]);
 
@@ -81,15 +100,12 @@ class LikeControllerTest extends TestCase
     #[TestDox('测试按 type 参数过滤点赞列表')]
     public function test_index_filters_by_type()
     {
+        $comment = $this->createComment();
+
         Like::create([
             'user_id' => $this->user->id,
-            'source_id' => 100,
+            'source_id' => $comment->id,
             'source_type' => 'comment',
-        ]);
-        Like::create([
-            'user_id' => $this->user->id,
-            'source_id' => 200,
-            'source_type' => 'user',
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
@@ -104,34 +120,40 @@ class LikeControllerTest extends TestCase
     #[TestDox('测试点赞成功')]
     public function test_store_creates_like()
     {
-        $target = User::factory()->create();
+        $comment = $this->createComment();
 
         $response = $this->actingAs($this->user, 'sanctum')->postJson('/api/v1/likes', [
-            'source_id' => $target->id,
-            'source_type' => 'user',
+            'source_id' => $comment->id,
+            'source_type' => 'comment',
         ]);
 
         $response->assertOk();
         $response->assertJson(['message' => trans('system.like_success')]);
         $this->assertDatabaseHas('likes', [
             'user_id' => $this->user->id,
-            'source_id' => $target->id,
-            'source_type' => 'user',
+            'source_id' => $comment->id,
+            'source_type' => 'comment',
         ]);
+
+        // 验证点赞计数增加
+        $comment->refresh();
+        $this->assertEquals(1, $comment->like_count);
     }
 
     #[Test]
     #[TestDox('测试重复点赞返回错误')]
     public function test_store_duplicate_returns_error()
     {
+        $comment = $this->createComment();
+
         Like::create([
             'user_id' => $this->user->id,
-            'source_id' => 500,
+            'source_id' => $comment->id,
             'source_type' => 'comment',
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')->postJson('/api/v1/likes', [
-            'source_id' => 500,
+            'source_id' => $comment->id,
             'source_type' => 'comment',
         ]);
 
@@ -166,9 +188,10 @@ class LikeControllerTest extends TestCase
     #[TestDox('测试取消自己的点赞')]
     public function test_destroy_deletes_own_like()
     {
+        $comment = $this->createComment();
         $like = Like::create([
             'user_id' => $this->user->id,
-            'source_id' => 300,
+            'source_id' => $comment->id,
             'source_type' => 'comment',
         ]);
 
@@ -184,9 +207,10 @@ class LikeControllerTest extends TestCase
     #[TestDox('测试无法取消他人的点赞')]
     public function test_destroy_does_not_delete_others_like()
     {
+        $comment = $this->createComment();
         $like = Like::create([
             'user_id' => $this->otherUser->id,
-            'source_id' => 400,
+            'source_id' => $comment->id,
             'source_type' => 'comment',
         ]);
 
