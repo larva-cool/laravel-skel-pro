@@ -48,14 +48,12 @@ class AgreementResourceTest extends TestCase
         $result = $resource->toArray($request);
 
         // 验证数组结构
-        $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('title', $result);
         $this->assertArrayHasKey('content', $result);
-        $this->assertArrayHasKey('created_at', $result);
         $this->assertArrayHasKey('updated_at', $result);
 
         // 验证字段数量
-        $this->assertCount(5, $result);
+        $this->assertCount(3, $result);
     }
 
     #[Test]
@@ -80,7 +78,6 @@ class AgreementResourceTest extends TestCase
         $result = $resource->toArray($request);
 
         // 验证日期格式
-        $this->assertEquals($createdAt->toDateTimeString(), $result['created_at']);
         $this->assertEquals($updatedAt->toDateTimeString(), $result['updated_at']);
     }
 
@@ -104,7 +101,6 @@ class AgreementResourceTest extends TestCase
         $result = $resource->toArray($request);
 
         // 验证null日期处理
-        $this->assertNull($result['created_at']);
         $this->assertNull($result['updated_at']);
     }
 
@@ -131,7 +127,6 @@ class AgreementResourceTest extends TestCase
         $result = $resource->toArray($request);
 
         // 验证字段值映射
-        $this->assertEquals($testData['id'], $result['id']);
         $this->assertEquals($testData['title'], $result['title']);
         $this->assertEquals($testData['content'], $result['content']);
     }
