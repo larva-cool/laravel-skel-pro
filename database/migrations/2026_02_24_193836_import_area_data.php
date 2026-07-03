@@ -20,7 +20,7 @@ return new class extends Migration
     {
         if (! app()->runningUnitTests()) {// testing 跳过
             ini_set('memory_limit', '-1');
-            $districts = FileHelper::json(database_path('data/areas-20260226.json'));
+            $districts = FileHelper::json(database_path('data/areas-20260703.json'));
             DB::transaction(function () use ($districts) {
                 Area::insert($districts);
             });
