@@ -28,7 +28,7 @@
                 models: {
                     openai: {
                         customUrl: "{{settings('openai.base_uri')}}",
-                        model: "doubao-seed-1-6-250615",
+                        model: "{{settings('openai.default_model')}}",
                         apiKey: "{{settings('openai.api_key')}}"
                     }
                 }
