@@ -22,6 +22,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
         $registrar->any('fpm', [\App\Http\Controllers\Api\V1\CommonController::class, 'fpm'])->name('fpm'); // reload fpm
         $registrar->post('sms-captcha', [\App\Http\Controllers\Api\V1\CommonController::class, 'smsCaptcha'])->name('sms_captcha'); // 短信验证码
         $registrar->post('mail-captcha', [\App\Http\Controllers\Api\V1\CommonController::class, 'mailCaptcha'])->name('mail_captcha'); // 邮件验证码
+        $registrar->get('nickname', [\App\Http\Controllers\Api\V1\CommonController::class, 'nickname'])->name('nickname'); // 获取一个随机昵称
         // 增加缓存Header
         $registrar->group(['middleware' => 'cache.headers:public;max_age=2628000;etag'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
             $registrar->get('dict', [\App\Http\Controllers\Api\V1\CommonController::class, 'dict'])->name('dict'); // 字典列表
@@ -30,6 +31,11 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
             $registrar->get('settings', [\App\Http\Controllers\Api\V1\CommonController::class, 'settings'])->name('settings'); // 系统配置
         });
     });
+
+    /**
+     * 协议接口
+     */
+    Route::get('agreement/{type}', [\App\Http\Controllers\Api\V1\AgreementController::class, 'show'])->name('agreement.show');
 
     /**
      * 注册接口
@@ -95,14 +101,6 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
         $registrar->put('address/{address}/default', [\App\Http\Controllers\Api\V1\User\AddressController::class, 'setDefault']); // 收货地址设为默认
         $registrar->apiResource('address', \App\Http\Controllers\Api\V1\User\AddressController::class); // 收货地址
         $registrar->delete('', [\App\Http\Controllers\Api\V1\UserController::class, 'destroy'])->name('destroy'); // 注销并删除自己的账户
-    });
-
-    /**
-     * 用户协议
-     */
-    Route::group(['prefix' => 'agreement', 'as' => 'agreement.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
-        $registrar->get('types', [\App\Http\Controllers\Api\V1\AgreementController::class, 'types'])->name('types');
-        $registrar->get('{type}', [\App\Http\Controllers\Api\V1\AgreementController::class, 'show'])->name('show');
     });
 
     /**

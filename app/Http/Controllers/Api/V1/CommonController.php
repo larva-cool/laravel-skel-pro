@@ -16,6 +16,7 @@ use App\Http\Requests\Api\V1\Common\SmsCaptchaRequest;
 use App\Http\Resources\Api\V1\DictResource;
 use App\Models\System\Area;
 use App\Models\System\Dict;
+use App\Models\User\Nickname;
 use App\Services\MailCaptchaService;
 use App\Services\SmsCaptchaService;
 use Illuminate\Http\JsonResponse;
@@ -38,6 +39,19 @@ class CommonController extends Controller
         }
 
         return response()->json(['message' => __('system.successful_operation')]);
+    }
+
+    /**
+     * 获取一个随机昵称
+     * @return JsonResponse
+     */
+    public function nickname(): JsonResponse
+    {
+        $nickname = Nickname::getRandomNickname();
+        return response()->json([
+            'data' => ['nickname' => $nickname],
+            'message' => __('system.successful_operation')
+        ]);
     }
 
     /**
