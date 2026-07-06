@@ -14,7 +14,6 @@ use App\Models\Admin\Admin;
 use App\Models\System\Setting;
 use App\Support\UserHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
@@ -94,14 +93,15 @@ class AuthControllerTest extends TestCase
     }
 
     #[Test]
-    #[TestDox('已登录用户访问登录页会被重定向')]
-    public function test_authenticated_user_login_form_redirects(): void
+    #[TestDox('已登录用户也可以访问登录页')]
+    public function test_authenticated_user_can_access_login_form(): void
     {
         $this->actingAsAdmin();
 
         $response = $this->get('/admin/auth/login');
 
-        $response->assertRedirect();
+        $response->assertOk();
+        $response->assertViewIs('admin.auth.login');
     }
 
     #[Test]
@@ -185,6 +185,8 @@ class AuthControllerTest extends TestCase
     #[TestDox('退出登录成功')]
     public function test_logout(): void
     {
+        // 刷新 admin 实例，确保 remember_token 等数据库字段已加载
+        $this->admin->refresh();
         $this->actingAsAdmin();
 
         $response = $this->postJson('/admin/auth/logout');

@@ -163,6 +163,8 @@ class IndexControllerTest extends TestCase
     #[TestDox('获取当前管理员账户信息')]
     public function test_account_returns_admin_resource(): void
     {
+        // 刷新 admin 实例，确保所有数据库字段已加载
+        $this->admin->refresh();
         $this->actingAsAdmin();
 
         $response = $this->getJson('/admin/account');
