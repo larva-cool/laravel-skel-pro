@@ -176,7 +176,7 @@ class UploaderControllerTest extends TestCase
     {
         $this->actingAsAdmin();
 
-        $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
+        $file = UploadedFile::fake()->create('document.jpg', 1024, 'image/jpeg');
 
         $response = $this->postJson('/admin/uploader/aieditor-file', [
             'file' => $file,

@@ -65,6 +65,7 @@ Route::post('uploader/tinymce', [\App\Http\Controllers\Admin\UploaderController:
 Route::post('uploader/aieditor-file', [\App\Http\Controllers\Admin\UploaderController::class, 'aiEditorFile'])->name('uploader.aieditor-file');
 Route::post('uploader/aieditor-video', [\App\Http\Controllers\Admin\UploaderController::class, 'aiEditorVideo'])->name('uploader.aieditor-video');
 Route::post('uploader/aieditor-image', [\App\Http\Controllers\Admin\UploaderController::class, 'aiEditorImage'])->name('uploader.aieditor-image');
+Route::post('uploader/image', [\App\Http\Controllers\Admin\UploaderController::class, 'image'])->name('uploader.image');
 
 // 用户协议
 Route::resource('agreements', \App\Http\Controllers\Admin\AgreementController::class, ['names' => 'agreements'])->except(['show']);

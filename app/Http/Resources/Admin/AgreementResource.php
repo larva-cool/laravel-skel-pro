@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace App\Http\Resources\Admin;
 
 use App\Models\System\Agreement;
+use App\Models\System\Dict;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,6 +32,7 @@ class AgreementResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => $this->type,
+            'type_name' => Dict::getNameById($this->type),
             'title' => $this->title,
             'status' => $this->status->label(),
             'order' => $this->order,

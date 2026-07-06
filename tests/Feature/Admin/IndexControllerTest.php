@@ -18,7 +18,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
-use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 /**
@@ -171,8 +170,8 @@ class IndexControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonStructure([
-            'data' => ['id', 'username', 'name', 'email'],
+            'id', 'username', 'name', 'email',
         ]);
-        $this->assertEquals($this->admin->id, $response->json('data.id'));
+        $this->assertEquals($this->admin->id, $response->json('id'));
     }
 }

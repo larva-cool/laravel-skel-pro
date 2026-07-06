@@ -10,7 +10,9 @@ namespace App\Models\System;
 
 use App\Enum\StatusSwitch;
 use App\Models\Model;
+use Database\Factories\AgreementFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
 
 /**
@@ -33,6 +35,9 @@ use Illuminate\Support\Carbon;
  */
 class Agreement extends Model
 {
+    /** @use HasFactory<AgreementFactory> */
+    use HasFactory;
+
     /**
      * The table associated with the model.
      *

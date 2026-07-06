@@ -11,7 +11,6 @@ namespace Tests\Feature\Admin;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Middleware\RefreshUserActiveAt;
 use App\Models\Admin\Admin;
-use App\Models\System\Permission;
 use App\Models\System\Setting;
 use App\Support\UserHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -307,7 +306,7 @@ class RoleControllerTest extends TestCase
     public function test_destroy_super_admin_role_forbidden(): void
     {
         $this->actingAsAdmin();
-        $superAdmin = Role::create(['name' => 'Super Admin', 'guard_name' => 'admin']);
+        $superAdmin = Role::findOrCreate('Super Admin', 'admin');
 
         $response = $this->deleteJson('/admin/roles/'.$superAdmin->id);
 

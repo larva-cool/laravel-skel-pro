@@ -135,64 +135,43 @@ class UserControllerTest extends TestCase
     }
 
     #[Test]
-    #[TestDox('获取用户列表JSON')]
-    public function test_index_returns_json_list(): void
+    #[TestDox('获取用户列表页面')]
+    public function test_index_returns_view(): void
     {
         $this->actingAsAdmin();
         $this->makeUser(['name' => '用户A']);
         $this->makeUser(['name' => '用户B']);
 
-        $response = $this->getJson('/admin/users');
+        $response = $this->get('/admin/users');
 
         $response->assertOk();
-        $response->assertJsonStructure([
-            'data' => [
-                '*' => ['id', 'username', 'name', 'email'],
-            ],
-            'links',
-            'meta',
-        ]);
-        $this->assertGreaterThanOrEqual(2, count($response->json('data')));
+        $response->assertViewIs('admin.user.index');
     }
 
     #[Test]
-    #[TestDox('按关键词搜索用户')]
+    #[TestDox('按关键词搜索用户列表页面')]
     public function test_index_search_by_keyword(): void
     {
         $this->actingAsAdmin();
-        $target = $this->makeUser(['name' => 'SpecialUser']);
+        $this->makeUser(['name' => 'SpecialUser']);
         $this->makeUser(['name' => 'OtherUser']);
 
-        $response = $this->getJson('/admin/users?keyword=SpecialUser');
+        $response = $this->get('/admin/users?keyword=SpecialUser');
 
         $response->assertOk();
-        $data = $response->json('data');
-        $this->assertCount(1, $data);
-        $this->assertEquals($target->id, $data[0]['id']);
+        $response->assertViewIs('admin.user.index');
     }
 
     #[Test]
-    #[TestDox('按ID搜索用户')]
+    #[TestDox('按ID搜索用户列表页面')]
     public function test_index_search_by_id(): void
     {
         $this->actingAsAdmin();
         $target = $this->makeUser();
         $this->makeUser();
 
-        $response = $this->getJson('/admin/users?id='.$target->id);
+        $response = $this->get('/admin/users?id='.$target->id);
 
-        $response->assertOk();
-        $data = $response->json('data');
-        $this->assertCount(1, $data);
-        $this->assertEquals($target->id, $data[0]['id']);
-    }
-
-    #[Test]
-    #[TestDox('用户列表页面返回视图')]
-    public function test_index_returns_view(): void
-    {
-        $this->actingAsAdmin();
-        $response = $this->get('/admin/users');
         $response->assertOk();
         $response->assertViewIs('admin.user.index');
     }

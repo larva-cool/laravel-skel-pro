@@ -70,7 +70,7 @@ class Admin extends Authenticatable
      */
     protected $fillable = [
         'user_id', 'username', 'email', 'phone', 'name', 'status', 'socket_id', 'password', 'last_login_ip',
-        'login_count', 'last_login_at',
+        'login_count', 'last_login_at', 'last_active_at',
     ];
 
     /**
@@ -193,6 +193,16 @@ class Admin extends Authenticatable
     public function isFrozen(): bool
     {
         return $this->status->isFrozen();
+    }
+
+    /**
+     * 刷新最后活动时间
+     */
+    public function refreshLastActiveAt(): void
+    {
+        if (empty($this->last_active_at) || $this->last_active_at->lt(\Carbon\Carbon::now()->subMinutes(5))) {
+            $this->updateQuietly(['last_active_at' => \Carbon\Carbon::now()]);
+        }
     }
 
     /**
