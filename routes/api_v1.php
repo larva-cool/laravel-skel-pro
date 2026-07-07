@@ -111,6 +111,15 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
     });
 
     /**
+     * 实名认证接口
+     */
+    Route::group(['prefix' => 'certification', 'as' => 'certification.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
+        $registrar->get('', [\App\Http\Controllers\Api\V1\CertificationController::class, 'show'])->name('show'); // 获取认证状态
+        $registrar->post('personal', [\App\Http\Controllers\Api\V1\CertificationController::class, 'submitPersonal'])->name('submit_personal'); // 提交个人实名认证
+        $registrar->post('enterprise', [\App\Http\Controllers\Api\V1\CertificationController::class, 'submitEnterprise'])->name('submit_enterprise'); // 提交企业实名认证
+    });
+
+    /**
      * 评论
      */
     Route::group(['as' => 'comments.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
