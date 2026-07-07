@@ -221,4 +221,61 @@ class UploaderControllerTest extends TestCase
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['file']);
     }
+
+    #[Test]
+    #[TestDox('通用图片上传成功')]
+    public function test_image_upload_success(): void
+    {
+        $this->actingAsAdmin();
+
+        $file = UploadedFile::fake()->image('card.jpg', 300, 200);
+
+        $response = $this->postJson('/admin/uploader/image', [
+            'file' => $file,
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'message',
+            'data' => ['file_name', 'file_path', 'url'],
+        ]);
+        $this->assertEquals('上传成功', $response->json('message'));
+    }
+
+    #[Test]
+    #[TestDox('通用图片上传时文件必填')]
+    public function test_image_requires_file(): void
+    {
+        $this->actingAsAdmin();
+
+        $response = $this->postJson('/admin/uploader/image', []);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['file']);
+    }
+
+    #[Test]
+    #[TestDox('通用图片上传非图片文件验证失败')]
+    public function test_image_rejects_non_image(): void
+    {
+        $this->actingAsAdmin();
+
+        $file = UploadedFile::fake()->create('document.txt', 100, 'text/plain');
+
+        $response = $this->postJson('/admin/uploader/image', [
+            'file' => $file,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['file']);
+    }
+
+    #[Test]
+    #[TestDox('未认证用户访问通用图片上传被重定向到登录页')]
+    public function test_image_unauthenticated_redirects_to_login(): void
+    {
+        $this->withoutMiddleware(RefreshUserActiveAt::class);
+        $response = $this->post('/admin/uploader/image');
+        $response->assertRedirect('/admin/auth/login');
+    }
 }

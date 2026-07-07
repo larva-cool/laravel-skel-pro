@@ -87,6 +87,7 @@ use Illuminate\Support\Str;
  * @property UserGroup $group 用户组
  * @property UserProfile $profile 个人信息
  * @property UserExtra $extra 用户扩展信息
+ * @property Certification $certification 认证信息
  * @property Collection<int,UserSocial> $socials 用户社交账号
  * @property UserSocial|null $wechatMp 微信公众号
  * @property UserSocial|null $wechatApp 微信应用
@@ -109,6 +110,7 @@ class User extends Authenticatable
 
     use Traits\DateTimeFormatter;
     use Traits\HasApiTokens;
+    use Traits\HasCertification;
 
     /**
      * The table associated with the model.

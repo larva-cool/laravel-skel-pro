@@ -104,6 +104,13 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
     });
 
     /**
+     * 上传接口
+     */
+    Route::group(['prefix' => 'upload', 'as' => 'upload.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {
+        $registrar->post('image', [\App\Http\Controllers\Api\V1\UploadController::class, 'image'])->name('upload_image'); // 上传图片
+    });
+
+    /**
      * 评论
      */
     Route::group(['as' => 'comments.'], function (Illuminate\Contracts\Routing\Registrar $registrar) {

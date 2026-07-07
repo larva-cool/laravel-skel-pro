@@ -10,7 +10,7 @@ namespace App\Models\System;
 
 use App\Enum\StatusSwitch;
 use App\Models\Model;
-use Database\Factories\AgreementFactory;
+use Database\Factories\System\AgreementFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
