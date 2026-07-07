@@ -31,9 +31,10 @@ return new class extends Migration
             $table->string('license')->nullable()->comment('营业执照照片');
 
             // 企业联系信息
-            $table->string('contact_person', 50)->nullable()->comment('联系人');
-            $table->string('contact_phone', 20)->nullable()->comment('联系手机');
-            $table->string('contact_email', 100)->nullable()->comment('联系邮箱');
+            $table->string('contact_person', 50)->nullable()->comment('联系人/法人姓名');
+            $table->string('contact_id_card_no', 200)->nullable()->comment('联系人/法人身份证号码');
+            $table->string('contact_phone', 20)->nullable()->comment('联系人/法人手机/邮箱');
+            $table->string('contact_email', 100)->nullable()->comment('联系人/法人邮箱');
 
             // 审核状态
             $table->unsignedTinyInteger('status')->default(0)->comment('认证状态: 0 未提交 1 待审核 2 被拒绝 3 已认证');

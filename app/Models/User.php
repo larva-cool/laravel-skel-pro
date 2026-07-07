@@ -61,6 +61,7 @@ use Illuminate\Support\Str;
  * @property string $name 昵称
  * @property string $avatar 头像访问 Url
  * @property UserStatus $status 状态
+ * @property bool $identified 是否实名认证
  * @property int $available_points 可用积分
  * @property int $available_coins 可用金币
  * @property string $socket_id Socket ID
@@ -125,7 +126,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'group_id', 'username', 'email', 'phone', 'name', 'avatar', 'status', 'available_points', 'available_coins',
+        'group_id', 'username', 'email', 'phone', 'name', 'avatar', 'status', 'identified', 'available_points', 'available_coins',
         'socket_id', 'device_id', 'password', 'login_count', 'vip_expires_at', 'last_active_at', 'last_login_at', 'last_login_ip',
     ];
 
@@ -148,6 +149,7 @@ class User extends Authenticatable
         'available_points' => 0,
         'available_coins' => 0,
         'vip_expires_at' => null,
+        'identified' => false,
     ];
 
     /**
@@ -166,6 +168,7 @@ class User extends Authenticatable
             'name' => 'string',
             'avatar' => 'string',
             'status' => UserStatus::class,
+            'identified' => 'boolean',
             'available_points' => 'integer',
             'available_coins' => 'integer',
             'device_id' => 'string',
