@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use App\Models\System\Dict;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

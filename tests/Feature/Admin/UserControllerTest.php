@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
 
-use App\Enum\StatusSwitch;
-use App\Enum\UserStatus;
+use App\Enums\StatusSwitch;
+use App\Enums\UserStatus;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Middleware\RefreshUserActiveAt;
 use App\Models\Admin\Admin;

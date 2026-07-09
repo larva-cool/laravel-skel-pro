@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V1;
 
-use App\Enum\ReviewStatus;
+use App\Enums\ReviewStatus;
 use App\Http\Controllers\Api\V1\CollectionController;
 use App\Models\Content\Collection;
 use App\Models\Content\Comment;

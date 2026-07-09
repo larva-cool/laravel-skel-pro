@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin\Auth;
 
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;

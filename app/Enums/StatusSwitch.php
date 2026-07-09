@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace App\Enum;
+namespace App\Enums;
 
 /**
  * 状态切换枚举 1开、0关

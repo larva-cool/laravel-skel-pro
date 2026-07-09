@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enum;
 
-use App\Enum\CacheKey;
+use App\Enums\CacheKey;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;

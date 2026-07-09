@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models\Announcement;
 
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use App\Models\Announcement\Announcement;
 use App\Models\Announcement\AnnouncementRead;
 use Illuminate\Database\Eloquent\Model;

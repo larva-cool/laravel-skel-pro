@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
 
-use App\Enum\CoinType;
+use App\Enums\CoinType;
 use App\Http\Controllers\Admin\CoinTradeController;
 use App\Http\Middleware\RefreshUserActiveAt;
 use App\Models\Admin\Admin;

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Database\Factories\System;
 
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use App\Models\System\Agreement;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

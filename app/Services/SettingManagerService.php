@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Enum\CacheKey;
-use App\Enum\SettingType;
+use App\Enums\CacheKey;
+use App\Enums\SettingType;
 use App\Models\System\Setting;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;

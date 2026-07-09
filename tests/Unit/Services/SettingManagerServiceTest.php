@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
-use App\Enum\CacheKey;
+use App\Enums\CacheKey;
 use App\Models\System\Setting;
 use App\Services\SettingManagerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;

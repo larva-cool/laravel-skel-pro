@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enum;
 
-use App\Enum\HasLabel;
-use App\Enum\StatusSwitch;
+use App\Enums\HasLabel;
+use App\Enums\StatusSwitch;
 use JsonSerializable;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;

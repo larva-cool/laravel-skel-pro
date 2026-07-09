@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1\Auth;
 
-use App\Enum\SocialProvider;
+use App\Enums\SocialProvider;
 use App\Models\User;
 use App\Support\UserHelper;
 use Illuminate\Foundation\Http\FormRequest;

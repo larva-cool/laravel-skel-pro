@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Models\User;
 
-use App\Enum\Gender;
+use App\Enums\Gender;
 use App\Models\Model;
 use App\Models\System\Area;
 use App\Models\User;

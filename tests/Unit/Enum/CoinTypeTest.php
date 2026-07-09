@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enum;
 
-use App\Enum\CoinType;
+use App\Enums\CoinType;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;

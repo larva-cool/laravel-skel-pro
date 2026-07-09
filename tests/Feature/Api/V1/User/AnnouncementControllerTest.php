@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V1\User;
 
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use App\Http\Controllers\Api\V1\User\AnnouncementController;
 use App\Models\Announcement\Announcement;
 use App\Models\User;

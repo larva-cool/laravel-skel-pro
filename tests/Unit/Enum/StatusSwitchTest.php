@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Enum;
 
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;

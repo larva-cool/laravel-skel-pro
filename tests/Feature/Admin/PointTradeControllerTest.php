@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
 
-use App\Enum\PointType;
+use App\Enums\PointType;
 use App\Http\Controllers\Admin\PointTradeController;
 use App\Http\Middleware\RefreshUserActiveAt;
 use App\Models\Admin\Admin;

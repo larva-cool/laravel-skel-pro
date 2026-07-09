@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace App\Enum;
+namespace App\Enums;
 
 use JsonSerializable;
 

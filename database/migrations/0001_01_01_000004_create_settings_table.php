@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-use App\Enum\SettingType;
+use App\Enums\SettingType;
 use App\Models\System\Setting;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

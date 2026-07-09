@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Models\System;
 
-use App\Enum\CacheKey;
+use App\Enums\CacheKey;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models\User;
 
-use App\Enum\SocialProvider;
+use App\Enums\SocialProvider;
 use App\Models\User\UserSocial;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;

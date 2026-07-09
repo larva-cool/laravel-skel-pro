@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Models\Admin;
 
-use App\Enum\UserStatus;
+use App\Enums\UserStatus;
 use App\Models\Traits;
 use App\Models\User;
 use App\Models\User\LoginHistory;

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Notifications;
 
-use App\Enum\ReviewStatus;
+use App\Enums\ReviewStatus;
 use App\Models\Content\Comment;
 use App\Models\User;
 use App\Notifications\Content\MentionedInComment;

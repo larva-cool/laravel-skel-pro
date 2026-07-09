@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enum\SocialProvider;
-use App\Enum\UserStatus;
+use App\Enums\SocialProvider;
+use App\Enums\UserStatus;
 use App\Events\User\EmailReset;
 use App\Events\User\EmailVerified;
 use App\Events\User\PayPasswordReset;

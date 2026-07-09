@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
-use App\Enum\UserStatus;
+use App\Enums\UserStatus;
 use App\Events\User\EmailVerified;
 use App\Events\User\PhoneVerified;
 use App\Events\User\UsernameReset;

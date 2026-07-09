@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V1;
 
-use App\Enum\ReviewStatus;
+use App\Enums\ReviewStatus;
 use App\Http\Controllers\Api\V1\LikeController;
 use App\Models\Content\Comment;
 use App\Models\Content\Like;
