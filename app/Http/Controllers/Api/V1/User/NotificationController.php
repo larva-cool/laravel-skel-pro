@@ -13,6 +13,7 @@ use App\Http\Resources\Api\V1\NotificationResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 
 /**
@@ -35,8 +36,9 @@ class NotificationController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $perPage = \per_page($request);
-        $notifications = $request->user()->notifications()->paginate($perPage);
+        $notifications = $request->user()
+            ->notifications()
+            ->paginate(per_page($request));
 
         return NotificationResource::collection($notifications);
     }
@@ -46,8 +48,9 @@ class NotificationController extends Controller
      */
     public function unread(Request $request): AnonymousResourceCollection
     {
-        $perPage = \per_page($request);
-        $notifications = $request->user()->unreadNotifications()->paginate($perPage);
+        $notifications = $request->user()
+            ->unreadNotifications()
+            ->paginate(per_page($request));
 
         return NotificationResource::collection($notifications);
     }
@@ -57,7 +60,9 @@ class NotificationController extends Controller
      */
     public function markAllAsRead(Request $request): JsonResponse
     {
-        $request->user()->unreadNotifications()->update(['read_at' => Carbon::now()]);
+        $request->user()
+            ->unreadNotifications()
+            ->update(['read_at' => Carbon::now()]);
 
         return response()->json(['message' => __('system.successful_operation')]);
     }
@@ -70,8 +75,10 @@ class NotificationController extends Controller
     public function markAsRead(Request $request): JsonResponse
     {
         if ($request->has('id')) {
-            $request->user()->unreadNotifications()->where('id',
-                $request->post('id'))->update(['read_at' => Carbon::now()]);
+            $request->user()
+                ->unreadNotifications()
+                ->where('id', $request->post('id'))
+                ->update(['read_at' => Carbon::now()]);
         }
 
         return response()->json(['message' => __('system.successful_operation')]);
@@ -82,9 +89,11 @@ class NotificationController extends Controller
      *
      * @codeCoverageIgnore
      */
-    public function clearRead(Request $request)
+    public function clearRead(Request $request): Response
     {
-        $request->user()->readNotifications()->delete();
+        $request->user()
+            ->readNotifications()
+            ->delete();
 
         return response()->noContent();
     }

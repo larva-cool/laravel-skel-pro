@@ -111,7 +111,6 @@ class User extends Authenticatable
 
     use Traits\DateTimeFormatter;
     use Traits\HasApiTokens;
-    use Traits\HasCertification;
 
     /**
      * The table associated with the model.
@@ -126,7 +125,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'group_id', 'username', 'email', 'phone', 'name', 'avatar', 'status', 'identified', 'available_points', 'available_coins',
+        'group_id', 'username', 'email', 'phone', 'name', 'avatar', 'status', 'available_points', 'available_coins',
         'socket_id', 'device_id', 'password', 'login_count', 'vip_expires_at', 'last_active_at', 'last_login_at', 'last_login_ip',
     ];
 
@@ -149,7 +148,6 @@ class User extends Authenticatable
         'available_points' => 0,
         'available_coins' => 0,
         'vip_expires_at' => null,
-        'identified' => false,
     ];
 
     /**
@@ -168,7 +166,6 @@ class User extends Authenticatable
             'name' => 'string',
             'avatar' => 'string',
             'status' => UserStatus::class,
-            'identified' => 'boolean',
             'available_points' => 'integer',
             'available_coins' => 'integer',
             'device_id' => 'string',

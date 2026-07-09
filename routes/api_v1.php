@@ -29,13 +29,9 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
             $registrar->get('area', [\App\Http\Controllers\Api\V1\CommonController::class, 'area'])->name('area'); // 地区列表
             $registrar->get('source-types', [\App\Http\Controllers\Api\V1\CommonController::class, 'sourceTypes'])->name('source_types'); // 获取 Source Types
             $registrar->get('settings', [\App\Http\Controllers\Api\V1\CommonController::class, 'settings'])->name('settings'); // 系统配置
+            $registrar->get('agreement/{type}', [\App\Http\Controllers\Api\V1\CommonController::class, 'agreement'])->name('agreement');// 协议详情
         });
     });
-
-    /**
-     * 协议接口
-     */
-    Route::get('agreement/{type}', [\App\Http\Controllers\Api\V1\AgreementController::class, 'show'])->name('agreement.show');
 
     /**
      * 注册接口

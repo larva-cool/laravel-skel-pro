@@ -12,7 +12,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Content\StoreCollectionRequest;
 use App\Http\Resources\Api\V1\CollectionResource;
 use App\Models\Content\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * 收藏控制器
@@ -32,9 +34,8 @@ class CollectionController extends Controller
     /**
      * 收藏列表
      */
-    public function index(Request $request)
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $perPage = clamp($request->query('per_page', 15), 1, 100);
         $query = Collection::with(['source'])
             ->where('user_id', $request->user()->id);
         if ($request->filled('type')) {
@@ -43,7 +44,7 @@ class CollectionController extends Controller
 
         $items = $query->orderByDesc('updated_at')
             ->orderByDesc('id')
-            ->paginate($perPage);
+            ->paginate(per_page($request));
 
         return CollectionResource::collection($items);
     }
@@ -51,7 +52,7 @@ class CollectionController extends Controller
     /**
      * 添加收藏
      */
-    public function store(StoreCollectionRequest $request)
+    public function store(StoreCollectionRequest $request): JsonResponse
     {
         if (! Collection::isExist($request->user()->id, $request->source_type, $request->source_id)) {
             Collection::create($request->validated());
@@ -63,7 +64,7 @@ class CollectionController extends Controller
     /**
      * 取消收藏
      */
-    public function destroy(Request $request, Collection $collection)
+    public function destroy(Request $request, Collection $collection): JsonResponse
     {
         if ($collection->user_id == $request->user()->id) {
             $collection?->delete();

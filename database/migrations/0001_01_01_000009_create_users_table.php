@@ -36,7 +36,6 @@ return new class extends Migration
             $table->string('name')->nullable()->comment('昵称');
             $table->string('avatar', 1000)->nullable()->comment('头像');
             $table->unsignedTinyInteger('status')->default(UserStatus::STATUS_ACTIVE->value)->comment('状态：1、active，0、frozen');
-            $table->boolean('identified')->nullable()->default(false)->comment('是否实名认证');
             $table->string('socket_id')->nullable()->comment('SocketId');
             $table->string('device_id')->nullable()->comment('设备ID');
             $table->unsignedInteger('available_points')->nullable()->default(0)->comment('可用积分');

@@ -34,7 +34,6 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $perPage = per_page($request);
         $userId = $request->user()->id;
         $items = Announcement::active('user')
             ->with([
@@ -43,7 +42,7 @@ class AnnouncementController extends Controller
                 },
             ])
             ->orderByDesc('id')
-            ->paginate($perPage);
+            ->paginate(per_page($request));
 
         return AnnouncementResource::collection($items);
     }

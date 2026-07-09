@@ -89,6 +89,5 @@ class UserObserver implements ShouldHandleEventsAfterCommit
         $user->socials()->delete();
         $user->profile->delete();
         $user->extra->delete();
-        $user->certification?->delete();
     }
 }

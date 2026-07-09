@@ -13,7 +13,9 @@ use App\Http\Requests\Api\V1\Common\AreaRequest;
 use App\Http\Requests\Api\V1\Common\DictRequest;
 use App\Http\Requests\Api\V1\Common\MailCaptchaRequest;
 use App\Http\Requests\Api\V1\Common\SmsCaptchaRequest;
+use App\Http\Resources\Api\V1\AgreementResource;
 use App\Http\Resources\Api\V1\DictResource;
+use App\Models\System\Agreement;
 use App\Models\System\Area;
 use App\Models\System\Dict;
 use App\Models\User\Nickname;
@@ -143,5 +145,17 @@ class CommonController extends Controller
     public function sourceTypes(): JsonResponse
     {
         return response()->json(source_types());
+    }
+
+    /**
+     * 按类型获取最新的一个协议
+     */
+    public function agreement(string $type): AgreementResource
+    {
+        $query = Agreement::query()->active($type);
+        $item = $query->orderBy('id', 'desc')
+            ->firstOrFail();
+
+        return new AgreementResource($item);
     }
 }
