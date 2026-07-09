@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Enum;
+namespace Tests\Unit\Enums;
 
 use App\Enums\UserStatus;
 use PHPUnit\Framework\Attributes\CoversClass;
