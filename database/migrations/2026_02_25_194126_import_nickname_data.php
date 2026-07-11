@@ -19,10 +19,10 @@ return new class extends Migration
     {
         if (! app()->runningUnitTests()) {// testing 跳过
             ini_set('memory_limit', '-1');
-            $items = FileHelper::json(database_path('data/nickname-20251129.json'));
+            $items = FileHelper::json(database_path('data/nickname-lite.json'));
             $nicknames = [];
             foreach ($items as $key => $val) {
-                $nicknames[] = ['nickname' => $val];
+                $nicknames[] = ['nickname' => $val['nickname']];
                 // 5000个一组写入数据库
                 if ($key % 5000 === 0) {
                     Nickname::insert($nicknames);
