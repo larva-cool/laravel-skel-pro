@@ -548,6 +548,15 @@
                                     <div class="layui-form-mid layui-text-em">OpenAI API Key。</div>
                                 </div>
                                 <div class="layui-form-item">
+                                    <label class="layui-form-label">默认模型</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="openai[default_model]"
+                                               value="{{ $settings['openai.default_model'] ?? '' }}" placeholder="请输入默认模型"
+                                               class="layui-input">
+                                    </div>
+                                    <div class="layui-form-mid layui-text-em">OpenAI 默认模型。</div>
+                                </div>
+                                <div class="layui-form-item">
                                     <label class="layui-form-label">请求超时时间</label>
                                     <div class="layui-input-inline">
                                         <div class="layui-input-group">

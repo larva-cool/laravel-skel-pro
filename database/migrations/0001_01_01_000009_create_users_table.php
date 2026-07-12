@@ -6,8 +6,8 @@
 
 declare(strict_types=1);
 
-use App\Enum\Gender;
-use App\Enum\UserStatus;
+use App\Enums\Gender;
+use App\Enums\UserStatus;
 use App\Models\User\UserGroup;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

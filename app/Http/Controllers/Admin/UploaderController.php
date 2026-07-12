@@ -114,4 +114,24 @@ class UploaderController extends AbstractController
             'location' => $attachment->file_url,
         ]);
     }
+
+    /**
+     * 通用图片上传（用于证件等）
+     *
+     * @throws ValidationException
+     */
+    public function image(UploadImageRequest $request): JsonResponse
+    {
+        $fileInfo = $request->handleUpload();
+        $attachment = Attachment::create($fileInfo);
+
+        return response()->json([
+            'message' => '上传成功',
+            'data' => [
+                'file_name' => $attachment->file_name,
+                'file_path' => $attachment->file_path,
+                'url' => $attachment->file_url,
+            ],
+        ]);
+    }
 }

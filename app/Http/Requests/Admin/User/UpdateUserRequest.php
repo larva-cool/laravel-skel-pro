@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin\User;
 
-use App\Enum\Gender;
+use App\Enums\Gender;
 use App\Models\User;
 use App\Models\User\UserExtra;
 use App\Rules\PhoneRule;

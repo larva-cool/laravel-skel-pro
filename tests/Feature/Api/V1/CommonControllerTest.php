@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V1;
 
-use App\Enum\CacheKey;
-use App\Enum\StatusSwitch;
+use App\Enums\CacheKey;
+use App\Enums\StatusSwitch;
 use App\Http\Controllers\Api\V1\CommonController;
 use App\Models\System\Dict;
 use Illuminate\Foundation\Testing\RefreshDatabase;

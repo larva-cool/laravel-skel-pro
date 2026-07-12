@@ -27,13 +27,13 @@ class UsernameRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (! is_scalar($value)) {
-            $fail('validation.username');
+            $fail('validation.username')->translate();
 
             return;
         }
         $value = (string) $value;
         if (! preg_match('/^[-a-zA-Z0-9_]+$/u', $value)) {
-            $fail('validation.username');
+            $fail('validation.username')->translate();
         }
     }
 }

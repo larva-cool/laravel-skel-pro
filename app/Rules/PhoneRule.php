@@ -27,13 +27,13 @@ class PhoneRule implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (! is_scalar($value)) {
-            $fail('validation.phone');
+            $fail('validation.phone')->translate();
 
             return;
         }
         $value = (string) $value;
         if (! preg_match('/^1[2-9]\d{9}$/', $value)) {
-            $fail('validation.phone');
+            $fail('validation.phone')->translate();
         }
     }
 }

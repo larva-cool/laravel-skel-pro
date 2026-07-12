@@ -46,7 +46,7 @@ Route::resource('settings', \App\Http\Controllers\Admin\SettingController::class
 
 // 字典管理
 Route::post('dicts/status', [\App\Http\Controllers\Admin\DictController::class, 'updateStatus'])->name('dicts.status');
-Route::post('dicts/store_data', [\App\Http\Controllers\Admin\DictController::class, 'storeData'])->name('dicts.stoer_data');
+Route::post('dicts/store_data', [\App\Http\Controllers\Admin\DictController::class, 'storeData'])->name('dicts.store_data');
 Route::post('dicts/batch_destroy', [\App\Http\Controllers\Admin\DictController::class, 'batchDestroy'])->name('dicts.batch_destroy');
 Route::get('dicts/create_data', [\App\Http\Controllers\Admin\DictController::class, 'createData'])->name('dicts.create_data');
 Route::get('dicts/edit_data/{dict}', [\App\Http\Controllers\Admin\DictController::class, 'editData'])->name('dicts.edit_data');
@@ -65,6 +65,7 @@ Route::post('uploader/tinymce', [\App\Http\Controllers\Admin\UploaderController:
 Route::post('uploader/aieditor-file', [\App\Http\Controllers\Admin\UploaderController::class, 'aiEditorFile'])->name('uploader.aieditor-file');
 Route::post('uploader/aieditor-video', [\App\Http\Controllers\Admin\UploaderController::class, 'aiEditorVideo'])->name('uploader.aieditor-video');
 Route::post('uploader/aieditor-image', [\App\Http\Controllers\Admin\UploaderController::class, 'aiEditorImage'])->name('uploader.aieditor-image');
+Route::post('uploader/image', [\App\Http\Controllers\Admin\UploaderController::class, 'image'])->name('uploader.image');
 
 // 用户协议
 Route::resource('agreements', \App\Http\Controllers\Admin\AgreementController::class, ['names' => 'agreements'])->except(['show']);
@@ -84,6 +85,13 @@ Route::resource('users', \App\Http\Controllers\Admin\UserController::class, ['na
 // 金币记录
 Route::get('coins', [\App\Http\Controllers\Admin\CoinTradeController::class, 'index'])->name('coins.index');
 Route::get('points', [\App\Http\Controllers\Admin\PointTradeController::class, 'index'])->name('points.index');
+
+// 短信验证码记录
+Route::get('phone_codes', [\App\Http\Controllers\Admin\PhoneCodeController::class, 'index'])->name('phone_codes.index');
+
+// 邮件验证码记录
+Route::get('mail_codes', [\App\Http\Controllers\Admin\MailCodeController::class, 'index'])->name('mail_codes.index');
+
 // 单页管理
 Route::resource('pages', \App\Http\Controllers\Admin\PageController::class, ['names' => 'pages'])->except(['show']);
 

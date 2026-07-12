@@ -78,6 +78,7 @@ class UserObserver implements ShouldHandleEventsAfterCommit
      */
     public function forceDeleted(User $user): void
     {
+        $user->tokens()->delete();
         $user->loginHistories()->delete();
         // $user->signs()->delete();
         $user->points()->delete();

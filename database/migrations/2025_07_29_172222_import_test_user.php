@@ -17,27 +17,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        UserHelper::createByPhone('14000000000')->updateQuietly(['name' => '测试号🐶']);
-        UserHelper::createByPhone('14000000001')->updateQuietly(['name' => '测试号🐱']);
-        UserHelper::createByPhone('14000000002')->updateQuietly(['name' => '测试号🐭']);
-        UserHelper::createByPhone('14000000003')->updateQuietly(['name' => '测试号🐹']);
-        UserHelper::createByPhone('14000000004')->updateQuietly(['name' => '测试号🐰']);
-        UserHelper::createByPhone('14000000005')->updateQuietly(['name' => '测试号🐻']);
-        UserHelper::createByPhone('14000000006')->updateQuietly(['name' => '测试号🐼']);
-        UserHelper::createByPhone('14000000007')->updateQuietly(['name' => '测试号🐨']);
-        UserHelper::createByPhone('14000000008')->updateQuietly(['name' => '测试号🐯']);
-        UserHelper::createByPhone('14000000009')->updateQuietly(['name' => '测试号🦁']);
-        UserHelper::createByPhone('14000000010')->updateQuietly(['name' => '测试号🐮']);
-        UserHelper::createByPhone('14000000011')->updateQuietly(['name' => '测试号🐷']);
-        UserHelper::createByPhone('14000000012')->updateQuietly(['name' => '测试号🐸']);
-        UserHelper::createByPhone('14000000013')->updateQuietly(['name' => '测试号🐙']);
-        UserHelper::createByPhone('14000000014')->updateQuietly(['name' => '测试号🐵']);
-        UserHelper::createByPhone('14000000015')->updateQuietly(['name' => '测试号🐔']);
-        UserHelper::createByPhone('14000000016')->updateQuietly(['name' => '测试号🦆']);
-        UserHelper::createByPhone('14000000017')->updateQuietly(['name' => '测试号🐥']);
-        UserHelper::createByPhone('14000000018')->updateQuietly(['name' => '测试号🦉']);
-        UserHelper::createByPhone('14000000019')->updateQuietly(['name' => '测试号🐌']);
-        UserHelper::createByPhone('14000000020')->updateQuietly(['name' => '测试号🐞']);
+        UserHelper::createByPhone('14000000000', 'password')->updateQuietly(['name' => '测试号🐶']);
+        UserHelper::createByPhone('14000000001', 'password')->updateQuietly(['name' => '测试号🐱']);
+        UserHelper::createByPhone('14000000002', 'password')->updateQuietly(['name' => '测试号🐭']);
+        UserHelper::createByPhone('14000000003', 'password')->updateQuietly(['name' => '测试号🐹']);
+        UserHelper::createByPhone('14000000004', 'password')->updateQuietly(['name' => '测试号🐰']);
+        UserHelper::createByPhone('14000000005', 'password')->updateQuietly(['name' => '测试号🐻']);
+        UserHelper::createByPhone('14000000006', 'password')->updateQuietly(['name' => '测试号🐼']);
+        UserHelper::createByPhone('14000000007', 'password')->updateQuietly(['name' => '测试号🐨']);
+        UserHelper::createByPhone('14000000008', 'password')->updateQuietly(['name' => '测试号🐯']);
+        UserHelper::createByPhone('14000000009', 'password')->updateQuietly(['name' => '测试号🦁']);
+        UserHelper::createByPhone('14000000010', 'password')->updateQuietly(['name' => '测试号🐮']);
+        UserHelper::createByPhone('14000000011', 'password')->updateQuietly(['name' => '测试号🐷']);
+        UserHelper::createByPhone('14000000012', 'password')->updateQuietly(['name' => '测试号🐸']);
+        UserHelper::createByPhone('14000000013', 'password')->updateQuietly(['name' => '测试号🐙']);
+        UserHelper::createByPhone('14000000014', 'password')->updateQuietly(['name' => '测试号🐵']);
+        UserHelper::createByPhone('14000000015', 'password')->updateQuietly(['name' => '测试号🐔']);
+        UserHelper::createByPhone('14000000016', 'password')->updateQuietly(['name' => '测试号🦆']);
+        UserHelper::createByPhone('14000000017', 'password')->updateQuietly(['name' => '测试号🐥']);
+        UserHelper::createByPhone('14000000018', 'password')->updateQuietly(['name' => '测试号🦉']);
+        UserHelper::createByPhone('14000000019', 'password')->updateQuietly(['name' => '测试号🐌']);
+        UserHelper::createByPhone('14000000020', 'password')->updateQuietly(['name' => '测试号🐞']);
     }
 
     /**

@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace App\Models\Content;
 
 use App\Casts\AsJson;
-use App\Enum\ReviewStatus;
+use App\Enums\ReviewStatus;
 use App\Models\Model;
 use App\Models\Traits;
 use App\Models\User;

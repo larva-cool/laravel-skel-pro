@@ -40,8 +40,9 @@ class AgreementController extends AbstractController
     public function index(Request $request)
     {
         if ($request->expectsJson()) {
-            $perPage = per_page($request, 15);
-            $items = Agreement::query()->orderBy('id')->paginate($perPage);
+            $items = Agreement::query()
+                ->orderByDesc('id')
+                ->paginate(per_page($request, 15));
 
             return AgreementResource::collection($items);
         }

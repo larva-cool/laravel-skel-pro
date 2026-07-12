@@ -10,7 +10,7 @@ namespace App\Models\Announcement;
 
 use App\Casts\AsJson;
 use App\Casts\StorageUrl;
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;

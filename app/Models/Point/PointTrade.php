@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Models\Point;
 
-use App\Enum\PointType;
+use App\Enums\PointType;
 use App\Models\Model;
 use App\Models\Traits;
 use Illuminate\Database\Eloquent\Casts\Attribute;

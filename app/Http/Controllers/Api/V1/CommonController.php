@@ -13,12 +13,16 @@ use App\Http\Requests\Api\V1\Common\AreaRequest;
 use App\Http\Requests\Api\V1\Common\DictRequest;
 use App\Http\Requests\Api\V1\Common\MailCaptchaRequest;
 use App\Http\Requests\Api\V1\Common\SmsCaptchaRequest;
+use App\Http\Resources\Api\V1\AgreementResource;
 use App\Http\Resources\Api\V1\DictResource;
+use App\Models\System\Agreement;
 use App\Models\System\Area;
 use App\Models\System\Dict;
+use App\Models\User\Nickname;
 use App\Services\MailCaptchaService;
 use App\Services\SmsCaptchaService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * 公共接口
@@ -37,6 +41,19 @@ class CommonController extends Controller
         }
 
         return response()->json(['message' => __('system.successful_operation')]);
+    }
+
+    /**
+     * 获取一个随机昵称
+     * @return JsonResponse
+     */
+    public function nickname(): JsonResponse
+    {
+        $nickname = Nickname::getRandomNickname();
+        return response()->json([
+            'data' => ['nickname' => $nickname],
+            'message' => __('system.successful_operation')
+        ]);
     }
 
     /**
@@ -96,7 +113,7 @@ class CommonController extends Controller
     /**
      * 字典接口
      */
-    public function dict(DictRequest $request)
+    public function dict(DictRequest $request): AnonymousResourceCollection
     {
         $options = Dict::getOptions($request->type);
 
@@ -128,5 +145,17 @@ class CommonController extends Controller
     public function sourceTypes(): JsonResponse
     {
         return response()->json(source_types());
+    }
+
+    /**
+     * 按类型获取最新的一个协议
+     */
+    public function agreement(string $type): AgreementResource
+    {
+        $query = Agreement::query()->active($type);
+        $item = $query->orderBy('id', 'desc')
+            ->firstOrFail();
+
+        return new AgreementResource($item);
     }
 }

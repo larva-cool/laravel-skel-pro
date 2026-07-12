@@ -44,7 +44,7 @@ class UsernameChangeRule implements ValidationRule
     {
         $allowedNumber = (int) settings('user.username_change', 3);
         if ($this->user->extra->username_change_count >= $allowedNumber) {
-            $fail('validation.custom.username.change_count');
+            $fail('validation.custom.username.change_count')->translate();
         }
     }
 }

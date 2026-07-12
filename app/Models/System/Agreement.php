@@ -8,9 +8,11 @@ declare(strict_types=1);
 
 namespace App\Models\System;
 
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use App\Models\Model;
+use Database\Factories\System\AgreementFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
 
 /**
@@ -33,6 +35,9 @@ use Illuminate\Support\Carbon;
  */
 class Agreement extends Model
 {
+    /** @use HasFactory<AgreementFactory> */
+    use HasFactory;
+
     /**
      * The table associated with the model.
      *

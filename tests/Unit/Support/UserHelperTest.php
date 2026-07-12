@@ -8,10 +8,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Support;
 
-use App\Enum\SocialProvider;
-use App\Enum\UserStatus;
+use App\Enums\SocialProvider;
+use App\Enums\UserStatus;
 use App\Models\User;
-use App\Models\User\UserSocial;
 use App\Support\UserHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;

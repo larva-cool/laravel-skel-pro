@@ -3,6 +3,6 @@
         <option value="">{{$placeholder}}</option>
     @endif
     @foreach($items as $key => $val)
-        <option value="{{$key}}" @selected($selected == $key)>{{$val}}</option>
+        <option value="{{$key}}" @selected(in_array($key, $selected))>{{$val}}</option>
     @endforeach
 </select>

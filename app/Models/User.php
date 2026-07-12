@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Enum\SocialProvider;
-use App\Enum\UserStatus;
+use App\Enums\SocialProvider;
+use App\Enums\UserStatus;
 use App\Events\User\EmailReset;
 use App\Events\User\EmailVerified;
 use App\Events\User\PayPasswordReset;
@@ -61,6 +61,7 @@ use Illuminate\Support\Str;
  * @property string $name 昵称
  * @property string $avatar 头像访问 Url
  * @property UserStatus $status 状态
+ * @property bool $identified 是否实名认证
  * @property int $available_points 可用积分
  * @property int $available_coins 可用金币
  * @property string $socket_id Socket ID
@@ -87,6 +88,7 @@ use Illuminate\Support\Str;
  * @property UserGroup $group 用户组
  * @property UserProfile $profile 个人信息
  * @property UserExtra $extra 用户扩展信息
+ * @property Certification $certification 认证信息
  * @property Collection<int,UserSocial> $socials 用户社交账号
  * @property UserSocial|null $wechatMp 微信公众号
  * @property UserSocial|null $wechatApp 微信应用

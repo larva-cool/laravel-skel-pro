@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models\System;
 
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use App\Models\System\Dict;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
-use App\Enum\CoinType;
+use App\Enums\CoinType;
 use App\Exceptions\InsufficientCoinsException;
 use App\Models\Coin\CoinTrade;
 use App\Models\User;

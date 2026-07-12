@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V1;
 
-use App\Enum\CoinType;
-use App\Enum\PointType;
+use App\Enums\CoinType;
+use App\Enums\PointType;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Models\System\PhoneCode;
 use App\Models\User;

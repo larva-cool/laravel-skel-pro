@@ -79,6 +79,20 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'tls' => [
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'handler' => \Larva\Volc\MonologHandler::class,
+            'handler_with' => [
+                'ak' => env('VOLC_ACCESS_KEY'),
+                'sk' => env('VOLC_SECRET_KEY'),
+                'endpoint' => env('TLS_ENDPOINT', 'https://tls-cn-beijing.volces.com'),
+                'topicId' => env('TLS_TOPIC', ''),
+                'region' => env('TLS_REGION', 'cn-beijing'),
+            ],
+            'formatter' => \Larva\Volc\TlsLoggingFormatter::class,
+        ],
+
         'kafka' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),

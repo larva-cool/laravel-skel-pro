@@ -44,7 +44,7 @@ class PayPasswordRule implements ValidationRule
     {
         // 验证支付密码是否正确
         if (! $this->user->verifyPayPassword($value)) {
-            $fail(__('user.pay_password'));
+            $fail('validation.pay_password')->translate();
         }
     }
 }

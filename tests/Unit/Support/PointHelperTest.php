@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Support;
 
-use App\Enum\PointType;
+use App\Enums\PointType;
 use App\Exceptions\InsufficientPointsException;
 use App\Models\Point\PointRecord;
 use App\Models\Point\PointTrade;

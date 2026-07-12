@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace App\Models\System;
 
-use App\Enum\CacheKey;
-use App\Enum\StatusSwitch;
+use App\Enums\CacheKey;
+use App\Enums\StatusSwitch;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

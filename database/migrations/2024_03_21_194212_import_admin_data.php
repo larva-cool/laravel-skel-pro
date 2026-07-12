@@ -128,6 +128,22 @@ return new class extends Migration
                         'order' => 1000,
                     ],
                     [
+                        'title' => '短信验证码',
+                        'icon' => 'layui-icon layui-icon-cellphone',
+                        'href' => '/admin/phone_codes',
+                        'permission_name' => 'phone_codes.*',
+                        'type' => 1,
+                        'order' => 1000,
+                    ],
+                    [
+                        'title' => '邮件验证码',
+                        'icon' => 'layui-icon layui-icon-email',
+                        'href' => '/admin/mail_codes',
+                        'permission_name' => 'mail_codes.*',
+                        'type' => 1,
+                        'order' => 1000,
+                    ],
+                    [
                         'title' => '用户协议管理',
                         'icon' => 'layui-icon layui-icon-set',
                         'href' => '/admin/agreements',

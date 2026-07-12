@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin\Announcement;
 
-use App\Enum\StatusSwitch;
-use App\Enum\UserType;
+use App\Enums\StatusSwitch;
+use App\Enums\UserType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

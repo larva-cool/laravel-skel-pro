@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace App\Jobs\User;
 
-use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Carbon;
 

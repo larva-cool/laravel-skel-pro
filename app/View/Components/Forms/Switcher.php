@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\View\Components\Forms;
 
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;

@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-use App\Enum\SettingType;
+use App\Enums\SettingType;
 use App\Models\System\Setting;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -91,6 +91,7 @@ return new class extends Migration
             ['name' => 'OpenAI Project', 'key' => 'openai.project', 'value' => null, 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => 'OpenAI Base URI', 'key' => 'openai.base_uri', 'value' => null, 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => 'OpenAI Request Timeout', 'key' => 'openai.request_timeout', 'value' => 30, 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
+            ['name' => 'OpenAI Default Model', 'key' => 'openai.default_model', 'value' => '', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
 
         ]);
     }

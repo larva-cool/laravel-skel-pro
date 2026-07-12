@@ -12,7 +12,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Content\StoreCommentRequest;
 use App\Http\Resources\Api\V1\CommentResource;
 use App\Models\Content\Comment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * 评论控制器
@@ -33,7 +35,7 @@ class CommentController extends Controller
     /**
      * 评论列表
      */
-    public function index(Request $request, $source_type, $source_id)
+    public function index(Request $request, $source_type, $source_id): AnonymousResourceCollection
     {
         $perPage = per_page($request);
         $query = Comment::with(['user'])
@@ -50,7 +52,7 @@ class CommentController extends Controller
     /**
      * 评论
      */
-    public function store(StoreCommentRequest $request)
+    public function store(StoreCommentRequest $request): CommentResource
     {
         $comment = Comment::create($request->validated());
 
@@ -60,7 +62,7 @@ class CommentController extends Controller
     /**
      * 删除评论
      */
-    public function destroy(Comment $comment)
+    public function destroy(Comment $comment): JsonResponse
     {
         $comment?->delete();
 

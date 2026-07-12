@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models\Point;
 
-use App\Enum\PointType;
+use App\Enums\PointType;
 use App\Models\Point\PointRecord;
 use App\Models\Point\PointTrade;
 use Illuminate\Database\Eloquent\Relations\MorphTo;

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Models\User;
 
-use App\Enum\SocialProvider;
+use App\Enums\SocialProvider;
 use App\Models\Model;
 use App\Models\Traits;
 use App\Models\User;

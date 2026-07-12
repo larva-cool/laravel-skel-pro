@@ -93,6 +93,7 @@ class StoreConfigRequest extends FormRequest
             'openai.organization' => ['nullable', 'string', 'max:255'],
             'openai.project' => ['nullable', 'string', 'max:255'],
             'openai.api_key' => ['nullable', 'string', 'max:255'],
+            'openai.default_model' => ['nullable', 'string', 'max:255'],
             'openai.request_timeout' => ['nullable', 'integer', 'min:3'],
         ];
     }

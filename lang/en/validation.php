@@ -180,6 +180,8 @@ return [
     */
     'username' => 'The :attribute field format is invalid.',
     'phone' => 'The :attribute field format is invalid.',
+    'verify_code' => 'The :attribute field format is invalid.',
+    'pay_password' => 'The :attribute field format is invalid.',
 
     /*
     |--------------------------------------------------------------------------
@@ -232,9 +234,16 @@ return [
         'phone' => 'Phone',
         'user_id' => 'User ID',
         'username' => 'Username',
+        'device' => 'Device',
+        'real_name' => 'Real Name',
+        'id_card' => 'ID Card Number',
         'verify_code' => 'Verify Code',
+        'pay_password' => 'Pay Password',
+        'amount' => 'Amount',
+        'status' => 'Status',
         'effective_start_time' => 'Effective Start Time',
-        'effective_end_time' => 'Effective Start Time',
+        'effective_end_time' => 'Effective End Time',
+        'remark' => 'Remark',
     ],
 
 ];

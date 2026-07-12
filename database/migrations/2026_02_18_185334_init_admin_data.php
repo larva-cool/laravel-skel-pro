@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-use App\Enum\StatusSwitch;
+use App\Enums\StatusSwitch;
 use App\Models\Admin\Admin;
 use App\Models\System\Permission;
 use Illuminate\Database\Migrations\Migration;

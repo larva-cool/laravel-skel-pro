@@ -37,6 +37,20 @@ class DynamicConfigServiceProvider extends ServiceProvider
             if ($instance->has('upload.storage')) {
                 Config::set('filesystems.default', $instance->get('upload.storage'));
             }
+            // 短信配置<火山引擎>
+            if ($instance->has('sms.region_id')) {
+                Config::set('sms.gateways.region_id', $instance->get('sms.region_id'));
+            }
+            if ($instance->has('sms.sign_name')) {
+                Config::set('sms.gateways.volcengine.sign_name', $instance->get('sms.sign_name'));
+            }
+            if ($instance->has('sms.sms_account')) {
+                Config::set('sms.gateways.volcengine.sms_account', $instance->get('sms.sms_account'));
+            }
+            // 阿里云短信
+            if ($instance->has('sms.aliyun_sign_name')) {
+                Config::set('sms.gateways.aliyun.sign_name', $instance->get('sms.aliyun_sign_name'));
+            }
         } catch (\Exception $e) {
             Log::warning($e->getMessage());
         }

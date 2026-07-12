@@ -28,7 +28,7 @@ class DictSelect extends Component
 
     public string $placeholder;
 
-    protected bool $multiple;
+    public bool $multiple;
 
     public array $items = [];
 

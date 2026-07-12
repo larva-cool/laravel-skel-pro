@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models\Coin;
 
-use App\Enum\CoinType;
+use App\Enums\CoinType;
 use App\Models\Coin\CoinTrade;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\MorphTo;

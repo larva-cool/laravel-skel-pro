@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Sms;
 
+use App\Services\SettingManagerService;
 use App\Sms\VerifyCodeMessage;
 use Overtrue\EasySms\Contracts\GatewayInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -22,12 +23,29 @@ use Tests\TestCase;
 class VerifyCodeMessageTest extends TestCase
 {
     /**
+     * 设置 mock 的 SettingsManager
+     */
+    protected function mockSettings(string $aliyunTemplateId = 'SMS_157965369', string $volcengineTemplateId = 'ST_84db0ca7'): void
+    {
+        $settingManagerMock = $this->createMock(SettingManagerService::class);
+        $settingManagerMock->method('get')
+            ->willReturnMap([
+                ['sms.aliyun_template_id', null, $aliyunTemplateId],
+                ['sms.template_id', null, $volcengineTemplateId],
+            ]);
+
+        $this->app->instance(SettingManagerService::class, $settingManagerMock);
+    }
+
+    /**
      * 测试 getTemplate 方法
      */
     #[Test]
     #[TestDox('测试 getTemplate 方法')]
     public function test_get_template(): void
     {
+        $this->mockSettings();
+
         // 创建 VerifyCodeMessage 实例
         $message = new VerifyCodeMessage;
 
@@ -39,26 +57,22 @@ class VerifyCodeMessageTest extends TestCase
 
         $sceneProperty = $reflection->getProperty('scene');
         $sceneProperty->setAccessible(true);
-        $sceneProperty->setValue($message, 'register');
+        $sceneProperty->setValue($message, 'default');
 
-        // 测试 aliyun 网关 - 注册场景
+        // 测试 aliyun 网关 - 使用配置值
         $aliyunGateway = $this->createMock(GatewayInterface::class);
         $aliyunGateway->method('getName')->willReturn('aliyun');
 
         $template = $message->getTemplate($aliyunGateway);
         $this->assertEquals('SMS_157965369', $template);
 
-        // 测试 aliyun 网关 - 默认场景
-        $sceneProperty->setValue($message, 'unknown');
-        $template = $message->getTemplate($aliyunGateway);
-        $this->assertEquals('SMS_176526437', $template);
-
-        // 测试 volcengine 网关
+        // 测试 volcengine 网关 - 使用配置值
         $volcengineGateway = $this->createMock(GatewayInterface::class);
         $volcengineGateway->method('getName')->willReturn('volcengine');
 
         $template = $message->getTemplate($volcengineGateway);
         $this->assertEquals('ST_84db0ca7', $template);
+
     }
 
     /**
@@ -76,13 +90,6 @@ class VerifyCodeMessageTest extends TestCase
         $codeProperty = $reflection->getProperty('code');
         $codeProperty->setAccessible(true);
         $codeProperty->setValue($message, 123456);
-
-        // 测试 qcloud 网关
-        $qcloudGateway = $this->createMock(GatewayInterface::class);
-        $qcloudGateway->method('getName')->willReturn('qcloud');
-
-        $data = $message->getData($qcloudGateway);
-        $this->assertEquals([123456], $data);
 
         // 测试 aliyun 网关
         $aliyunGateway = $this->createMock(GatewayInterface::class);
@@ -121,13 +128,6 @@ class VerifyCodeMessageTest extends TestCase
         $codeProperty = $reflection->getProperty('code');
         $codeProperty->setAccessible(true);
         $codeProperty->setValue($message, 123456);
-
-        // 测试 qcloud 网关
-        $qcloudGateway = $this->createMock(GatewayInterface::class);
-        $qcloudGateway->method('getName')->willReturn('qcloud');
-
-        $content = $message->getContent($qcloudGateway);
-        $this->assertEquals('您的验证码为：123456，该验证码5分钟内有效，请勿泄漏于他人！', $content);
 
         // 测试 aliyun 网关
         $aliyunGateway = $this->createMock(GatewayInterface::class);

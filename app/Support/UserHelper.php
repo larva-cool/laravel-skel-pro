@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace App\Support;
 
-use App\Enum\SocialProvider;
-use App\Enum\UserStatus;
+use App\Enums\SocialProvider;
+use App\Enums\UserStatus;
 use App\Events\User\ModifyAvatar;
 use App\Models\User;
 use App\Models\User\Nickname;

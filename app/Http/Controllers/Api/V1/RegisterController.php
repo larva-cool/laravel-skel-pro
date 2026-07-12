@@ -67,7 +67,7 @@ class RegisterController extends Controller
      *
      * @throws AuthorizationException
      */
-    public function emailRegister(MailRegisterRequest $request)
+    public function emailRegister(MailRegisterRequest $request): JsonResponse
     {
         $this->authorize('register', User::class);
         $this->authorize('emailRegister', User::class);
@@ -95,7 +95,7 @@ class RegisterController extends Controller
      *
      * @throws AuthorizationException
      */
-    public function phoneRegister(PhoneRegisterRequest $request)
+    public function phoneRegister(PhoneRegisterRequest $request): JsonResponse
     {
         $this->authorize('register', User::class);
         $this->authorize('phoneRegister', User::class);
