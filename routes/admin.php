@@ -85,6 +85,13 @@ Route::resource('users', \App\Http\Controllers\Admin\UserController::class, ['na
 // 金币记录
 Route::get('coins', [\App\Http\Controllers\Admin\CoinTradeController::class, 'index'])->name('coins.index');
 Route::get('points', [\App\Http\Controllers\Admin\PointTradeController::class, 'index'])->name('points.index');
+
+// 短信验证码记录
+Route::get('phone_codes', [\App\Http\Controllers\Admin\PhoneCodeController::class, 'index'])->name('phone_codes.index');
+
+// 邮件验证码记录
+Route::get('mail_codes', [\App\Http\Controllers\Admin\MailCodeController::class, 'index'])->name('mail_codes.index');
+
 // 单页管理
 Route::resource('pages', \App\Http\Controllers\Admin\PageController::class, ['names' => 'pages'])->except(['show']);
 
