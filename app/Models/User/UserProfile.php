@@ -171,7 +171,7 @@ class UserProfile extends Model
     protected function genderLabel(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value, $attributes) => $this->gender->label()
+            get: fn (mixed $value, $attributes) => $this->gender?->label()
         )->shouldCache();
     }
 }
