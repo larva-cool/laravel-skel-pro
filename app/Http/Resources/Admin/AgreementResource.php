@@ -32,7 +32,7 @@ class AgreementResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => $this->type,
-            'type_name' => Dict::getNameById($this->type),
+            'type_name' => Dict::getNameByCode('AGREEMENT_TYPE',$this->type),
             'title' => $this->title,
             'status' => $this->status->label(),
             'order' => $this->order,
