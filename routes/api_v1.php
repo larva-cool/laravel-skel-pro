@@ -131,6 +131,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
     // 任务中心（福利中心）
     Route::group(['prefix' => 'tasks', 'as' => 'tasks.'], function (Registrar $registrar) {
         $registrar->get('', [TaskController::class, 'index'])->name('index'); // 任务列表
+        $registrar->post('{task}/claim', [TaskController::class, 'claim'])->name('claim'); // 领取任务奖励
     });
 
     /**
