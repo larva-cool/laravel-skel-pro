@@ -19,10 +19,10 @@ use Illuminate\Validation\ValidationException;
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */
-class UploadController extends Controller
+class UploaderController extends Controller
 {
     /**
-     * UploadController Constructor.
+     * UploaderController Constructor.
      */
     public function __construct()
     {

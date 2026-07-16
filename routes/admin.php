@@ -82,6 +82,13 @@ Route::resource('user_groups', \App\Http\Controllers\Admin\UserGroupController::
 Route::post('users/status', [\App\Http\Controllers\Admin\UserController::class, 'updateStatus'])->name('users.status');
 Route::resource('users', \App\Http\Controllers\Admin\UserController::class, ['names' => 'users']);
 
+
+// 任务管理
+Route::post('task_groups/{task_group}/status', [TaskGroupController::class, 'updateStatus'])->name('task_groups.status');
+Route::post('task_groups/{task_group}/repair', [TaskGroupController::class, 'repair'])->name('task_groups.repair');
+Route::resource('task_groups', TaskGroupController::class, ['names' => 'task_groups']);
+Route::resource('task_groups.tasks', TaskController::class, ['names' => 'task_groups.tasks'])->except(['show']);
+
 // 金币记录
 Route::get('coins', [\App\Http\Controllers\Admin\CoinTradeController::class, 'index'])->name('coins.index');
 Route::get('points', [\App\Http\Controllers\Admin\PointTradeController::class, 'index'])->name('points.index');

@@ -12,7 +12,9 @@ use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\CommonController;
 use App\Http\Controllers\Api\V1\LikeController;
 use App\Http\Controllers\Api\V1\RegisterController;
-use App\Http\Controllers\Api\V1\UploadController;
+use App\Http\Controllers\Api\V1\SignInController;
+use App\Http\Controllers\Api\V1\TaskController;
+use App\Http\Controllers\Api\V1\UploaderController;
 use App\Http\Controllers\Api\V1\User\AddressController;
 use App\Http\Controllers\Api\V1\User\AnnouncementController;
 use App\Http\Controllers\Api\V1\User\NotificationController;
@@ -114,8 +116,21 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
     /**
      * 上传接口
      */
-    Route::group(['prefix' => 'upload', 'as' => 'upload.'], function (Registrar $registrar) {
-        $registrar->post('image', [UploadController::class, 'image'])->name('upload_image'); // 上传图片
+    Route::group(['prefix' => 'uploader', 'as' => 'uploader.'], function (Registrar $registrar) {
+        $registrar->post('image', [UploaderController::class, 'image'])->name('upload_image'); // 上传图片
+    });
+
+    /**
+     * 签到
+     */
+    Route::group(['prefix' => 'sign-in', 'as' => 'sign-in.'], function (Registrar $registrar) {
+        $registrar->get('', [SignInController::class, 'info'])->name('info'); // 获取签到信息
+        $registrar->post('', [SignInController::class, 'sign'])->name('sign'); // 签到
+    });
+
+    // 任务中心（福利中心）
+    Route::group(['prefix' => 'tasks', 'as' => 'tasks.'], function (Registrar $registrar) {
+        $registrar->get('', [TaskController::class, 'index'])->name('index'); // 任务列表
     });
 
     /**
