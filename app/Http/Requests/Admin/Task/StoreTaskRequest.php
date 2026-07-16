@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin\Task;
 
-use App\Enum\TaskType;
+use App\Enums\TaskType;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -47,7 +47,7 @@ class StoreTaskRequest extends FormRequest
             'coins' => ['required', 'integer'],
 
             'condition' => ['nullable', 'array'],
-            'condition.played_time' => ['required_if:type,'.TaskType::TYPE_WATCH_PLAYLET->value, 'integer'],
+            'condition.played_time' => ['required_if:type,'.TaskType::TYPE_INCENTIVE_VIDEO->value, 'integer'],
             'condition.serial_days' => ['required_if:type,'.TaskType::TYPE_SIGN_IN->value, 'integer'],
 
             'activity_bonus' => ['nullable', 'boolean'],

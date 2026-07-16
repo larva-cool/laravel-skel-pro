@@ -15,7 +15,7 @@
                     </div>
                 </div>
 
-                @if($item->type == \App\Enum\TaskType::TYPE_WATCH_PLAYLET)
+                @if($item->type == \App\Enums\TaskType::TYPE_INCENTIVE_VIDEO)
                 <div class="layui-form-item" id="task_watch_video">
                     <label class="layui-form-label required">观看视频时长（秒）</label>
                     <div class="layui-input-block">
@@ -24,7 +24,7 @@
                 </div>
                 @endif
 
-                @if($item->type == \App\Enum\TaskType::TYPE_SIGN_IN)
+                @if($item->type == \App\Enums\TaskType::TYPE_SIGN_IN)
                 <div class="layui-form-item" id="task_sign_in">
                     <label class="layui-form-label required">连续签到天数</label>
                     <div class="layui-input-block">

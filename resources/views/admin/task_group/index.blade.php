@@ -17,17 +17,17 @@
             <button class="pear-btn pear-btn-primary pear-btn-md" lay-event="create">
                 <i class="layui-icon layui-icon-add-1"></i>新增
             </button>
-            @endif
+            @endcan
         </script>
 
         <!-- 表格行工具栏 -->
         <script type="text/html" id="table-bar">
             @can('task_groups.edit')
             <button class="pear-btn pear-btn-primary pear-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
-            @endif
+            @endcan
             @can('task_groups.edit')
             <button class="pear-btn pear-btn-danger pear-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
-            @endif
+            @endcan
         </script>
     </div>
 @endsection

@@ -106,10 +106,10 @@ class TaskController extends AbstractController
      */
     public function destroy(TaskGroup $task_group, Task $task): JsonResponse
     {
-        $task->delete();
         if ($task->logs()->count() > 0) {
             return $this->fail('该任务下存在完成记录，不能删除');
         }
+        $task->delete();
 
         return $this->success(trans('system.delete_success'));
     }

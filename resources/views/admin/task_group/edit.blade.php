@@ -24,8 +24,8 @@
 
             <div class="layui-form-item">
                 <label class="layui-form-label required">任务类型</label>
-                <input name="type" value="{{$item->type}}" type="hidden">
-                <div class="layui-form-mid">{{$item->typeName}}</div>
+                <input name="type" value="{{$item->type->value}}" type="hidden">
+                <div class="layui-form-mid">{{$item->type_name}}</div>
             </div>
 
             <div class="layui-form-item">

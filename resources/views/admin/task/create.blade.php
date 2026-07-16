@@ -16,7 +16,7 @@
 
             <div class="layui-form-item">
                 <label class="layui-form-label required">任务类型</label>
-                <input name="type" value="{{$group->type}}" type="hidden">
+                <input name="type" value="{{$group->type->value}}" type="hidden">
                 <div class="layui-form-mid">{{$group->type_name}}</div>
             </div>
 
@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <div class="layui-form-item" id="task_sign_in" @if($group->type != 'sign_in') style="display: none;" @endif>
+            <div class="layui-form-item" id="task_sign_in" @if($group->type->value != 'sign_in') style="display: none;" @endif>
                 <label class="layui-form-label required">连续签到天数</label>
                 <div class="layui-input-block">
                     <input type="text" name="condition[serial_days]" value="0" class="layui-input">
