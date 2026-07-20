@@ -144,6 +144,13 @@ return new class extends Migration
         Permission::create(['name' => 'feedbacks.delete', 'display_name' => '删除反馈', 'guard_name' => 'admin']);
         $adminRole->givePermissionTo(['feedbacks.*']);
 
+        // 举报管理
+        Permission::create(['name' => 'reports.*', 'display_name' => '举报管理', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'reports.index', 'display_name' => '举报列表', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'reports.edit', 'display_name' => '处理举报', 'guard_name' => 'admin']);
+        Permission::create(['name' => 'reports.delete', 'display_name' => '删除举报', 'guard_name' => 'admin']);
+        $adminRole->givePermissionTo(['reports.*']);
+
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
     }
 

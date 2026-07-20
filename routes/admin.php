@@ -125,3 +125,6 @@ Route::resource('pages', PageController::class, ['names' => 'pages'])->except(['
 
 // 反馈管理
 Route::resource('feedbacks', \App\Http\Controllers\Admin\FeedbackController::class, ['names' => 'feedbacks'])->only(['index', 'edit', 'update', 'destroy']);
+
+// 举报管理
+Route::resource('reports', \App\Http\Controllers\Admin\ReportController::class, ['names' => 'reports'])->only(['index', 'edit', 'update', 'destroy']);

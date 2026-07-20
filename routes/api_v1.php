@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\CommonController;
 use App\Http\Controllers\Api\V1\FeedbackController;
 use App\Http\Controllers\Api\V1\LikeController;
 use App\Http\Controllers\Api\V1\RegisterController;
+use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\SignInController;
 use App\Http\Controllers\Api\V1\TaskController;
 use App\Http\Controllers\Api\V1\UploaderController;
@@ -169,5 +170,12 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
         $registrar->get('', [FeedbackController::class, 'index'])->name('index');
         $registrar->post('', [FeedbackController::class, 'store'])->name('store');
         $registrar->get('{feedback}', [FeedbackController::class, 'show'])->name('show');
+    });
+
+    /**
+     * 举报
+     */
+    Route::group(['prefix' => 'reports', 'as' => 'reports.'], function (Registrar $registrar) {
+        $registrar->post('', [ReportController::class, 'store'])->name('store');
     });
 });
