@@ -258,6 +258,14 @@ return new class extends Migration
                         'type' => 1,
                         'order' => 1000,
                     ],
+                    [
+                        'title' => '反馈管理',
+                        'icon' => 'layui-icon layui-icon-survey',
+                        'href' => '/admin/feedbacks',
+                        'permission_name' => 'feedbacks.*',
+                        'type' => 1,
+                        'order' => 1000,
+                    ],
                 ],
             ],
             // 开发工具

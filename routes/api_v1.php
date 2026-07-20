@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CollectionController;
 use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\CommonController;
+use App\Http\Controllers\Api\V1\FeedbackController;
 use App\Http\Controllers\Api\V1\LikeController;
 use App\Http\Controllers\Api\V1\RegisterController;
 use App\Http\Controllers\Api\V1\SignInController;
@@ -159,5 +160,14 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
         $registrar->get('likes', [LikeController::class, 'index'])->name('index');
         $registrar->post('likes', [LikeController::class, 'store'])->name('store');
         $registrar->delete('likes/{like}', [LikeController::class, 'destroy'])->name('destroy');
+    });
+
+    /**
+     * 反馈
+     */
+    Route::group(['prefix' => 'feedbacks', 'as' => 'feedbacks.'], function (Registrar $registrar) {
+        $registrar->get('', [FeedbackController::class, 'index'])->name('index');
+        $registrar->post('', [FeedbackController::class, 'store'])->name('store');
+        $registrar->get('{feedback}', [FeedbackController::class, 'show'])->name('show');
     });
 });

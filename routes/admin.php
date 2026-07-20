@@ -124,4 +124,4 @@ Route::get('mail_codes', [MailCodeController::class, 'index'])->name('mail_codes
 Route::resource('pages', PageController::class, ['names' => 'pages'])->except(['show']);
 
 // 反馈管理
-// Route::resource('feedback', \App\Http\Controllers\Admin\FeedbackController::class, ['names' => 'feedback'])->only(['index', 'destroy']);
+Route::resource('feedbacks', \App\Http\Controllers\Admin\FeedbackController::class, ['names' => 'feedbacks'])->only(['index', 'edit', 'update', 'destroy']);
