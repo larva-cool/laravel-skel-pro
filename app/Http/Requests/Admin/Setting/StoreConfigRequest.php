@@ -43,6 +43,7 @@ class StoreConfigRequest extends FormRequest
             'system.icp_beian' => ['nullable', 'string', 'max:255'],
             'system.police_beian' => ['nullable', 'string', 'max:255'],
             'system.support_email' => ['nullable', 'email'],
+            'system.support_phone' => ['nullable', 'string', 'max:255'],
             'system.lawyer_email' => ['nullable', 'email'],
 
             // 用户设置

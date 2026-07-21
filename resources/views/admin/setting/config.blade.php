@@ -100,6 +100,14 @@
                                     </div>
                                 </div>
                                 <div class="layui-form-item">
+                                    <label class="layui-form-label">服务电话</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="system[support_phone]"
+                                            value="{{ $settings['system.support_phone'] ?? '' }}" placeholder="请输入服务电话"
+                                            class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
                                     <label class="layui-form-label">法律邮箱</label>
                                     <div class="layui-input-inline">
                                         <input type="text" name="system[lawyer_email]"

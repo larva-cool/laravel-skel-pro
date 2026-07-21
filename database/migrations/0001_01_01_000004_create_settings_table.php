@@ -45,6 +45,7 @@ return new class extends Migration
             ['name' => 'ICP备案号', 'key' => 'system.icp_beian', 'value' => 'ICP备XXXX号', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => '公安备案号', 'key' => 'system.police_beian', 'value' => '公安备XXXX号', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => '服务邮箱', 'key' => 'system.support_email', 'value' => 'support@xxx.com', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
+            ['name' => '服务电话', 'key' => 'system.support_phone', 'value' => '13800000000', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
             ['name' => '法律邮箱', 'key' => 'system.lawyer_email', 'value' => 'lawyer@xxx.com', 'cast_type' => SettingType::CAST_TYPE_STRING, 'input_type' => SettingType::CAST_TYPE_STRING],
 
             // SMS 配置
