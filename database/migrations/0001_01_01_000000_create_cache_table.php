@@ -19,13 +19,17 @@ return new class extends Migration
         Schema::create('cache', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->mediumText('value');
-            $table->bigInteger('expiration')->index();
+            $table->bigInteger('expiration')->index()->comment('过期时间');
+
+            $table->comment('缓存表');
         });
 
         Schema::create('cache_locks', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->string('owner');
-            $table->bigInteger('expiration')->index();
+            $table->bigInteger('expiration')->index()->comment('过期时间');
+
+            $table->comment('缓存锁表');
         });
     }
 
