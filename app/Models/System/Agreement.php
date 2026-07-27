@@ -9,10 +9,12 @@ declare(strict_types=1);
 namespace App\Models\System;
 
 use App\Enums\StatusSwitch;
+use App\Models\Admin\Admin;
 use App\Models\Model;
 use Database\Factories\System\AgreementFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -28,6 +30,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at 添加时间
  * @property Carbon $updated_at 更新时间
  * @property Carbon $deleted_at 删除时间
+ * @property Admin $admin 管理员
  *
  * @method Builder active(string $type) 查询已发布的协议
  *
@@ -90,6 +93,14 @@ class Agreement extends Model
     protected static function booted(): void
     {
         parent::booted();
+    }
+
+    /**
+     * Get the admin relation.
+     */
+    public function admin(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class);
     }
 
     /**

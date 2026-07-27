@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
 /**
  * 邮件验证码模型
  *
+ * @property int $id ID
  * @property string $email 邮箱
  * @property string $code 验证码
  * @property string $ip IP地址

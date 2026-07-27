@@ -10,5 +10,6 @@ return [
     'admin' => \App\Models\Admin\Admin::class,
     'point' => \App\Models\Point\PointRecord::class,
     'comment' => \App\Models\Content\Comment::class,
-    
+    'report' => \App\Models\Report\Report::class,
+
 ];

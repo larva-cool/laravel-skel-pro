@@ -45,14 +45,14 @@ class CommonController extends Controller
 
     /**
      * 获取一个随机昵称
-     * @return JsonResponse
      */
     public function nickname(): JsonResponse
     {
         $nickname = Nickname::getRandomNickname();
+
         return response()->json([
             'data' => ['nickname' => $nickname],
-            'message' => __('system.successful_operation')
+            'message' => __('system.successful_operation'),
         ]);
     }
 
@@ -70,6 +70,7 @@ class CommonController extends Controller
                 'icp_beian' => settings('system.icp_beian'),
                 'police_beian' => settings('system.police_beian'),
                 'support_email' => settings('system.support_email'),
+                'support_phone' => settings('system.support_phone'),
                 'lawyer_email' => settings('system.lawyer_email'),
                 'url' => settings('system.url'),
                 'm_url' => settings('system.m_url'),

@@ -26,7 +26,7 @@ class VerifyCodeMessage extends Message
     /**
      * 验证码
      */
-    protected int $code;
+    protected string $code;
 
     /**
      * 验证码有效期

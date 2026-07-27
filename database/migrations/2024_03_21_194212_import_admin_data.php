@@ -200,14 +200,6 @@ return new class extends Migration
                 'order' => 1000,
                 'children' => [
                     [
-                        'title' => '反馈管理',
-                        'icon' => 'layui-icon layui-icon-username',
-                        'href' => '/admin/feedback',
-                        'permission_name' => 'feedback.*',
-                        'type' => 1,
-                        'order' => 1000,
-                    ],
-                    [
                         'title' => '公告管理',
                         'icon' => 'layui-icon layui-icon-username',
                         'href' => '/admin/announcements',
@@ -255,6 +247,14 @@ return new class extends Migration
                         'icon' => 'layui-icon layui-icon-username',
                         'href' => '/admin/reports',
                         'permission_name' => 'reports.*',
+                        'type' => 1,
+                        'order' => 1000,
+                    ],
+                    [
+                        'title' => '反馈管理',
+                        'icon' => 'layui-icon layui-icon-survey',
+                        'href' => '/admin/feedbacks',
+                        'permission_name' => 'feedbacks.*',
                         'type' => 1,
                         'order' => 1000,
                     ],

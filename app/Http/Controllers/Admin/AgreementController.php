@@ -61,7 +61,7 @@ class AgreementController extends AbstractController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreAgreementRequest $request)
+    public function store(StoreAgreementRequest $request): JsonResponse
     {
         Agreement::create($request->validated());
 
@@ -81,7 +81,7 @@ class AgreementController extends AbstractController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAgreementRequest $request, Agreement $agreement)
+    public function update(UpdateAgreementRequest $request, Agreement $agreement): JsonResponse
     {
         $agreement->update($request->validated());
 

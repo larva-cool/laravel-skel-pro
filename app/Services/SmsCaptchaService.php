@@ -150,10 +150,9 @@ class SmsCaptchaService
         if (! is_null($this->fixedVerifyCode)) {
             return $this->fixedVerifyCode;
         }
-        $verifyCode = PhoneCode::query()->where('phone', $this->phone)->where('state', 0)->orderBy('send_at',
-            'desc')->value('code');
+        $verifyCode = PhoneCode::query()->where('phone', $this->phone)->where('state', 0)->orderBy('send_at', 'desc')->value('code');
         if ($verifyCode === null || $regenerate) {
-            $verifyCode = Str::password($this->length, false, true, false, false);
+            $verifyCode = Str::password($this->length,false,true,false);
         }
 
         return $verifyCode;

@@ -121,13 +121,13 @@
                     title: '发送时间',
                     field: 'send_at',
                     align: 'center',
-                    width: 170
+                    width: 190
                 },
                 {
                     title: '使用时间',
                     field: 'usage_at',
                     align: 'center',
-                    width: 170
+                    width: 190
                 },
             ];
 
