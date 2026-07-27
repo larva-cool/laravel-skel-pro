@@ -1,0 +1,31 @@
+{
+    "preset": "laravel",
+    "rules": {
+        "header_comment": {
+            "comment_type": "PHPDoc",
+            "header": "This is NOT a freeware, use is subject to license terms.",
+            "separate": "bottom",
+            "location": "after_open"
+        },
+        "encoding": true,
+        "declare_strict_types": true,
+        "class_attributes_separation": {
+            "elements": {
+                "const": "only_if_meta",
+                "method": "one",
+                "property": "one",
+                "trait_import": "none"
+            }
+        }
+    },
+    "exclude": [
+        "bootstrap",
+        "config",
+        "node_modules",
+        "public",
+        "storage",
+        "vendor",
+        "resources",
+        "routes"
+    ]
+}
