@@ -1,10 +1,10 @@
 # Trae AI 项目规则文件
 
 ## 项目概述
-本项目基于 Laravel 12.x 构建，采用 DDD 架构并遵循 RESTful API 设计规范。项目结构清晰，模块化程度高，符合 Laravel 最佳实践。
+本项目基于 Laravel 13.x 构建，采用 DDD 架构并遵循 RESTful API 设计规范。项目结构清晰，模块化程度高，符合 Laravel 最佳实践。
 
 ## 技术栈
-- **框架**：Laravel 12.x
+- **框架**：Laravel 13.x
 - **PHP 版本**：8.2+
 - **后台**：Filament 5.x
 - **前台前端**：Tailwind CSS（默认 CSS 框架）
