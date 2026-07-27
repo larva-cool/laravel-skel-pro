@@ -9,6 +9,10 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * 应用服务提供器
+ *
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**
