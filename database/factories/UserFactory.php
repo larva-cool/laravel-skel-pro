@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -34,23 +35,34 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'username' => fake()->userName(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            'phone' => fake()->numerify('+8613#########'),
+            'avatar' => null,
+            'status' => UserStatus::STATUS_ACTIVE,
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
-     *
-     * @param  (callable(array): array)  $attributes
+     * Indicate that the user is frozen.
      */
-    public function unverified(): static
+    public function frozen(): static
     {
         return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+            'status' => UserStatus::STATUS_FROZEN,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is not active.
+     */
+    public function notActive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => UserStatus::STATUS_NOT_ACTIVE,
         ]);
     }
 }

@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserStatus;
 use App\Models\Traits\DateTimeFormatter;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -45,7 +46,7 @@ use Illuminate\Support\Carbon;
  * @author Tongle Xu <xutongle@msn.com>
  */
 #[Table('users')]
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['username', 'name', 'email', 'phone', 'avatar', 'status', 'available_points', 'available_coins', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -63,7 +64,7 @@ class User extends Authenticatable
     {
         return [
             'id' => 'integer',
-            'remember_token' => 'string',
+            'status' => UserStatus::class,
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
