@@ -4,7 +4,7 @@
         "header_comment": {
             "comment_type": "PHPDoc",
             "header": "This is NOT a freeware, use is subject to license terms.",
-            "separate": "bottom",
+            "separate": "none",
             "location": "after_open"
         },
         "encoding": true,
