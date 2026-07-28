@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace App\Models\System;
 
+use App\Models\Traits\DateTimeFormatter;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -33,6 +34,8 @@ use Illuminate\Support\Carbon;
 #[Fillable(['name', 'key', 'value', 'cast_type', 'input_type', 'param', 'order', 'remark'])]
 class Setting extends Model
 {
+    use DateTimeFormatter;
+    
     /**
      * “created at”列的名称。
      *

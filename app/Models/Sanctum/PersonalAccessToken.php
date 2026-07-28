@@ -6,8 +6,9 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Models\Sanctum;
 
+use App\Models\Traits\DateTimeFormatter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
@@ -33,5 +34,5 @@ use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
  */
 class PersonalAccessToken extends SanctumPersonalAccessToken
 {
-    // ...
+    use DateTimeFormatter;
 }
