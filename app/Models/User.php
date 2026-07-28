@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
@@ -18,7 +19,6 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * 用户模型
- *
  */
 #[Table('users')]
 #[Fillable(['name', 'email', 'password'])]

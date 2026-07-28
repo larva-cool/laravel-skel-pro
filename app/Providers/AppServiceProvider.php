@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
@@ -13,7 +14,6 @@ use Illuminate\Support\ServiceProvider;
 
 /**
  * 应用服务提供器
- *
  */
 class AppServiceProvider extends ServiceProvider
 {

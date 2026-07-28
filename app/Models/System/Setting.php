@@ -33,8 +33,12 @@ use Illuminate\Support\Carbon;
 #[Fillable(['name', 'key', 'value', 'cast_type', 'input_type', 'param', 'order', 'remark'])]
 class Setting extends Model
 {
-    // 时间定义
-    const CREATED_AT = null;
+    /**
+     * “created at”列的名称。
+     *
+     * @var string|null
+     */
+    public const CREATED_AT = null;
 
     /**
      * Get the attributes that should be cast.
