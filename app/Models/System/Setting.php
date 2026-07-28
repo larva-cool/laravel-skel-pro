@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace App\Models\System;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -28,18 +29,12 @@ use Illuminate\Support\Carbon;
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
+#[Table('settings')]
 #[Fillable(['name', 'key', 'value', 'cast_type', 'input_type', 'param', 'order', 'remark'])]
 class Setting extends Model
 {
     // 时间定义
     const CREATED_AT = null;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'settings';
 
     /**
      * Get the attributes that should be cast.

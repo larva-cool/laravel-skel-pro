@@ -20,7 +20,7 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->uuid('id')->primary()->comment('通知ID');
             $table->string('type')->comment('通知类型');
-            $table->morphs('notifiable');
+            $table->morphs('notifiable', 'unique_notifiable');
             $table->text('data')->comment('通知数据');
             $table->timestamp('read_at')->nullable()->comment('阅读时间');
             $table->timestamps();

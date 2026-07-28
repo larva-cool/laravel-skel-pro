@@ -5,6 +5,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\UserStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,14 +18,44 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->id()->from(10000000)->comment('用户ID');
+            $table->string('username')->nullable()->comment('用户名');
+            $table->string('email')->nullable()->comment('邮箱');
+            $table->string('phone', 30)->nullable()->comment('手机号（支持国际格式，如+8613800138000）');
+            $table->string('name')->nullable()->comment('昵称');
+            $table->string('avatar', 1000)->nullable()->comment('头像');
+            $table->unsignedTinyInteger('status')->default(UserStatus::STATUS_ACTIVE->value)->comment('状态：1、active，0、frozen');
+            $table->unsignedInteger('available_points')->nullable()->default(0)->comment('可用积分');
+            $table->unsignedInteger('available_coins')->nullable()->default(0)->comment('可用金币');
+            $table->string('password')->nullable()->comment('密码');
+            $table->rememberToken()->comment('记住我token');
+            $table->unsignedBigInteger('login_count')->nullable()->default(0)->comment('登录次数');
+            $table->ipAddress('last_login_ip')->nullable()->comment('最后登录IP地址');
+            $table->dateTime('vip_expires_at')->nullable()->comment('VIP过期时间');
+            $table->timestamp('last_active_at')->nullable()->comment('最后活动时间');
+            $table->timestamp('last_login_at')->nullable()->comment('最后登录时间');
             $table->timestamps();
+            $table->softDeletes()->comment('删除时间');
+
+            $table->comment('用户表');
         });
+
+        Schema::create('user_socials', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id')->comment('用户ID');
+            $table->string('provider')->comment('服务渠道');
+            $table->string('openid')->comment('开放平台ID');
+            $table->string('unionid')->nullable()->comment('联合ID');
+            $table->string('access_token')->nullable()->comment('访问令牌');
+            $table->string('refresh_token')->nullable()->comment('刷新令牌');
+            $table->timestamp('expiry_at')->nullable()->comment('过期时间');
+            $table->mediumText('identity_token')->nullable()->comment('身份令牌');
+            $table->timestamps();
+
+            $table->index(['user_id', 'provider', 'openid']);
+            $table->comment('用户社交账号表');
+        });
+
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary()->comment('邮箱');
             $table->string('token')->comment('Token');
@@ -42,6 +73,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('user_socials');
     }
 };
