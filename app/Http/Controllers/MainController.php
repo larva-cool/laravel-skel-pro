@@ -36,6 +36,6 @@ class MainController extends Controller
      */
     public function redirect(Request $request)
     {
-        return view('main.redirect', ['url' => $request->get('url')]);
+        return view('main.redirect', ['url' => $request->query('url')]);
     }
 }
