@@ -9,7 +9,10 @@
         },
         "encoding": true,
         "declare_strict_types": true,
-        "imports_order": "null",
+        "ordered_imports": {
+            "sort_algorithm": "alpha"
+        },
+        "fully_qualified_strict_types": false,
         "class_attributes_separation": {
             "elements": {
                 "const": "only_if_meta",

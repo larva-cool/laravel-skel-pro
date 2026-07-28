@@ -15,9 +15,15 @@ namespace App\Enums;
  */
 class SettingType
 {
-    // 值类型
+    /** @var string 整型 */
     public const string CAST_TYPE_INT = 'int';
+
+    /** @var string 浮点型 */
     public const string CAST_TYPE_FLOAT = 'float';
+
+    /** @var string 布尔型 */
     public const string CAST_TYPE_BOOL = 'bool';
+
+    /** @var string 字符串型 */
     public const string CAST_TYPE_STRING = 'string';
 }

@@ -12,6 +12,11 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+/**
+ * 数据库填充器
+ *
+ * @author Tongle Xu <xutongle@msn.com>
+ */
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;

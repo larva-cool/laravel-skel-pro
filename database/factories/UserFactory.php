@@ -14,7 +14,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
+ * 用户模型工厂
+ *
  * @extends Factory<User>
+ *
+ * @author Tongle Xu <xutongle@msn.com>
  */
 class UserFactory extends Factory
 {
@@ -41,6 +45,8 @@ class UserFactory extends Factory
 
     /**
      * Indicate that the model's email address should be unverified.
+     *
+     * @param  (callable(array): array)  $attributes
      */
     public function unverified(): static
     {

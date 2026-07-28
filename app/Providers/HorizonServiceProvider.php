@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
@@ -11,6 +12,11 @@ use Illuminate\Support\Facades\Gate;
 use Laravel\Horizon\Horizon;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 
+/**
+ * Horizon 队列监控服务提供者
+ *
+ * @author Tongle Xu <xutongle@msn.com>
+ */
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
 {
     /**
