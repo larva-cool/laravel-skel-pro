@@ -7,9 +7,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Sanctum\PersonalAccessToken;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 
 /**
  * 应用服务
