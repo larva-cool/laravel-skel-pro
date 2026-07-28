@@ -19,9 +19,9 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id()->from(10000000)->comment('用户ID');
-            $table->string('username')->nullable()->comment('用户名');
-            $table->string('email')->nullable()->comment('邮箱');
-            $table->string('phone', 30)->nullable()->comment('手机号（支持国际格式，如+8613800138000）');
+            $table->string('username')->unique()->nullable()->comment('用户名');
+            $table->string('email')->unique()->nullable()->comment('邮箱');
+            $table->string('phone', 30)->unique()->nullable()->comment('手机号（支持国际格式，如+8613800138000）');
             $table->string('name')->nullable()->comment('昵称');
             $table->string('avatar', 1000)->nullable()->comment('头像');
             $table->unsignedTinyInteger('status')->default(UserStatus::STATUS_ACTIVE->value)->comment('状态：1、active，0、frozen');
