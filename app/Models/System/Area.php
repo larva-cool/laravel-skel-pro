@@ -7,11 +7,10 @@ declare(strict_types=1);
 
 namespace App\Models\System;
 
-use App\Models\Traits\DateTimeFormatter;
+use App\Models\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -40,8 +39,6 @@ use Illuminate\Support\Carbon;
 #[Fillable(['parent_id', 'name', 'area_code', 'lat', 'lng', 'city_code', 'order'])]
 class Area extends Model
 {
-    use DateTimeFormatter;
-
     /**
      * The model's attributes.
      *
