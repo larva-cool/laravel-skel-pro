@@ -11,6 +11,7 @@
         "laravel-best-practices",
         "configuring-horizon",
         "octane-development",
+        "pulse-development",
         "echo-development",
         "tailwindcss-development"
     ]
