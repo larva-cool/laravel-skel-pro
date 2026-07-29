@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Spatie\Permission\Models\Permission;
 
 /**
  * 后台菜单模型
@@ -61,6 +62,9 @@ use Illuminate\Support\Collection;
 ])]
 class AdminMenu extends Model
 {
+    /** @var string Spatie 权限使用的 guard 名称 */
+    public const string GUARD_NAME = 'admin';
+
     /**
      * Get the attributes that should be cast.
      *
@@ -96,6 +100,24 @@ class AdminMenu extends Model
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Perform any actions required after the model boots.
+     */
+    protected static function booted(): void
+    {
+        parent::booted();
+
+        // 保存菜单时，按钮类型自动同步到 permissions 表
+        static::saved(function (self $menu): void {
+            $menu->syncPermission();
+        });
+
+        // 删除菜单时，按钮类型同步删除对应 permission
+        static::deleted(function (self $menu): void {
+            $menu->deletePermission();
+        });
     }
 
     /**
@@ -192,22 +214,23 @@ class AdminMenu extends Model
             'name' => $this->name,
             'component' => $this->component,
             'redirect' => $this->redirect,
-            'meta' => [
+            'meta' => array_filter([
                 'title' => $this->title,
                 'icon' => $this->icon,
                 'link' => $this->link,
-                'isHide' => $this->is_hide,
-                'isHideTab' => $this->is_hide_tab,
-                'isIframe' => $this->is_iframe,
-                'keepAlive' => $this->keep_alive,
-                'isFullPage' => $this->is_full_page,
-                'fixedTab' => $this->fixed_tab,
-                'showBadge' => $this->show_badge,
+                'isHide' => $this->is_hide ?: null,
+                'isHideTab' => $this->is_hide_tab ?: null,
+                'isIframe' => $this->is_iframe ?: null,
+                'keepAlive' => $this->keep_alive ?: null,
+                'isFullPage' => $this->is_full_page ?: null,
+                'fixedTab' => $this->fixed_tab ?: null,
+                'showBadge' => $this->show_badge ?: null,
                 'showTextBadge' => $this->show_text_badge,
                 'activePath' => $this->active_path,
                 'roles' => $this->roles,
                 'authMark' => $this->isButton() ? $this->permission : null,
-            ],
+                'isAuthButton' => $this->isButton() ?: null,
+            ], fn ($value): bool => ! is_null($value)),
         ];
 
         if ($this->children->isNotEmpty()) {
@@ -219,5 +242,48 @@ class AdminMenu extends Model
 
         // 过滤 null 值字段
         return array_filter($record, fn ($value): bool => ! is_null($value));
+    }
+
+    /**
+     * 将按钮菜单同步到 permissions 表
+     */
+    protected function syncPermission(): void
+    {
+        // 非按钮类型或权限标识为空：删除历史 permission（如果存在）
+        if (! $this->isButton() || blank($this->permission)) {
+            $this->deletePermission();
+
+            return;
+        }
+
+        Permission::findOrCreate($this->permission, self::GUARD_NAME)->update([
+            'display_name' => $this->title,
+        ]);
+    }
+
+    /**
+     * 删除对应 permission（仅删除孤立的、未被其他菜单引用且未分配给角色的 permission）
+     */
+    protected function deletePermission(): void
+    {
+        if (blank($this->getOriginal('permission'))) {
+            return;
+        }
+
+        $oldPermission = $this->getOriginal('permission');
+
+        // 其他菜单仍在使用该权限标识时不删除
+        $stillUsed = static::query()
+            ->where('id', '!=', $this->id)
+            ->where('type', MenuType::BUTTON->value)
+            ->where('permission', $oldPermission)
+            ->exists();
+
+        if ($stillUsed) {
+            return;
+        }
+
+        $permission = Permission::findByName($oldPermission, self::GUARD_NAME);
+        $permission?->delete();
     }
 }

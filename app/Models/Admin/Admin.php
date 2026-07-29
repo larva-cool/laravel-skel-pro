@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * 管理员模型
@@ -53,8 +54,12 @@ use Laravel\Sanctum\HasApiTokens;
 class Admin extends Authenticatable
 {
     use DateTimeFormatter;
+    use HasApiTokens, HasRoles, Notifiable, SoftDeletes;
 
-    use HasApiTokens, Notifiable, SoftDeletes;
+    /**
+     * The guard name for Spatie Permission.
+     */
+    protected string $guard_name = 'admin';
 
     /**
      * The model's attributes.
@@ -62,7 +67,7 @@ class Admin extends Authenticatable
      * @var array
      */
     protected $attributes = [
-
+        'login_count' => 0,
     ];
 
     /**

@@ -8,15 +8,19 @@ declare(strict_types=1);
 namespace Tests\Unit\Models\Admin;
 
 use App\Models\Admin\Admin;
+use App\Models\Admin\AdminMenu;
 use App\Models\User\LoginHistory;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
+use Laravel\Sanctum\NewAccessToken;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 /**
@@ -308,5 +312,132 @@ class AdminTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Foundation\Auth\User::class, $admin);
         $this->assertTrue(method_exists($admin, 'getAuthIdentifier'));
         $this->assertSame($admin->id, $admin->getAuthIdentifier());
+    }
+
+    /**
+     * 测试管理员使用 admin guard 作为 Spatie 权限 guard
+     */
+    #[Test]
+    #[TestDox('HasRoles trait 使用 admin 作为默认 guard_name，创建的权限归属 admin guard')]
+    public function roles_and_permissions_use_admin_guard(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $permission = Permission::findOrCreate('guard:check', AdminMenu::GUARD_NAME);
+
+        $admin->givePermissionTo($permission);
+
+        $permissions = $admin->permissions;
+        $this->assertCount(1, $permissions);
+        $this->assertSame(AdminMenu::GUARD_NAME, $permissions->first()->guard_name);
+    }
+
+    /**
+     * 测试管理员可分配直接权限
+     */
+    #[Test]
+    #[TestDox('管理员可被赋予直接权限并通过 can() 校验')]
+    public function admin_can_be_given_direct_permission(): void
+    {
+        $admin = $this->makeAdmin();
+
+        Permission::findOrCreate('admin:add', AdminMenu::GUARD_NAME);
+
+        $this->assertFalse($admin->can('admin:add'));
+
+        $admin->givePermissionTo('admin:add');
+
+        $this->assertTrue($admin->can('admin:add'));
+        $this->assertTrue($admin->hasPermissionTo('admin:add', AdminMenu::GUARD_NAME));
+    }
+
+    /**
+     * 测试管理员可分配角色并继承角色权限
+     */
+    #[Test]
+    #[TestDox('管理员通过角色继承权限')]
+    public function admin_inherits_permissions_from_role(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $role = Role::findOrCreate('editor', AdminMenu::GUARD_NAME);
+        Permission::findOrCreate('menu:edit', AdminMenu::GUARD_NAME);
+        $role->givePermissionTo('menu:edit');
+
+        $admin->assignRole($role);
+
+        $this->assertTrue($admin->hasRole('editor'));
+        $this->assertTrue($admin->can('menu:edit'));
+    }
+
+    /**
+     * 测试管理员可创建 Sanctum API Token
+     */
+    #[Test]
+    #[TestDox('管理员可通过 HasApiTokens 创建 Sanctum 个人访问令牌')]
+    public function admin_can_create_sanctum_token(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $tokenResult = $admin->createToken('admin-token');
+
+        $this->assertInstanceOf(NewAccessToken::class, $tokenResult);
+        $this->assertIsString($tokenResult->plainTextToken);
+        $this->assertNotEmpty($tokenResult->plainTextToken);
+        $this->assertSame($admin->id, $tokenResult->accessToken->tokenable_id);
+        $this->assertSame(Admin::class, $tokenResult->accessToken->tokenable_type);
+    }
+
+    /**
+     * 测试管理员可创建带能力的 Token
+     */
+    #[Test]
+    #[TestDox('创建 Token 时可赋予 abilities 并可校验')]
+    public function admin_token_abilities_are_enforced(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $tokenResult = $admin->createToken('ability-token', ['admin:list', 'admin:view']);
+
+        $this->assertTrue($tokenResult->accessToken->can('admin:list'));
+        $this->assertTrue($tokenResult->accessToken->can('admin:view'));
+        $this->assertFalse($tokenResult->accessToken->can('admin:delete'));
+    }
+
+    /**
+     * 测试使用 Sanctum Token 认证后可通过 Auth::guard('admin') 获取当前管理员
+     */
+    #[Test]
+    #[TestDox('Sanctum 可通过 admin guard 解析出 Admin 实例')]
+    public function sanctum_authenticates_admin_via_admin_guard(): void
+    {
+        $admin = $this->makeAdmin();
+        $tokenResult = $admin->createToken('guard-test');
+
+        $this->actingAs($admin, 'sanctum');
+
+        $this->assertAuthenticatedAs($admin, 'sanctum');
+        $this->assertSame($admin->id, auth('sanctum')->id());
+    }
+
+    /**
+     * 测试移除角色后权限失效
+     */
+    #[Test]
+    #[TestDox('移除角色后管理员失去该角色的权限')]
+    public function removing_role_revokes_inherited_permissions(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $role = Role::findOrCreate('manager', AdminMenu::GUARD_NAME);
+        Permission::findOrCreate('role:delete', AdminMenu::GUARD_NAME);
+        $role->givePermissionTo('role:delete');
+        $admin->assignRole($role);
+        $this->assertTrue($admin->can('role:delete'));
+
+        $admin->removeRole($role);
+
+        $this->assertFalse($admin->hasRole('manager'));
+        $this->assertFalse($admin->can('role:delete'));
     }
 }
