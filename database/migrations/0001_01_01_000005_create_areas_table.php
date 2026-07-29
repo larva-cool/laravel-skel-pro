@@ -24,10 +24,10 @@ return new class extends Migration
             $table->float('lat', 10, 6)->nullable()->comment('纬度');
             $table->float('lng', 10, 6)->nullable()->comment('经度');
             $table->string('city_code')->nullable()->comment('城市编码');
-            $table->unsignedSmallInteger('order')->default(0)->nullable()->comment('排序');
+            $table->unsignedInteger('sort')->default(0)->comment('排序权重，越小越靠前');
             $table->timestamps();
             $table->softDeletes()->comment('删除时间');
-            $table->index(['parent_id', 'deleted_at', 'order', 'id'], 'idx_parent_id');
+            $table->index(['parent_id', 'deleted_at', 'sort', 'id'], 'idx_parent_id');
             $table->index(['name', 'deleted_at'], 'idx_name');
             $table->index(['area_code', 'deleted_at'], 'idx_area_code');
 

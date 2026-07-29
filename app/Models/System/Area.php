@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Cache;
  * @property float|null $lat 纬度
  * @property float|null $lng 经度
  * @property int|null $area_code 区域编码
- * @property int $order 排序
+ * @property int $sort 排序权重，越小越靠前
  * @property Carbon $created_at 添加时间
  * @property Carbon $updated_at 更新时间
  *
@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Cache;
  * @author Tongle Xu <xutongle@msn.com>
  */
 #[Table('areas')]
-#[Fillable(['parent_id', 'name', 'area_code', 'lat', 'lng', 'city_code', 'order'])]
+#[Fillable(['parent_id', 'name', 'area_code', 'lat', 'lng', 'city_code', 'sort'])]
 class Area extends Model
 {
     /**
@@ -47,7 +47,7 @@ class Area extends Model
      * @var array
      */
     protected $attributes = [
-        'order' => 99,
+        'sort' => 0,
     ];
 
     /**
@@ -65,7 +65,7 @@ class Area extends Model
             'lat' => 'float',
             'lng' => 'float',
             'city_code' => 'string',
-            'order' => 'integer',
+            'sort' => 'integer',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',
@@ -100,7 +100,7 @@ class Area extends Model
     public function children(): HasMany
     {
         return $this->hasMany(static::class, 'parent_id', 'id')
-            ->orderBy('order')
+            ->orderBy('sort')
             ->orderBy('id');
     }
 

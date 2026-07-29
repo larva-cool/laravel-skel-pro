@@ -37,7 +37,7 @@ class AreaTest extends TestCase
             'lat' => 39.9042,
             'lng' => 116.4074,
             'city_code' => '010',
-            'order' => 1,
+            'sort' => 1,
         ]);
 
         $this->assertDatabaseHas('areas', [
@@ -48,17 +48,17 @@ class AreaTest extends TestCase
     }
 
     /**
-     * 测试 order 默认值为 99
+     * 测试 sort 默认值为 0
      */
     #[Test]
-    #[TestDox('未指定 order 时使用默认值 99')]
-    public function create_area_uses_default_order(): void
+    #[TestDox('未指定 sort 时使用默认值 0')]
+    public function create_area_uses_default_sort(): void
     {
         $area = Area::create([
             'name' => '天津市',
         ]);
 
-        $this->assertSame(99, $area->order);
+        $this->assertSame(0, $area->sort);
     }
 
     /**
@@ -89,17 +89,17 @@ class AreaTest extends TestCase
     }
 
     /**
-     * 测试 children 关联返回子地区并按 order 和 id 排序
+     * 测试 children 关联返回子地区并按 sort 和 id 排序
      */
     #[Test]
-    #[TestDox('children 关联返回子地区并按 order、id 排序')]
+    #[TestDox('children 关联返回子地区并按 sort、id 排序')]
     public function children_relation_returns_children_ordered(): void
     {
         $parent = Area::create(['name' => '浙江省']);
 
-        Area::create(['name' => '温州市', 'parent_id' => $parent->id, 'order' => 2]);
-        Area::create(['name' => '杭州市', 'parent_id' => $parent->id, 'order' => 1]);
-        Area::create(['name' => '宁波市', 'parent_id' => $parent->id, 'order' => 1]);
+        Area::create(['name' => '温州市', 'parent_id' => $parent->id, 'sort' => 2]);
+        Area::create(['name' => '杭州市', 'parent_id' => $parent->id, 'sort' => 1]);
+        Area::create(['name' => '宁波市', 'parent_id' => $parent->id, 'sort' => 1]);
 
         $children = $parent->children;
 
@@ -198,13 +198,13 @@ class AreaTest extends TestCase
             'area_code' => '500000',
             'lat' => '29.5630',
             'lng' => '106.5516',
-            'order' => '5',
+            'sort' => '5',
         ]);
 
         $this->assertIsInt($area->id);
         $this->assertIsInt($area->area_code);
         $this->assertIsFloat($area->lat);
         $this->assertIsFloat($area->lng);
-        $this->assertIsInt($area->order);
+        $this->assertIsInt($area->sort);
     }
 }

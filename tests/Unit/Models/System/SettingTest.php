@@ -77,17 +77,17 @@ class SettingTest extends TestCase
     }
 
     /**
-     * 测试获取所有配置并按 order 排序
+     * 测试获取所有配置并按 sort 排序
      */
     #[Test]
-    #[TestDox('获取所有配置并按 order 排序')]
+    #[TestDox('获取所有配置并按 sort 排序')]
     public function get_all_returns_all_settings_ordered(): void
     {
         Setting::query()->delete();
 
-        Setting::create(['name' => '配置B', 'key' => 'key.b', 'value' => 'b_value', 'order' => 2]);
-        Setting::create(['name' => '配置A', 'key' => 'key.a', 'value' => 'a_value', 'order' => 1]);
-        Setting::create(['name' => '配置C', 'key' => 'key.c', 'value' => 'c_value', 'order' => 3]);
+        Setting::create(['name' => '配置B', 'key' => 'key.b', 'value' => 'b_value', 'sort' => 2]);
+        Setting::create(['name' => '配置A', 'key' => 'key.a', 'value' => 'a_value', 'sort' => 1]);
+        Setting::create(['name' => '配置C', 'key' => 'key.c', 'value' => 'c_value', 'sort' => 3]);
 
         $settings = Setting::getAll();
 
@@ -153,7 +153,7 @@ class SettingTest extends TestCase
         $this->assertNull($setting->name);
         $this->assertSame('string', $setting->cast_type);
         $this->assertSame('text', $setting->input_type);
-        $this->assertSame(99, $setting->order);
+        $this->assertSame(0, $setting->sort);
     }
 
     /**
