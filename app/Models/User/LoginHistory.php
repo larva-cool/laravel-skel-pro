@@ -7,12 +7,16 @@ declare(strict_types=1);
 
 namespace App\Models\User;
 
+use App\Events\User\TodayFirstLogged;
+use Database\Factories\User\LoginHistoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Event;
 
 /**
  * 登录历史
@@ -36,6 +40,9 @@ use Illuminate\Support\Carbon;
 #[Hidden(['user_id', 'user_type'])]
 class LoginHistory extends Model
 {
+    /** @use HasFactory<LoginHistoryFactory> */
+    use HasFactory;
+
     // 时间定义
     public const CREATED_AT = 'login_at';
     public const UPDATED_AT = null;
@@ -69,24 +76,24 @@ class LoginHistory extends Model
     {
         parent::booted();
         static::creating(function ($model) {
-//            if ($model->user_agent) {
-//                $agent = parse_user_agent($model->user_agent);
-//                $model->platform = $agent['platform'] ?: null;
-//                $model->device = $agent['device'] ?: null;
-//                $model->browser = $agent['browser'] ?: null;
-//            }
-//            if ($model->ip) {
-//                $model->address = ip_address($model->ip);
-//            }
+            //            if ($model->user_agent) {
+            //                $agent = parse_user_agent($model->user_agent);
+            //                $model->platform = $agent['platform'] ?: null;
+            //                $model->device = $agent['device'] ?: null;
+            //                $model->browser = $agent['browser'] ?: null;
+            //            }
+            //            if ($model->ip) {
+            //                $model->address = ip_address($model->ip);
+            //            }
         });
         static::created(function (LoginHistory $model) {
             $model->user->increment('login_count', 1, [
                 'last_login_ip' => $model->ip,
                 'last_login_at' => $model->login_at,
             ]);
-//            if (static::isTodayLogged($model->user_id, $model->user_type)) {// 当天首次登录
-//                Event::dispatch(new TodayFirstLogged($model));
-//            }
+            if (static::isTodayLogged($model->user_id, $model->user_type)) {// 当天首次登录
+                Event::dispatch(new TodayFirstLogged($model));
+            }
         });
     }
 
