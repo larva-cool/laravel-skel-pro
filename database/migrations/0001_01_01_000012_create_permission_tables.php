@@ -31,7 +31,6 @@ return new class extends Migration
         Schema::create($tableNames['permissions'], static function (Blueprint $table) {
             $table->id(); // permission id
             $table->string('name');
-            $table->string('display_name')->nullable()->comment('显示名称');
             $table->string('guard_name');
             $table->timestamps();
 
