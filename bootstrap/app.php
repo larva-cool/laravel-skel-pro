@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 use Illuminate\Foundation\Application;
@@ -17,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         api: [
             __DIR__.'/../routes/api_v1.php',
-            __DIR__.'/../routes/api_v2.php'
+            __DIR__.'/../routes/api_v2.php',
         ],
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
@@ -27,7 +26,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         // $middleware->authenticateSessions();
         $middleware->throttleApi(redis: false);
-
+        $middleware->alias([
+            'abilities' => Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
+            'ability' => Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
+            'role' => Spatie\Permission\Middleware\RoleMiddleware::class, // 角色
+            'permission' => Spatie\Permission\Middleware\PermissionMiddleware::class, // 权限
+            'role_or_permission' => Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class, // 角色权限
+        ]);
         // Configure the CSRF token validation middleware.
         $middleware->preventRequestForgery([
             '/admin/*',
