@@ -29,7 +29,7 @@ abstract class Controller extends \App\Http\Controllers\Controller
     {
         return response()->json([
             'code' => $code,
-            'msg' => $message,
+            'message' => $message,
             'data' => $data,
         ]);
     }
@@ -48,7 +48,7 @@ abstract class Controller extends \App\Http\Controllers\Controller
     {
         return response()->json([
             'code' => $code,
-            'msg' => $message,
+            'message' => $message,
             'data' => $data,
         ]);
     }
