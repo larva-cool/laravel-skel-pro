@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
@@ -28,7 +27,6 @@ return new class extends Migration
             $table->rememberToken()->comment('记住我token');
             $table->unsignedBigInteger('login_count')->nullable()->default(0)->comment('登录次数');
             $table->ipAddress('last_login_ip')->nullable()->comment('最后登录IP地址');
-            $table->dateTime('vip_expires_at')->nullable()->comment('VIP过期时间');
             $table->timestamp('last_active_at')->nullable()->comment('最后活动时间');
             $table->timestamp('last_login_at')->nullable()->comment('最后登录时间');
             $table->timestamps();
