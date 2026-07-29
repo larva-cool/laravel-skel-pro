@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace App\Models\Admin;
 
+use App\Enums\AdminStatus;
 use App\Models\Traits\DateTimeFormatter;
 use App\Models\User\LoginHistory;
 use Illuminate\Auth\Events\PasswordReset;
@@ -32,7 +33,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $email 邮件地址
  * @property string|null $phone 手机号
  * @property string $name 昵称
- * @property int $status 状态
+ * @property AdminStatus $status 状态
  * @property string $password 密码哈希
  * @property string $remember_token 记住我 Token
  * @property int $login_count 登录次数
@@ -83,7 +84,7 @@ class Admin extends Authenticatable
             'email' => 'string',
             'phone' => 'string',
             'name' => 'string',
-            'status' => 'integer',
+            'status' => AdminStatus::class,
             'password' => 'hashed',
             'login_count' => 'integer',
             'last_login_ip' => 'string',
