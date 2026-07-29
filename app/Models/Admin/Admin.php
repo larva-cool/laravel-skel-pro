@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace App\Models\Admin;
 
+use App\Models\Traits\DateTimeFormatter;
 use App\Models\User\LoginHistory;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -14,10 +15,13 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * 管理员模型
@@ -48,6 +52,10 @@ use Illuminate\Support\Str;
 #[Hidden(['password', 'remember_token'])]
 class Admin extends Authenticatable
 {
+    use DateTimeFormatter;
+
+    use HasApiTokens, Notifiable, SoftDeletes;
+
     /**
      * The model's attributes.
      *
