@@ -12,6 +12,7 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
@@ -36,6 +37,9 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at 创建时间
  * @property Carbon|null $updated_at 更新时间
  * @property Carbon|null $deleted_at 删除时间
+ *
+ * 关系对象
+ * @property Collection<int,LoginHistory> $loginHistories 登录历史
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */

@@ -10,16 +10,22 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserStatus;
 use App\Models\Traits\DateTimeFormatter;
+use App\Models\User\LoginHistory;
 use Database\Factories\UserFactory;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -51,6 +57,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read string $status_label 状态文本
  *
  * 关系对象
+ * @property Collection<int,LoginHistory> $loginHistories 登录历史
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -137,6 +144,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the login histories relation.
+     */
+    public function loginHistories(): MorphMany
+    {
+        return $this->morphMany(LoginHistory::class, 'user')->latest('login_at');
+    }
+
+    /**
      * 手机号路由通知
      *
      * @param  \Illuminate\Notifications\Notification|null  $notification
@@ -182,6 +197,17 @@ class User extends Authenticatable
         }
 
         return $this->saveQuietly();
+    }
+
+    /**
+     * 重置用户密码
+     */
+    public function resetPassword(string $password): void
+    {
+        $this->password = $password;
+        $this->setRememberToken(Str::random(60));
+        $this->saveQuietly();
+        Event::dispatch(new PasswordReset($this));
     }
 
     /**
