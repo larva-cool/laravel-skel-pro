@@ -49,6 +49,7 @@ return new class extends Migration
 
             // SMS 配置
             ['name' => '短信验证码有效期', 'key' => 'sms_captcha.duration', 'value' => '10', 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
+            ['name' => '短信验证码清理时间', 'key' => 'sms_captcha.prunable_days', 'value' => '10', 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
             ['name' => '短信验证码长度', 'key' => 'sms_captcha.length', 'value' => '6', 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
             ['name' => '短信验证码等待时间', 'key' => 'sms_captcha.wait_time', 'value' => '60', 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
             ['name' => '短信验证码测试次数', 'key' => 'sms_captcha.test_limit', 'value' => '3', 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
@@ -57,6 +58,7 @@ return new class extends Migration
 
             // 邮件配置
             ['name' => '邮件验证码有效期', 'key' => 'email_captcha.duration', 'value' => '10', 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
+            ['name' => '邮件验证码清理时间', 'key' => 'email_captcha.prunable_days', 'value' => '10', 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
             ['name' => '邮件验证码长度', 'key' => 'email_captcha.length', 'value' => '6', 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
             ['name' => '邮件验证码等待时间', 'key' => 'email_captcha.wait_time', 'value' => '60', 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],
             ['name' => '邮件验证码测试次数', 'key' => 'email_captcha.test_limit', 'value' => '3', 'cast_type' => SettingType::CAST_TYPE_INT, 'input_type' => SettingType::CAST_TYPE_INT],

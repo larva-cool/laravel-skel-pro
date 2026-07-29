@@ -76,15 +76,15 @@ class LoginHistory extends Model
     {
         parent::booted();
         static::creating(function ($model) {
-            //            if ($model->user_agent) {
-            //                $agent = parse_user_agent($model->user_agent);
-            //                $model->platform = $agent['platform'] ?: null;
-            //                $model->device = $agent['device'] ?: null;
-            //                $model->browser = $agent['browser'] ?: null;
-            //            }
-            //            if ($model->ip) {
-            //                $model->address = ip_address($model->ip);
-            //            }
+//            if ($model->user_agent) {
+//                $agent = parse_user_agent($model->user_agent);
+//                $model->platform = $agent['platform'] ?: null;
+//                $model->device = $agent['device'] ?: null;
+//                $model->browser = $agent['browser'] ?: null;
+//            }
+//            if ($model->ip) {
+//                $model->address = ip_address($model->ip);
+//            }
         });
         static::created(function (LoginHistory $model) {
             $model->user->increment('login_count', 1, [

@@ -25,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // 注册系统设置服务
+        $this->app->singleton(\App\Services\SettingManagerService::class, function () {
+            return new \App\Services\SettingManagerService;
+        });
         // telescope 配置
         if ($this->app->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);

@@ -99,3 +99,20 @@ if (! function_exists('disable_telescope')) {
         }
     }
 }
+
+/**
+ * Get setting value or object.
+ *
+ * @param  mixed|null  $default
+ * @return \App\Services\SettingManagerService|mixed
+ */
+if (! function_exists('settings')) {
+    function settings(string $key = '', $default = null)
+    {
+        if (empty($key)) {
+            return app(\App\Services\SettingManagerService::class);
+        }
+
+        return app(\App\Services\SettingManagerService::class)->get($key, $default);
+    }
+}

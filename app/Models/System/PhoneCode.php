@@ -72,7 +72,7 @@ class PhoneCode extends Model
      */
     public function prunable(): Builder
     {
-        return static::query()->where('send_at', '<=', now()->subDays(180));
+        return static::query()->where('send_at', '<=', now()->subDays(settings('sms_captcha.prunable_days', 10)));
     }
 
     /**
