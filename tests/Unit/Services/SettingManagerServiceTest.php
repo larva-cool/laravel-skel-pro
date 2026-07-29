@@ -246,7 +246,7 @@ class SettingManagerServiceTest extends TestCase
 
         $this->assertTrue($result);
         $this->assertSame('new_value', $this->service->get('update_key'));
-        $this->assertSame(1, Setting::where('key', 'update_key')->count());
+        $this->assertSame(1, Setting::query()->where('key', '=', 'update_key')->count());
     }
 
     /**
