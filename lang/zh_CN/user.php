@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * This is NOT a freeware, use is subject to license terms.
+ */
+declare(strict_types=1);
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Language Lines
+    |--------------------------------------------------------------------------
+    |
+    | 用户/管理员相关的提示消息。
+    |
+    */
+
+    'login_success' => '登录成功',
+    'logout_success' => '退出成功',
+    'blocked' => '该账号已被禁用',
+
+];

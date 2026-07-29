@@ -39,7 +39,8 @@ class AdminMenuSeeder extends Seeder
         foreach ($menus as $menu) {
             $children = $menu['children'] ?? [];
             $buttons = $menu['buttons'] ?? [];
-            unset($menu['children'], $menu['buttons']);
+            $menuKey = $menu['key'] ?? null;
+            unset($menu['children'], $menu['buttons'], $menu['key']);
 
             $menu['created_at'] = $now;
             $menu['updated_at'] = $now;
@@ -49,17 +50,22 @@ class AdminMenuSeeder extends Seeder
             $menu['parent_id'] = $parentKey && isset($idMap[$parentKey]) ? $idMap[$parentKey] : 0;
 
             $model = AdminMenu::query()->create($menu);
-            $idMap[$menu['key']] = $model->id;
+            if ($menuKey !== null) {
+                $idMap[$menuKey] = $model->id;
+            }
 
             // 创建子菜单
             foreach ($children as $child) {
                 $childButtons = $child['buttons'] ?? [];
-                unset($child['buttons']);
+                $childKey = $child['key'] ?? null;
+                unset($child['buttons'], $child['key']);
                 $child['parent_id'] = $model->id;
                 $child['created_at'] = $now;
                 $child['updated_at'] = $now;
                 $childModel = AdminMenu::query()->create($child);
-                $idMap[$child['key']] = $childModel->id;
+                if ($childKey !== null) {
+                    $idMap[$childKey] = $childModel->id;
+                }
 
                 $this->createButtons($childModel->id, $childButtons, $now);
             }
