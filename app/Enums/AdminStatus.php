@@ -47,6 +47,6 @@ enum AdminStatus: int implements \JsonSerializable
      */
     public function isFrozen(): bool
     {
-        return $this === self::STATUS_FROZEN;
+        return $this === self::STATUS_DISABLED;
     }
 }
