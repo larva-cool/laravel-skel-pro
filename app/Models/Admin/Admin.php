@@ -114,4 +114,19 @@ class Admin extends Authenticatable
         $this->saveQuietly();
         Event::dispatch(new PasswordReset($this));
     }
+
+
+    /**
+     * 通过账号查找管理员
+     */
+    public static function findForAccount(string $account): ?Admin
+    {
+        if (filter_var($account, FILTER_VALIDATE_EMAIL)) {
+            return Admin::query()->whereNotNull('email')->where('email', $account)->first();
+        } elseif (preg_match('/^1[2-9]\d{9}$/', $account)) {
+            return Admin::query()->whereNotNull('phone')->where('phone', $account)->first();
+        } else {
+            return Admin::query()->whereNotNull('username')->where('username', $account)->first();
+        }
+    }
 }

@@ -1,0 +1,231 @@
+<?php
+
+/**
+ * This is NOT a freeware, use is subject to license terms.
+ */
+declare(strict_types=1);
+
+namespace Feature\Admin;
+
+use App\Http\Controllers\Admin\AuthController;
+use App\Models\Admin\Admin;
+use Database\Seeders\AdminMenuSeeder;
+use Database\Seeders\AdminSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\TestDox;
+use Tests\TestCase;
+
+/**
+ * 后台认证控制器功能测试
+ */
+#[CoversClass(AuthController::class)]
+#[Group('admin')]
+#[Group('auth')]
+class AuthControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    /**
+     * 设置测试环境：运行 seeders 创建管理员和权限
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed([AdminMenuSeeder::class, AdminSeeder::class]);
+    }
+
+    /**
+     * 测试登录成功返回 token
+     */
+    #[Test]
+    #[TestDox('管理员使用正确凭证登录返回 200 和 token')]
+    public function login_with_valid_credentials(): void
+    {
+        $response = $this->postJson('/admin/auth/login', [
+            'userName' => 'admin',
+            'password' => '123456',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'code',
+                'msg',
+                'data' => [
+                    'token',
+                    'refreshToken',
+                ],
+            ])
+            ->assertJson(['code' => 200]);
+    }
+
+    /**
+     * 测试登录失败返回错误提示
+     */
+    #[Test]
+    #[TestDox('管理员使用错误密码登录返回 400 和错误提示')]
+    public function login_with_wrong_password(): void
+    {
+        $response = $this->postJson('/admin/auth/login', [
+            'userName' => 'admin',
+            'password' => 'wrong_password',
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'code' => 400,
+                'msg' => '用户名或密码错误',
+            ]);
+    }
+
+    /**
+     * 测试登录参数验证失败
+     */
+    #[Test]
+    #[TestDox('登录缺少必填字段返回 400 验证错误')]
+    public function login_with_missing_fields(): void
+    {
+        $response = $this->postJson('/admin/auth/login', [
+            'userName' => 'admin',
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'code' => 400,
+            ]);
+    }
+
+    /**
+     * 测试登录成功后获取用户信息
+     */
+    #[Test]
+    #[TestDox('使用有效 token 获取用户信息返回 200 和完整信息')]
+    public function user_info_with_valid_token(): void
+    {
+        // 先登录获取 token
+        $loginResponse = $this->postJson('/admin/auth/login', [
+            'userName' => 'admin',
+            'password' => '123456',
+        ]);
+
+        $token = $loginResponse->json('data.token');
+
+        // 使用 token 获取用户信息
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/admin/user/info');
+
+        $response->assertOk()
+            ->assertJson([
+                'code' => 200,
+            ])
+            ->assertJsonStructure([
+                'code',
+                'msg',
+                'data' => [
+                    'userId',
+                    'userName',
+                    'email',
+                    'avatar',
+                    'roles',
+                    'buttons',
+                ],
+            ]);
+    }
+
+    /**
+     * 测试未登录时获取用户信息返回 401
+     */
+    #[Test]
+    #[TestDox('未登录时获取用户信息返回 401')]
+    public function user_info_without_token(): void
+    {
+        $response = $this->getJson('/admin/user/info');
+
+        $response->assertStatus(401)
+            ->assertJson([
+                'code' => 401,
+            ]);
+    }
+
+    /**
+     * 测试退出登录
+     */
+    #[Test]
+    #[TestDox('退出登录成功返回 200')]
+    public function logout_successfully(): void
+    {
+        // 先登录
+        $loginResponse = $this->postJson('/admin/auth/login', [
+            'userName' => 'admin',
+            'password' => '123456',
+        ]);
+
+        $token = $loginResponse->json('data.token');
+
+        // 退出登录
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/admin/auth/logout');
+
+        $response->assertOk()
+            ->assertJson([
+                'code' => 200,
+                'msg' => '退出成功',
+            ]);
+    }
+
+    /**
+     * 测试退出后 token 失效
+     */
+    #[Test]
+    #[TestDox('退出登录后 token 失效无法获取用户信息')]
+    public function token_invalid_after_logout(): void
+    {
+        // 登录
+        $loginResponse = $this->postJson('/admin/auth/login', [
+            'userName' => 'admin',
+            'password' => '123456',
+        ]);
+
+        $token = $loginResponse->json('data.token');
+
+        // 退出
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->postJson('/admin/auth/logout');
+
+        // 旧 token 失效
+        $response = $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/admin/user/info');
+
+        $response->assertStatus(401);
+    }
+
+    /**
+     * 测试被禁用账号无法登录
+     */
+    #[Test]
+    #[TestDox('被禁用的管理员账号返回 403 错误')]
+    public function login_with_disabled_admin(): void
+    {
+        // 创建一个禁用账号
+        Admin::query()->create([
+            'username' => 'disabled_user',
+            'name' => 'Disabled User',
+            'password' => bcrypt('123456'),
+            'status' => 0, // 禁用状态
+        ]);
+
+        $response = $this->postJson('/admin/auth/login', [
+            'userName' => 'disabled_user',
+            'password' => '123456',
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'code' => 403,
+                'msg' => '该账号已被禁用',
+            ]);
+    }
+}

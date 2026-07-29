@@ -116,3 +116,15 @@ if (! function_exists('settings')) {
         return app(\App\Services\SettingManagerService::class)->get($key, $default);
     }
 }
+
+/**
+ * Create a new validation exception from a plain array of messages.
+ */
+if (! function_exists('validation_exception')) {
+    function validation_exception($field, $message)
+    {
+        throw \Illuminate\Validation\ValidationException::withMessages([
+            $field => [$message],
+        ]);
+    }
+}
