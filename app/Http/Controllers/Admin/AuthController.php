@@ -62,8 +62,8 @@ class AuthController extends Controller
         Event::dispatch(new LoginSucceeded($admin, $request->ip(), (string) $request->server('REMOTE_PORT'), $request->userAgent()));
 
         return $this->success([
-            'token' => $token->plainTextToken,
-            'refresh_token' => $token->plainTextToken,
+            'access_token' => $token->plainTextToken,
+            'user' => new AdminInfoResource($admin),
         ], __('user.login_success'));
     }
 

@@ -25,12 +25,10 @@ class RoleResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'role_id' => $this->id,
-            'role_name' => $this->name,
-            'role_code' => $this->name,
-            'description' => '',
-            'enabled' => true,
-            'create_time' => optional($this->created_at)?->toDateTimeString(),
+            'id' => $this->id,
+            'name' => $this->name,
+            'created_at' => $this->created_at?->toDateTimeString(),
+            'updated_at' => $this->updated_at?->toDateTimeString(),
         ];
     }
 }
