@@ -37,8 +37,8 @@ class AdminInfoResource extends JsonResource
         $roles = $admin->getRoleNames()->toArray();
 
         return [
-            'userId' => $admin->id,
-            'userName' => $admin->username,
+            'user_id' => $admin->id,
+            'user_name' => $admin->username,
             'email' => $admin->email ?? '',
             'avatar' => '', // 管理员暂无头像功能
             'roles' => $roles,

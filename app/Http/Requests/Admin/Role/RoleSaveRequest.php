@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * This is NOT a freeware, use is subject to license terms.
+ */
+declare(strict_types=1);
+
+namespace App\Http\Requests\Admin\Role;
+
+use App\Models\Admin\AdminMenu;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+/**
+ * 角色保存请求（创建/编辑）
+ *
+ * @property-read string $name 角色名称（同时作为编码）
+ * @property-read int[]|null $permissions 权限ID数组
+ *
+ * @author Tongle Xu <xutongle@msn.com>
+ */
+class RoleSaveRequest extends FormRequest
+{
+    /**
+     * Get the validation rules that apply to the request.
+     */
+    public function rules(): array
+    {
+        $roleId = (int) $this->route('id');
+
+        return [
+            'name' => [
+                'required', 'string', 'min:2', 'max:50',
+                Rule::unique('roles', 'name')->ignore($roleId)->where('guard_name', AdminMenu::GUARD_NAME),
+            ],
+            'permissions' => ['sometimes', 'array'],
+            'permissions.*' => ['integer', 'exists:permissions,id'],
+        ];
+    }
+}

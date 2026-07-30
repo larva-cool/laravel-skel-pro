@@ -63,7 +63,7 @@ class AuthController extends Controller
 
         return $this->success([
             'token' => $token->plainTextToken,
-            'refreshToken' => $token->plainTextToken,
+            'refresh_token' => $token->plainTextToken,
         ], __('user.login_success'));
     }
 

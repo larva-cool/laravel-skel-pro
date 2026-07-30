@@ -56,7 +56,7 @@ class AuthControllerTest extends TestCase
                 'message',
                 'data' => [
                     'token',
-                    'refreshToken',
+                    'refresh_token',
                 ],
             ])
             ->assertJson(['code' => 200]);
@@ -121,8 +121,8 @@ class AuthControllerTest extends TestCase
                 'code',
                 'message',
                 'data' => [
-                    'userId',
-                    'userName',
+                    'user_id',
+                    'user_name',
                     'email',
                     'avatar',
                     'roles',
