@@ -53,7 +53,7 @@ class AuthControllerTest extends TestCase
         $response->assertOk()
             ->assertJsonStructure([
                 'code',
-                'msg',
+                'message',
                 'data' => [
                     'token',
                     'refreshToken',
@@ -63,10 +63,10 @@ class AuthControllerTest extends TestCase
     }
 
     /**
-     * 测试登录失败返回错误提示
+     * 测试登录失败返回验证错误
      */
     #[Test]
-    #[TestDox('管理员使用错误密码登录返回验证错误')]
+    #[TestDox('管理员使用错误密码登录返回 422 验证错误')]
     public function login_with_wrong_password(): void
     {
         $response = $this->postJson('/admin/auth/login', [
@@ -74,27 +74,25 @@ class AuthControllerTest extends TestCase
             'password' => 'wrong_password',
         ]);
 
-        $response->assertOk()
-            ->assertJson([
-                'code' => 400,
-                'message' => '用户名或密码错误',
-            ]);
+        $response->assertUnprocessable()
+            ->assertJsonPath('errors.password.0', trans('auth.failed'));
     }
 
     /**
      * 测试登录参数验证失败
      */
     #[Test]
-    #[TestDox('登录缺少必填字段返回 400 验证错误')]
+    #[TestDox('登录缺少必填字段返回 422 验证错误')]
     public function login_with_missing_fields(): void
     {
         $response = $this->postJson('/admin/auth/login', [
             'account' => 'admin',
         ]);
 
-        $response->assertOk()
-            ->assertJson([
-                'code' => 400,
+        $response->assertUnprocessable()
+            ->assertJsonStructure([
+                'message',
+                'errors' => ['password'],
             ]);
     }
 
@@ -113,7 +111,7 @@ class AuthControllerTest extends TestCase
         $token = $loginResponse->json('data.token');
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
-            ->postJson('/admin/auth/info');
+            ->getJson('/admin/auth/info');
 
         $response->assertOk()
             ->assertJson([
@@ -121,7 +119,7 @@ class AuthControllerTest extends TestCase
             ])
             ->assertJsonStructure([
                 'code',
-                'msg',
+                'message',
                 'data' => [
                     'userId',
                     'userName',
@@ -140,12 +138,10 @@ class AuthControllerTest extends TestCase
     #[TestDox('未登录时获取用户信息返回 401')]
     public function info_without_token(): void
     {
-        $response = $this->postJson('/admin/auth/info');
+        $response = $this->getJson('/admin/auth/info');
 
-        $response->assertStatus(401)
-            ->assertJson([
-                'code' => 401,
-            ]);
+        $response->assertUnauthorized()
+            ->assertJsonStructure(['message']);
     }
 
     /**
@@ -215,10 +211,7 @@ class AuthControllerTest extends TestCase
             'password' => '123456',
         ]);
 
-        $response->assertOk()
-            ->assertJson([
-                'code' => 400,
-                'msg' => trans('user.blocked'),
-            ]);
+        $response->assertUnprocessable()
+            ->assertJsonPath('errors.account.0', trans('user.blocked'));
     }
 }

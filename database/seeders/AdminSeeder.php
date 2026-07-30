@@ -30,7 +30,6 @@ class AdminSeeder extends Seeder
 
         // 创建超级管理员角色（admin guard）
         $superRole = Role::findOrCreate('super_admin', AdminMenu::GUARD_NAME);
-        $superRole->update(['name' => 'super_admin', 'display_name' => '超级管理员']);
 
         // 将所有权限赋给超级管理员角色
         $permissions = \Spatie\Permission\Models\Permission::where('guard_name', AdminMenu::GUARD_NAME)->pluck('name');

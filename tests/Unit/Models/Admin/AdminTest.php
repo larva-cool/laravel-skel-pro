@@ -104,8 +104,8 @@ class AdminTest extends TestCase
         ]);
 
         $this->assertIsInt($admin->id);
-        $this->assertIsInt($admin->status);
-        $this->assertSame(1, $admin->status);
+        $this->assertIsInt($admin->status->value);
+        $this->assertSame(1, $admin->status->value);
         $this->assertIsInt($admin->login_count);
         $this->assertSame(5, $admin->login_count);
         $this->assertInstanceOf(Carbon::class, $admin->last_login_at);
