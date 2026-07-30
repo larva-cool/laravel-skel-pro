@@ -3,18 +3,18 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
 use Laravel\Telescope\TelescopeApplicationServiceProvider;
 
 /**
- * 望远镜服务提供者
+ * Telescope服务提供者
  *
  * @codeCoverageIgnore
  *
@@ -68,8 +68,10 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     protected function gate(): void
     {
-        Gate::define('viewTelescope', function ($user) {
-            return $user->hasRole('Super Admin') || $user->hasPermissionTo('telescope');
+        Gate::define('viewTelescope', function (User $user) {
+            return in_array($user->email, [
+                //
+            ]);
         });
     }
 }

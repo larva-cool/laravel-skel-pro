@@ -22,7 +22,6 @@ return [
     'failed' => 'These credentials do not match our records.',
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
-    'account_does_not_exist' => 'This phone number does not exist, please register first',
+
     'blocked' => 'This account has been blocked, please contact customer service',
-    'get_phone_failed' => 'Failed to get phone number',
 ];

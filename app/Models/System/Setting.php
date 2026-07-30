@@ -3,13 +3,13 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Models\System;
 
 use App\Models\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Support\Carbon;
 
 /**
@@ -22,33 +22,30 @@ use Illuminate\Support\Carbon;
  * @property string $cast_type 配置变量类型
  * @property string $input_type 配置输入类型
  * @property string $param 配置参数
- * @property int $order 配置排序
+ * @property int $sort 排序权重，越小越靠前
  * @property string $remark 配置描述
  * @property Carbon $updated_at 配置更新时间
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
+#[Table('settings')]
+#[Fillable(['name', 'key', 'value', 'cast_type', 'input_type', 'param', 'sort', 'remark'])]
 class Setting extends Model
 {
-    use HasFactory;
-
-    // 时间定义
-    const CREATED_AT = null;
+    /**
+     * "created at"列的名称。
+     *
+     * @var string|null
+     */
+    public const CREATED_AT = null;
 
     /**
-     * The table associated with the model.
+     * The model's attributes.
      *
-     * @var string
+     * @var array
      */
-    protected $table = 'settings';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name', 'key', 'value', 'cast_type', 'input_type', 'param', 'order', 'remark',
+    protected $attributes = [
+        'sort' => 0,
     ];
 
     /**
@@ -66,7 +63,7 @@ class Setting extends Model
             'cast_type' => 'string',
             'input_type' => 'string',
             'param' => 'string',
-            'order' => 'integer',
+            'sort' => 'integer',
             'remark' => 'string',
             'updated_at' => 'datetime',
         ];
@@ -91,7 +88,7 @@ class Setting extends Model
     public static function getAll(): array
     {
         $settings = [];
-        self::query()->orderBy('order')->get()->each(function ($setting) use (&$settings) {
+        self::query()->orderBy('sort')->get()->each(function ($setting) use (&$settings) {
             $settings[$setting['key']] = $setting['value'];
         });
 
@@ -115,7 +112,7 @@ class Setting extends Model
                 'cast_type' => 'string',
                 'input_type' => 'text',
                 'param' => null,
-                'order' => 99,
+                'sort' => 0,
                 'remark' => null,
             ], $item);
 
@@ -126,7 +123,7 @@ class Setting extends Model
         self::query()->upsert(
             $items,
             ['key'],
-            ['name', 'value', 'cast_type', 'input_type', 'param', 'order', 'remark', 'updated_at'],
+            ['name', 'value', 'cast_type', 'input_type', 'param', 'sort', 'remark', 'updated_at'],
         );
     }
 }

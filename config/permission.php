@@ -1,12 +1,7 @@
 <?php
-/**
- * This is NOT a freeware, use is subject to license terms.
- */
 
-declare(strict_types=1);
-
-use App\Models\System\Permission;
 use Spatie\Permission\DefaultTeamResolver;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 return [
@@ -35,6 +30,19 @@ return [
 
         'role' => Role::class,
 
+        /*
+         * When using the "Teams" feature from this package, we need to know which
+         * Eloquent model should be used to retrieve your teams. Of course, it
+         * is often just the "Team" model but you may use whatever you like.
+         */
+        'team' => null,
+
+        /*
+         * When using the "HasModels" trait and passing raw IDs to syncModels,
+         * attachModels, or detachModels, this model class will be used to
+         * resolve those IDs. If null, defaults to the guard's model.
+         */
+        'default_model' => null,
     ],
 
     'table_names' => [
@@ -121,10 +129,10 @@ return [
 
     /*
      * Events will fire when a role or permission is assigned/unassigned:
-     * \Spatie\Permission\Events\RoleAttached
-     * \Spatie\Permission\Events\RoleDetached
-     * \Spatie\Permission\Events\PermissionAttached
-     * \Spatie\Permission\Events\PermissionDetached
+     * \Spatie\Permission\Events\RoleAttachedEvent
+     * \Spatie\Permission\Events\RoleDetachedEvent
+     * \Spatie\Permission\Events\PermissionAttachedEvent
+     * \Spatie\Permission\Events\PermissionDetachedEvent
      *
      * To enable, set to true, and then create listeners to watch these events.
      */
@@ -171,9 +179,11 @@ return [
     'display_role_in_exception' => false,
 
     /*
-     * 权限通配符检索
+     * By default wildcard permission lookups are disabled.
+     * See documentation to understand supported syntax.
      */
-    'enable_wildcard_permission' => true,
+
+    'enable_wildcard_permission' => false,
 
     /*
      * The class to use for interpreting wildcard permissions.
@@ -181,7 +191,7 @@ return [
      */
     // 'wildcard_permission' => Spatie\Permission\WildcardPermission::class,
 
-    /* 缓存设置 */
+    /* Cache-specific settings */
 
     'cache' => [
 
@@ -193,8 +203,9 @@ return [
         'expiration_time' => DateInterval::createFromDateString('24 hours'),
 
         /*
-         * 存储所有权限的缓存键。
+         * The cache key used to store all permissions.
          */
+
         'key' => 'permission.cache',
 
         /*

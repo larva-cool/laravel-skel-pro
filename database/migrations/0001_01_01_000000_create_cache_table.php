@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
@@ -20,7 +19,7 @@ return new class extends Migration
         Schema::create('cache', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->mediumText('value');
-            $table->integer('expiration')->comment('过期时间');
+            $table->bigInteger('expiration')->index()->comment('过期时间');
 
             $table->comment('缓存表');
         });
@@ -28,7 +27,7 @@ return new class extends Migration
         Schema::create('cache_locks', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->string('owner');
-            $table->integer('expiration')->comment('过期时间');
+            $table->bigInteger('expiration')->index()->comment('过期时间');
 
             $table->comment('缓存锁表');
         });

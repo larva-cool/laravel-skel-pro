@@ -3,13 +3,17 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Models\User;
 
 use App\Events\User\TodayFirstLogged;
-use App\Models\Model;
+use Database\Factories\User\LoginHistoryFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
@@ -31,36 +35,17 @@ use Illuminate\Support\Facades\Event;
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
+#[Table('login_histories')]
+#[Fillable(['user_id', 'user_type', 'ip', 'port', 'platform', 'device', 'browser', 'user_agent', 'address', 'login_at'])]
+#[Hidden(['user_id', 'user_type'])]
 class LoginHistory extends Model
 {
+    /** @use HasFactory<LoginHistoryFactory> */
+    use HasFactory;
+
     // 时间定义
     public const CREATED_AT = 'login_at';
     public const UPDATED_AT = null;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'login_histories';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'user_id', 'user_type', 'ip', 'port', 'platform', 'device', 'browser', 'user_agent', 'address', 'login_at',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'user_id', 'user_type',
-    ];
 
     /**
      * Get the attributes that should be cast.
@@ -91,15 +76,15 @@ class LoginHistory extends Model
     {
         parent::booted();
         static::creating(function ($model) {
-            if ($model->user_agent) {
-                $agent = parse_user_agent($model->user_agent);
-                $model->platform = $agent['platform'] ?: null;
-                $model->device = $agent['device'] ?: null;
-                $model->browser = $agent['browser'] ?: null;
-            }
-            if ($model->ip) {
-                $model->address = ip_address($model->ip);
-            }
+            //            if ($model->user_agent) {
+            //                $agent = parse_user_agent($model->user_agent);
+            //                $model->platform = $agent['platform'] ?: null;
+            //                $model->device = $agent['device'] ?: null;
+            //                $model->browser = $agent['browser'] ?: null;
+            //            }
+            //            if ($model->ip) {
+            //                $model->address = ip_address($model->ip);
+            //            }
         });
         static::created(function (LoginHistory $model) {
             $model->user->increment('login_count', 1, [
@@ -123,7 +108,7 @@ class LoginHistory extends Model
     /**
      * 当天是否登录过
      */
-    public static function isTodayLogged(int|string $userId, $type): bool
+    public static function isTodayLogged(int|string $userId, string $type): bool
     {
         return static::query()->where('user_id', $userId)
             ->where('user_type', $type)

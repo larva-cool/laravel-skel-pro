@@ -30,6 +30,7 @@ return [
     'any_of' => 'The :attribute field is invalid.',
     'array' => 'The :attribute field must be an array.',
     'ascii' => 'The :attribute field must only contain single-byte alphanumeric characters and symbols.',
+    'base64' => 'The :attribute field must be a valid Base64 string.',
     'before' => 'The :attribute field must be a date before :date.',
     'before_or_equal' => 'The :attribute field must be a date before or equal to :date.',
     'between' => [
@@ -177,16 +178,6 @@ return [
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
     |--------------------------------------------------------------------------
-    */
-    'username' => 'The :attribute field format is invalid.',
-    'phone' => 'The :attribute field format is invalid.',
-    'verify_code' => 'The :attribute field format is invalid.',
-    'pay_password' => 'The :attribute field format is invalid.',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Language Lines
-    |--------------------------------------------------------------------------
     |
     | Here you may specify custom validation messages for attributes using the
     | convention "attribute.rule" to name the lines. This makes it quick to
@@ -194,10 +185,11 @@ return [
     |
     */
 
+    'username' => 'The :attribute field format is invalid.',
+    'phone' => 'The :attribute field format is invalid.',
+    'verify_code' => 'The :attribute field format is invalid.',
+
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
-        ],
         'source_type' => [
             'incorrect' => 'The :attribute is incorrect.',
         ],
@@ -235,15 +227,7 @@ return [
         'user_id' => 'User ID',
         'username' => 'Username',
         'device' => 'Device',
-        'real_name' => 'Real Name',
-        'id_card' => 'ID Card Number',
         'verify_code' => 'Verify Code',
-        'pay_password' => 'Pay Password',
-        'amount' => 'Amount',
-        'status' => 'Status',
-        'effective_start_time' => 'Effective Start Time',
-        'effective_end_time' => 'Effective End Time',
-        'remark' => 'Remark',
     ],
 
 ];

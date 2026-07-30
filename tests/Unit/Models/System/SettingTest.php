@@ -3,164 +3,196 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace Tests\Unit\Models\System;
 
+use App\Enums\SettingType;
 use App\Models\System\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
+/**
+ * Setting 模型单元测试
+ */
 #[CoversClass(Setting::class)]
+#[Group('models')]
 class SettingTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * 测试获取已存在配置的变量类型
+     */
     #[Test]
-    #[TestDox('测试模型的基本属性和类型转换')]
-    public function test_model_basic_attributes_and_casts(): void
+    #[TestDox('获取已存在配置的变量类型')]
+    public function get_value_type_returns_cast_type_for_existing_key(): void
     {
-        // 创建测试数据
-        $setting = Setting::create([
-            'name' => '测试配置',
-            'key' => 'test.key',
-            'value' => 'test value',
-            'cast_type' => 'string',
-            'input_type' => 'text',
-            'param' => '',
-            'order' => 99,
-            'remark' => '测试配置描述',
-        ]);
+        Setting::query()->delete();
 
-        // 验证模型属性
-        $this->assertInstanceOf(Setting::class, $setting);
-        $this->assertEquals('测试配置', $setting->name);
-        $this->assertEquals('test.key', $setting->key);
-        $this->assertEquals('test value', $setting->value);
-        $this->assertEquals('string', $setting->cast_type);
-        $this->assertEquals('text', $setting->input_type);
-        $this->assertEquals(99, $setting->order);
-        $this->assertEquals('测试配置描述', $setting->remark);
-        $this->assertNotNull($setting->updated_at);
-    }
-
-    #[Test]
-    #[TestDox('测试 getValueType 方法')]
-    public function test_get_value_type_method(): void
-    {
-        // 创建测试数据
         Setting::create([
             'name' => '测试配置',
             'key' => 'test.key',
-            'value' => 'test value',
-            'cast_type' => 'integer',
-            'input_type' => 'text',
+            'value' => 'hello',
+            'cast_type' => SettingType::CAST_TYPE_STRING,
         ]);
 
-        // 测试存在的配置
-        $this->assertEquals('integer', Setting::getValueType('test.key'));
-
-        // 测试不存在的配置（使用默认值）
-        $this->assertEquals('string', Setting::getValueType('non.existent.key'));
-        $this->assertEquals('boolean', Setting::getValueType('non.existent.key', 'boolean'));
+        $this->assertSame(SettingType::CAST_TYPE_STRING, Setting::getValueType('test.key'));
     }
 
+    /**
+     * 测试获取不存在配置时返回默认值
+     */
     #[Test]
-    #[TestDox('测试 getAll 方法')]
-    public function test_get_all_method(): void
+    #[TestDox('获取不存在配置时返回默认值')]
+    public function get_value_type_returns_default_for_non_existing_key(): void
     {
-        // 创建测试数据
-        Setting::create([
-            'name' => '配置1',
-            'key' => 'config.one',
-            'value' => 'value1',
-            'order' => 10,
-        ]);
+        $this->assertSame('string', Setting::getValueType('non.existent.key'));
+    }
 
-        Setting::create([
-            'name' => '配置2',
-            'key' => 'config.two',
-            'value' => 'value2',
-            'order' => 5,
-        ]);
+    /**
+     * 测试获取不存在配置时返回自定义默认值
+     */
+    #[Test]
+    #[TestDox('获取不存在配置时返回自定义默认值')]
+    public function get_value_type_returns_custom_default_for_non_existing_key(): void
+    {
+        $this->assertSame('int', Setting::getValueType('non.existent.key', 'int'));
+    }
 
-        // 获取所有配置
+    /**
+     * 测试空表时获取所有配置返回空数组
+     */
+    #[Test]
+    #[TestDox('空表时获取所有配置返回空数组')]
+    public function get_all_returns_empty_array_when_no_settings(): void
+    {
+        Setting::query()->delete();
+
+        $this->assertSame([], Setting::getAll());
+    }
+
+    /**
+     * 测试获取所有配置并按 sort 排序
+     */
+    #[Test]
+    #[TestDox('获取所有配置并按 sort 排序')]
+    public function get_all_returns_all_settings_ordered(): void
+    {
+        Setting::query()->delete();
+
+        Setting::create(['name' => '配置B', 'key' => 'key.b', 'value' => 'b_value', 'sort' => 2]);
+        Setting::create(['name' => '配置A', 'key' => 'key.a', 'value' => 'a_value', 'sort' => 1]);
+        Setting::create(['name' => '配置C', 'key' => 'key.c', 'value' => 'c_value', 'sort' => 3]);
+
         $settings = Setting::getAll();
 
-        // 验证返回值是数组
-        $this->assertIsArray($settings);
-        // 验证包含预期的配置
-        $this->assertArrayHasKey('config.one', $settings);
-        $this->assertArrayHasKey('config.two', $settings);
-        $this->assertEquals('value1', $settings['config.one']);
-        $this->assertEquals('value2', $settings['config.two']);
+        $this->assertCount(3, $settings);
+        $this->assertSame(['key.a', 'key.b', 'key.c'], array_keys($settings));
+        $this->assertSame('a_value', $settings['key.a']);
     }
 
+    /**
+     * 测试批量插入新配置
+     */
     #[Test]
-    #[TestDox('测试 batchSet 方法')]
-    public function test_batch_set_method(): void
+    #[TestDox('批量插入新配置')]
+    public function batch_set_inserts_new_settings(): void
     {
-        // 准备批量数据
-        $batchData = [
-            [
-                'name' => '批量配置1',
-                'key' => 'batch.one',
-                'value' => 'batch1',
-                'cast_type' => 'string',
-                'input_type' => 'text',
-            ],
-            [
-                'name' => '批量配置2',
-                'key' => 'batch.two',
-                'value' => 'batch2',
-                'cast_type' => 'integer',
-                'input_type' => 'number',
-            ],
-        ];
+        Setting::query()->delete();
 
-        // 执行批量设置
-        Setting::batchSet($batchData);
-
-        // 验证数据是否正确插入
-        $this->assertDatabaseHas('settings', [
-            'key' => 'batch.one',
-            'value' => 'batch1',
+        Setting::batchSet([
+            ['name' => '配置一', 'key' => 'test.one', 'value' => 'value1'],
+            ['name' => '配置二', 'key' => 'test.two', 'value' => 'value2'],
         ]);
 
-        $this->assertDatabaseHas('settings', [
-            'key' => 'batch.two',
-            'value' => 'batch2',
-        ]);
+        $this->assertDatabaseHas('settings', ['key' => 'test.one', 'value' => 'value1']);
+        $this->assertDatabaseHas('settings', ['key' => 'test.two', 'value' => 'value2']);
     }
 
+    /**
+     * 测试批量更新已存在配置
+     */
     #[Test]
-    #[TestDox('测试模型的可填充属性')]
-    public function test_model_fillable_attributes(): void
+    #[TestDox('批量更新已存在配置')]
+    public function batch_set_updates_existing_settings(): void
     {
-        // 测试所有可填充属性
-        $setting = Setting::create([
-            'name' => '可填充测试',
-            'key' => 'fillable.test',
-            'value' => 'fillable value',
-            'cast_type' => 'string',
-            'input_type' => 'text',
-            'param' => 'test param',
-            'order' => 50,
-            'remark' => '可填充属性测试',
+        Setting::query()->delete();
+
+        Setting::create(['name' => '原名称', 'key' => 'test.update', 'value' => 'old_value']);
+
+        Setting::batchSet([
+            ['name' => '新名称', 'key' => 'test.update', 'value' => 'new_value'],
         ]);
 
-        // 验证所有属性都被正确设置
-        $this->assertEquals('可填充测试', $setting->name);
-        $this->assertEquals('fillable.test', $setting->key);
-        $this->assertEquals('fillable value', $setting->value);
-        $this->assertEquals('string', $setting->cast_type);
-        $this->assertEquals('text', $setting->input_type);
-        $this->assertEquals('test param', $setting->param);
-        $this->assertEquals(50, $setting->order);
-        $this->assertEquals('可填充属性测试', $setting->remark);
+        $setting = Setting::where('key', 'test.update')->first();
+        $this->assertNotNull($setting);
+        $this->assertSame('新名称', $setting->name);
+        $this->assertSame('new_value', $setting->value);
+    }
+
+    /**
+     * 测试批量设置时缺失字段使用默认值
+     */
+    #[Test]
+    #[TestDox('批量设置时缺失字段使用默认值')]
+    public function batch_set_uses_default_values_for_missing_fields(): void
+    {
+        Setting::query()->delete();
+
+        Setting::batchSet([
+            ['key' => 'test.defaults', 'value' => 'some_value'],
+        ]);
+
+        $setting = Setting::where('key', 'test.defaults')->first();
+        $this->assertNotNull($setting);
+        $this->assertNull($setting->name);
+        $this->assertSame('string', $setting->cast_type);
+        $this->assertSame('text', $setting->input_type);
+        $this->assertSame(0, $setting->sort);
+    }
+
+    /**
+     * 测试批量同时插入和更新配置
+     */
+    #[Test]
+    #[TestDox('批量同时插入和更新配置')]
+    public function batch_set_inserts_and_updates_simultaneously(): void
+    {
+        Setting::query()->delete();
+
+        Setting::create(['name' => '旧名称', 'key' => 'test.existing', 'value' => 'old_value']);
+
+        Setting::batchSet([
+            ['name' => '新名称', 'key' => 'test.existing', 'value' => 'new_value'],
+            ['name' => '新配置', 'key' => 'test.new', 'value' => 'new_item_value'],
+        ]);
+
+        $this->assertSame(2, Setting::count());
+
+        $existing = Setting::where('key', 'test.existing')->first();
+        $this->assertSame('new_value', $existing->value);
+
+        $new = Setting::where('key', 'test.new')->first();
+        $this->assertSame('new_item_value', $new->value);
+    }
+
+    /**
+     * 测试配置不记录 created_at
+     */
+    #[Test]
+    #[TestDox('配置不记录 created_at')]
+    public function setting_does_not_record_created_at(): void
+    {
+        Setting::query()->delete();
+
+        $setting = Setting::create(['name' => '测试', 'key' => 'test.no_created', 'value' => 'val']);
+
+        $this->assertNull($setting->created_at);
+        $this->assertNotNull($setting->updated_at);
     }
 }

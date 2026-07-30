@@ -1,13 +1,14 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Psr\Log\LogLevel;
 
@@ -16,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         api: [
             __DIR__.'/../routes/api_v1.php',
-            __DIR__.'/../routes/api_v2.php'
+            __DIR__.'/../routes/api_v2.php',
         ],
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
@@ -35,18 +36,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'abilities' => Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
             'ability' => Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
-            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,//角色
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,//权限
-            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,//角色权限
-        ]);
-        $middleware->web(append: [
-            \App\Http\Middleware\RefreshUserActiveAt::class,
-        ]);
-        $middleware->api(prepend: [
-            \App\Http\Middleware\RefreshUserActiveAt::class,
+            'role' => Spatie\Permission\Middleware\RoleMiddleware::class, // 角色
+            'permission' => Spatie\Permission\Middleware\PermissionMiddleware::class, // 权限
+            'role_or_permission' => Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class, // 角色权限
         ]);
         // Configure the CSRF token validation middleware.
-        $middleware->validateCsrfTokens([
+        $middleware->preventRequestForgery([
             '/admin/*',
             '/api/*',
         ]);
@@ -81,6 +76,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->level(\PDOException::class, LogLevel::CRITICAL);
-        $exceptions->dontReportDuplicates();
+        $exceptions->level(PDOException::class, LogLevel::CRITICAL);
+        $exceptions->shouldRenderJsonWhen(
+            fn (Request $request) => $request->is('api/*') || $request->is('admin/*'),
+        );
     })->create();

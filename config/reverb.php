@@ -72,7 +72,6 @@ return [
         'provider' => 'config',
 
         'apps' => [
-            // 生产环境
             [
                 'key' => env('REVERB_APP_KEY'),
                 'secret' => env('REVERB_APP_SECRET'),
@@ -88,40 +87,13 @@ return [
                 'activity_timeout' => env('REVERB_APP_ACTIVITY_TIMEOUT', 30),
                 'max_connections' => env('REVERB_APP_MAX_CONNECTIONS'),
                 'max_message_size' => env('REVERB_APP_MAX_MESSAGE_SIZE', 10_000),
-            ],
-            // 预发环境
-            [
-                'key' => env('REVERB_STAGE_APP_KEY'),
-                'secret' => env('REVERB_STAGE_APP_SECRET'),
-                'app_id' => env('REVERB_STAGE_APP_ID'),
-                'options' => [
-                    'host' => env('REVERB_HOST'),
-                    'port' => env('REVERB_PORT', 443),
-                    'scheme' => env('REVERB_SCHEME', 'https'),
-                    'useTLS' => env('REVERB_SCHEME', 'https') === 'https',
+                'accept_client_events_from' => env('REVERB_APP_ACCEPT_CLIENT_EVENTS_FROM', 'members'),
+                'rate_limiting' => [
+                    'enabled' => env('REVERB_APP_RATE_LIMITING_ENABLED', false),
+                    'max_attempts' => env('REVERB_APP_RATE_LIMIT_MAX_ATTEMPTS', 60),
+                    'decay_seconds' => env('REVERB_APP_RATE_LIMIT_DECAY_SECONDS', 60),
+                    'terminate_on_limit' => env('REVERB_APP_RATE_LIMIT_TERMINATE', false),
                 ],
-                'allowed_origins' => ['*'],
-                'ping_interval' => env('REVERB_STAGE_APP_PING_INTERVAL', 60),
-                'activity_timeout' => env('REVERB_STAGE_APP_ACTIVITY_TIMEOUT', 30),
-                'max_connections' => env('REVERB_STAGE_APP_MAX_CONNECTIONS'),
-                'max_message_size' => env('REVERB_STAGE_APP_MAX_MESSAGE_SIZE', 10_000),
-            ],
-            // 本地环境
-            [
-                'key' => env('REVERB_DEV_APP_KEY'),
-                'secret' => env('REVERB_DEV_APP_SECRET'),
-                'app_id' => env('REVERB_DEV_APP_ID'),
-                'options' => [
-                    'host' => env('REVERB_HOST'),
-                    'port' => env('REVERB_PORT', 443),
-                    'scheme' => env('REVERB_SCHEME', 'https'),
-                    'useTLS' => env('REVERB_SCHEME', 'https') === 'https',
-                ],
-                'allowed_origins' => ['*'],
-                'ping_interval' => env('REVERB_DEV_APP_PING_INTERVAL', 60),
-                'activity_timeout' => env('REVERB_DEV_APP_ACTIVITY_TIMEOUT', 30),
-                'max_connections' => env('REVERB_DEV_APP_MAX_CONNECTIONS'),
-                'max_message_size' => env('REVERB_DEV_APP_MAX_MESSAGE_SIZE', 10_000),
             ],
         ],
 

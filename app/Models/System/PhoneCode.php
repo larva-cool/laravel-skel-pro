@@ -3,17 +3,17 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Models\System;
 
 use App\Models\Model;
-use App\Models\User;
+use Database\Factories\System\PhoneCodeFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\MassPrunable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -29,37 +29,22 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $usage_at 使用时间
  * @property Carbon $send_at 发送时间
  * @property array $result 发送结果
- * @property User|null $user
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
+#[Table('phone_codes')]
+#[Fillable(['scene', 'phone', 'code', 'ip', 'state', 'verify_count', 'usage_at', 'send_at', 'result'])]
 class PhoneCode extends Model
 {
-    use HasFactory;
-    use MassPrunable;
+    /** @use HasFactory<PhoneCodeFactory> */
+    use HasFactory, MassPrunable;
 
     // 使用状态
-    public const USED_STATE = 1;
+    public const int USED_STATE = 1;
 
     // 时间定义
     public const CREATED_AT = 'send_at';
     public const UPDATED_AT = null;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'phone_codes';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'scene', 'phone', 'code', 'ip', 'state', 'verify_count', 'usage_at', 'send_at', 'result',
-    ];
 
     /**
      * Get the attributes that should be cast.
@@ -71,21 +56,15 @@ class PhoneCode extends Model
         return [
             'id' => 'integer',
             'scene' => 'string',
-            'ip' => 'string',
-            'state' => 'integer',
+            'phone' => 'string',
             'code' => 'string',
+            'state' => 'integer',
             'verify_count' => 'integer',
+            'ip' => 'string',
             'send_at' => 'datetime',
             'usage_at' => 'datetime',
+            'result' => 'json',
         ];
-    }
-
-    /**
-     * Get the user relation.
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'phone', 'phone');
     }
 
     /**
@@ -93,7 +72,7 @@ class PhoneCode extends Model
      */
     public function prunable(): Builder
     {
-        return static::query()->where('send_at', '<=', now()->subDays(180));
+        return static::query()->where('send_at', '<=', now()->subDays(settings('sms_captcha.prunable_days', 10)));
     }
 
     /**

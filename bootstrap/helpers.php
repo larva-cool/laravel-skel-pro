@@ -6,64 +6,15 @@
 
 declare(strict_types=1);
 
-use App\Services\SettingManagerService;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
-use Jenssegers\Agent\Agent;
 use Laravel\Telescope\Telescope;
-use Zhuzhichao\IpLocationZh\Ip;
-
-/**
- * Get setting value or object.
- *
- * @param  mixed|null  $default
- * @return SettingManagerService|mixed
- */
-if (! function_exists('settings')) {
-    function settings(string $key = '', $default = null)
-    {
-        if (empty($key)) {
-            return app(SettingManagerService::class);
-        }
-
-        return app(SettingManagerService::class)->get($key, $default);
-    }
-}
-
-/**
- * get the morph map for polymorphic relations.
- *
- * @return array
- */
-if (! function_exists('get_morph_maps')) {
-    function get_morph_maps(): array
-    {
-        $maps = Relation::morphMap();
-        foreach ($maps as $key => $val) {
-            $maps[$key] = Lang::get('morph_maps.'.$val);
-        }
-
-        return $maps;
-    }
-}
-
-/**
- * 获取源类型
- */
-if (!function_exists('source_types')) {
-    function source_types(): array
-    {
-        $maps = Relation::morphMap();
-        return array_keys($maps);
-    }
-}
 
 if (! function_exists('cpu_count')) {
     /**
-     * Get cpu count
+     * 获取 CPU 核心数
+     *
+     * @return int CPU 核心数
      */
     function cpu_count(): int
     {
@@ -88,105 +39,47 @@ if (! function_exists('cpu_count')) {
     }
 }
 
-/**
- * Create a new validation exception from a plain array of messages.
- */
-if (! function_exists('validation_exception')) {
-    function validation_exception($field, $message)
-    {
-        throw ValidationException::withMessages([
-            $field => [$message],
-        ]);
-    }
-}
-
-/**
- * 限制值在指定范围内
- */
-if (! function_exists('clamp')) {
-    function clamp($value, $min, $max)
-    {
-        return max($min, min($max, $value));
-    }
-}
-
-/**
- * 获取每页条数
- */
 if (! function_exists('per_page')) {
+    /**
+     * 获取分页每页条数
+     *
+     * @param  Request  $request  HTTP 请求实例
+     * @param  int  $limit  默认每页条数
+     * @return int 每页条数（1-100之间）
+     */
     function per_page($request, int $limit = 15)
     {
         return clamp($request->input('per_page', $limit), 1, 100);
     }
 }
 
-/**
- * 手机号替换
- */
-if (!function_exists('mobile_replace')) {
+if (! function_exists('mobile_replace')) {
+    /**
+     * 手机号脱敏处理
+     *
+     * @param  string|null  $value  原始手机号
+     * @param  string  $character  替换字符，默认为 *
+     * @param  int  $index  开始替换的位置
+     * @param  int  $length  替换的长度
+     * @return string 脱敏后的手机号
+     */
     function mobile_replace(?string $value, $character = '*', int $index = 3, int $length = 4): string
     {
-        if (!$value) {
+        if (! $value) {
             return '';
         }
 
-        return \Illuminate\Support\Str::mask($value, $character, $index, $length);
+        return Str::mask($value, $character, $index, $length);
     }
 }
 
-/**
- * 解析UA
- */
-if (! function_exists('parse_user_agent')) {
-    function parse_user_agent($userAgent): array
-    {
-        $userAgent = trim($userAgent);
-        $agent = new Agent;
-        $agent->setUserAgent($userAgent);
-
-        return [
-            'platform' => $agent->platform(),
-            'device' => $agent->device(),
-            'browser' => $agent->browser(),
-            'isMobile' => $agent->isMobile(),
-            'isTablet' => $agent->isTablet(),
-            'isDesktop' => $agent->isDesktop(),
-            'isPhone' => $agent->isPhone(),
-        ];
-    }
-}
-
-/**
- * 解析IP归属地
- */
-if (! function_exists('ip_address')) {
-    function ip_address(string $ip)
-    {
-        $location = Ip::find($ip);
-
-        return is_array($location) ? implode(' ', $location) : $location;
-    }
-}
-
-/**
- * 安全处理字符串，移除特殊字符
- */
-if (! function_exists('sanitize_key')) {
-    function sanitize_key(string $key): string
-    {
-        // 限制键长度
-        if (strlen($key) > 255) {
-            $key = substr($key, 0, 255);
-        }
-
-        return preg_replace('/[^a-zA-Z0-9_]/', '', $key);
-    }
-}
-
-/**
- * 解析被提及的用户名
- */
 if (! function_exists('parse_mentioned_usernames')) {
+    /**
+     * 解析内容中被 @ 提及的用户名
+     *
+     * @param  string  $content  原始内容
+     * @return array<string> 被提及的用户名列表
+     */
     function parse_mentioned_usernames(string $content): array
     {
         preg_match_all('/@([a-zA-Z0-9_]+)/', $content, $matches);
@@ -195,32 +88,43 @@ if (! function_exists('parse_mentioned_usernames')) {
     }
 }
 
-/**
- * 代码中禁用 telescope，防止爆内存
- */
 if (! function_exists('disable_telescope')) {
+    /**
+     * 禁用 Telescope 数据记录，防止内存溢出
+     */
     function disable_telescope(): void
     {
-        if (class_exists('Laravel\Telescope\Telescope')) {
+        if (class_exists(Telescope::class)) {
             Telescope::stopRecording();
         }
     }
 }
 
 /**
- * 跳转到管理员登陆页
+ * Get setting value or object.
+ *
+ * @param  mixed|null  $default
+ * @return \App\Services\SettingManagerService|mixed
  */
-if (!function_exists('admin_login_url')) {
-    function admin_login_url(Request $request): ?string
+if (! function_exists('settings')) {
+    function settings(string $key = '', $default = null)
     {
-        if ($request->expectsJson()) {
-            return null;
+        if (empty($key)) {
+            return app(\App\Services\SettingManagerService::class);
         }
 
-        if (Str::startsWith($request->decodedPath(), 'admin')) {
-            return route('admin.login');
-        }
+        return app(\App\Services\SettingManagerService::class)->get($key, $default);
+    }
+}
 
-        return route('login');
+/**
+ * Create a new validation exception from a plain array of messages.
+ */
+if (! function_exists('validation_exception')) {
+    function validation_exception($field, $message)
+    {
+        throw \Illuminate\Validation\ValidationException::withMessages([
+            $field => [$message],
+        ]);
     }
 }

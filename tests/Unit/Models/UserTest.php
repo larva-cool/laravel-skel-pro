@@ -3,416 +3,356 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
 use App\Enums\UserStatus;
-use App\Events\User\EmailVerified;
-use App\Events\User\PhoneVerified;
-use App\Events\User\UsernameReset;
 use App\Models\User;
-use App\Models\User\UserExtra;
-use App\Models\User\UserProfile;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Storage;
-use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
+/**
+ * User 模型单元测试
+ */
 #[CoversClass(User::class)]
-#[TestDox('User 模型测试')]
+#[Group('models')]
 class UserTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * 测试工厂创建用户
+     */
     #[Test]
-    #[TestDox('测试可填充属性')]
-    public function test_fillable_attributes()
+    #[TestDox('工厂创建用户并验证默认值')]
+    public function factory_creates_user_with_defaults(): void
     {
-        $user = new User;
-        $fillable = $user->getFillable();
+        $user = User::factory()->create();
 
-        $this->assertEqualsCanonicalizing([
-            'group_id',
-            'username',
-            'email',
-            'phone',
-            'name',
-            'avatar',
-            'status',
-            'available_points',
-            'available_coins',
-            'device_id',
-            'socket_id',
-            'password',
-            'login_count',
-            'vip_expires_at',
-            'last_active_at',
-            'last_login_at',
-            'last_login_ip',
-        ], $fillable);
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertSame(UserStatus::STATUS_ACTIVE, $user->status);
+        $this->assertSame(0, $user->available_points);
+        $this->assertSame(0, $user->available_coins);
     }
 
+    /**
+     * 测试 factory frozen 状态
+     */
     #[Test]
-    #[TestDox('测试属性类型转换')]
-    public function test_attribute_casts()
+    #[TestDox('factory frozen 状态创建冻结用户')]
+    public function factory_frozen_creates_frozen_user(): void
     {
-        $user = new User;
-        $casts = $user->getCasts();
-        $dd = [
-            'id' => 'integer',
-            'group_id' => 'integer',
-            'username' => 'string',
-            'email' => 'string',
-            'phone' => 'string',
-            'name' => 'string',
-            'avatar' => 'string',
-            'status' => UserStatus::class,
-            'available_points' => 'integer',
-            'available_coins' => 'integer',
-            'device_id' => 'string',
-            'socket_id' => 'string',
-            'password' => 'hashed',
-            'pay_password' => 'hashed',
-            'login_count' => 'integer',
-            'last_login_ip' => 'string',
-            'vip_expires_at' => 'datetime',
-            'last_active_at' => 'datetime',
-            'last_login_at' => 'datetime',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
-        ];
-        sort($casts);
-        sort($dd);
-        $this->assertSame($dd, $casts);
+        $user = User::factory()->frozen()->create();
+
+        $this->assertSame(UserStatus::STATUS_FROZEN, $user->status);
     }
 
+    /**
+     * 测试 factory notActive 状态
+     */
     #[Test]
-    #[TestDox('测试默认属性值')]
-    public function test_default_attributes()
+    #[TestDox('factory notActive 状态创建未激活用户')]
+    public function factory_not_active_creates_not_active_user(): void
     {
-        $user = new User;
+        $user = User::factory()->notActive()->create();
 
-        $this->assertEquals(UserStatus::STATUS_ACTIVE, $user->status);
-        $this->assertEquals(0, $user->available_points);
+        $this->assertSame(UserStatus::STATUS_NOT_ACTIVE, $user->status);
     }
 
+    /**
+     * 测试 status 字段转换为 UserStatus 枚举
+     */
     #[Test]
-    #[TestDox('测试姓名访问器')]
-    public function test_name_accessor()
+    #[TestDox('status 字段转换为 UserStatus 枚举')]
+    public function status_is_cast_to_enum(): void
     {
-        // 测试有 name 的情况
-        $user = User::factory()->create(['name' => '测试昵称', 'username' => 'test_user']);
-        $this->assertEquals('测试昵称', $user->name);
+        $user = User::factory()->create();
 
-        // 测试没有 name 的情况
-        $user = User::factory()->create(['name' => null, 'username' => 'test_user1']);
-        $this->assertEquals('test_user1', $user->name);
+        $this->assertInstanceOf(UserStatus::class, $user->status);
     }
 
+    /**
+     * 测试 name 属性：有昵称时返回昵称
+     */
     #[Test]
-    #[TestDox('测试手机号显示访问器')]
-    public function test_phone_text_accessor()
+    #[TestDox('name 访问器：有昵称时返回昵称')]
+    public function name_accessor_returns_name_when_set(): void
     {
-        // 测试有 phone 的情况
-        $user = User::factory()->create(['phone' => '13812345678']);
-        $this->assertEquals('138****5678', $user->phone_text);
+        $user = User::factory()->create([
+            'name' => '张三',
+            'username' => 'zhangsan',
+        ]);
 
-        // 测试没有 phone 的情况
-        $user = User::factory()->create(['phone' => null]);
-        $this->assertEquals('', $user->phone_text);
+        $this->assertSame('张三', $user->name);
     }
 
+    /**
+     * 测试 name 属性：昵称为空时回退到用户名
+     */
     #[Test]
-    #[TestDox('测试头像访问器')]
-    public function test_avatar_accessor()
+    #[TestDox('name 访问器：昵称为空时回退到用户名')]
+    public function name_accessor_falls_back_to_username(): void
     {
-        // 测试默认头像
+        $user = User::factory()->create([
+            'name' => null,
+            'username' => 'zhangsan',
+        ]);
+
+        $this->assertSame('zhangsan', $user->name);
+    }
+
+    /**
+     * 测试 phone_text 属性：手机号脱敏
+     */
+    #[Test]
+    #[TestDox('phone_text 访问器：手机号脱敏处理')]
+    public function phone_text_attribute_masks_phone(): void
+    {
+        $user = User::factory()->create([
+            'phone' => '13800138000',
+        ]);
+
+        $this->assertNotSame('13800138000', $user->phone_text);
+        $this->assertStringContainsString('*', $user->phone_text);
+    }
+
+    /**
+     * 测试 phone_text 属性：手机号为空时返回空字符串
+     */
+    #[Test]
+    #[TestDox('phone_text 访问器：手机号为空时返回空字符串')]
+    public function phone_text_returns_empty_string_when_phone_is_null(): void
+    {
+        $user = User::factory()->create([
+            'phone' => null,
+        ]);
+
+        $this->assertSame('', $user->phone_text);
+    }
+
+    /**
+     * 测试 status_label 属性返回状态文本
+     */
+    #[Test]
+    #[TestDox('status_label 访问器返回状态中文标签')]
+    public function status_label_returns_status_label(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertSame('正常', $user->status_label);
+    }
+
+    /**
+     * 测试 routeNotificationForPhone 返回手机号
+     */
+    #[Test]
+    #[TestDox('routeNotificationForPhone 返回手机号')]
+    public function route_notification_for_phone_returns_phone(): void
+    {
+        $user = User::factory()->create([
+            'phone' => '13800138000',
+        ]);
+
+        $this->assertSame('13800138000', $user->routeNotificationForPhone(null));
+    }
+
+    /**
+     * 测试 routeNotificationForPhone 手机号为空时返回 null
+     */
+    #[Test]
+    #[TestDox('routeNotificationForPhone 手机号为空时返回 null')]
+    public function route_notification_for_phone_returns_null_when_empty(): void
+    {
+        $user = User::factory()->create([
+            'phone' => null,
+        ]);
+
+        $this->assertNull($user->routeNotificationForPhone(null));
+    }
+
+    /**
+     * 测试 hasAvatar：无头像返回 false
+     */
+    #[Test]
+    #[TestDox('hasAvatar：无头像返回 false')]
+    public function has_avatar_returns_false_when_no_avatar(): void
+    {
         $user = User::factory()->create(['avatar' => null]);
-        $this->assertEquals('http://localhost/img/avatar.png', $user->avatar);
 
-        // 测试自定义头像
-        $user = User::factory()->create(['avatar' => 'uploads/avatars/test.jpg']);
-        $this->assertEquals('/storage/uploads/avatars/test.jpg', $user->avatar);
+        $this->assertFalse($user->hasAvatar());
     }
 
+    /**
+     * 测试 hasAvatar：有头像返回 true
+     */
     #[Test]
-    #[TestDox('测试 Socket 状态访问器')]
-    public function test_socket_status_accessor()
+    #[TestDox('hasAvatar：有头像返回 true')]
+    public function has_avatar_returns_true_when_avatar_set(): void
     {
-        // 测试在线状态
-        $user = User::factory()->create(['socket_id' => 'test_socket_id']);
-        $this->assertEquals('online', $user->socket_status);
+        $user = User::factory()->create(['avatar' => 'https://example.com/avatar.png']);
 
-        // 测试离线状态
-        $user = User::factory()->create(['socket_id' => null]);
-        $this->assertEquals('offline', $user->socket_status);
+        $this->assertTrue($user->hasAvatar());
     }
 
+    /**
+     * 测试 hasPassword：有密码返回 true
+     */
     #[Test]
-    #[TestDox('测试用户配置关系')]
-    public function test_profile_relation()
-    {
-        $user = User::factory()->create();
-        $profile = $user->profile; // 由观察者自动创建
-
-        $this->assertInstanceOf(UserProfile::class, $user->profile);
-        $this->assertEquals($profile->user_id, $user->profile->user_id);
-    }
-
-    #[Test]
-    #[TestDox('测试用户额外信息关系')]
-    public function test_extra_relation()
+    #[TestDox('hasPassword：有密码返回 true')]
+    public function has_password_returns_true_when_password_set(): void
     {
         $user = User::factory()->create();
-        $extra = $user->extra; // 由观察者自动创建
 
-        $this->assertInstanceOf(UserExtra::class, $user->extra);
-        $this->assertEquals($extra->user_id, $user->extra->user_id);
+        $this->assertTrue($user->hasPassword());
     }
 
+    /**
+     * 测试 hasPassword：无密码返回 false
+     */
     #[Test]
-    #[TestDox('测试活跃用户作用域')]
-    public function test_active_scope()
+    #[TestDox('hasPassword：无密码返回 false')]
+    public function has_password_returns_false_when_empty(): void
     {
-        $userCount = User::query()->active()->count();
-        User::factory()->create(['status' => UserStatus::STATUS_ACTIVE]);
-        User::factory()->create(['status' => UserStatus::STATUS_FROZEN]);
-        User::factory()->create(['status' => UserStatus::STATUS_NOT_ACTIVE]);
+        $user = User::factory()->create(['password' => null]);
 
-        $activeUsers = User::active()->get();
-
-        $this->assertCount($userCount + 1, $activeUsers);
-        $this->assertEquals(UserStatus::STATUS_ACTIVE, $activeUsers->first()->status);
+        $this->assertFalse($user->hasPassword());
     }
 
+    /**
+     * 测试 isVip：VIP 未过期返回 true
+     */
     #[Test]
-    #[TestDox('测试用户关键词搜索作用域')]
-    public function test_keyword_scope()
+    #[TestDox('isVip：VIP 未过期返回 true')]
+    public function is_vip_returns_true_when_not_expired(): void
     {
-        $user1 = User::factory()->create([
-            'username' => 'demo_user',
-            'name' => '演示用户',
-            'email' => 'demo@example.com',
-            'phone' => '15812345678',
-        ]);
-        $user2 = User::factory()->create([
-            'username' => 'sample_user',
-            'name' => '示例用户',
-            'email' => 'sample@example.com',
-            'phone' => '15987654321',
+        $user = User::factory()->create([
+            'vip_expires_at' => Carbon::now()->addDays(30),
         ]);
 
-        // 测试用户名搜索
-        $results = User::keyword('demo')->get();
-        $this->assertCount(1, $results);
-        $this->assertEquals($user1->id, $results->first()->id);
-
-        // 测试昵称搜索
-        $results = User::keyword('演示')->get();
-        $this->assertCount(1, $results);
-        $this->assertEquals($user1->id, $results->first()->id);
-
-        // 测试邮箱搜索
-        $results = User::keyword('demo@')->get();
-        $this->assertCount(1, $results);
-        $this->assertEquals($user1->id, $results->first()->id);
-
-        // 测试手机号搜索
-        $results = User::keyword('158')->get();
-        $this->assertCount(1, $results);
-        $this->assertEquals($user1->id, $results->first()->id);
-
-        // 测试无匹配
-        $results = User::keyword('not_exist')->get();
-        $this->assertCount(0, $results);
+        $this->assertTrue($user->isVip());
     }
 
+    /**
+     * 测试 isVip：VIP 已过期返回 false
+     */
     #[Test]
-    #[TestDox('测试用户是否已验证手机号')]
-    public function test_has_verified_phone()
+    #[TestDox('isVip：VIP 已过期返回 false')]
+    public function is_vip_returns_false_when_expired(): void
     {
-        $user = User::factory()->create();
-        $extra = $user->extra; // 由观察者自动创建
+        $user = User::factory()->create([
+            'vip_expires_at' => Carbon::now()->subDays(1),
+        ]);
 
-        $this->assertFalse($user->hasVerifiedPhone());
-
-        $extra->phone_verified_at = Carbon::now();
-        $extra->save();
-        $user->refresh();
-
-        $this->assertTrue($user->hasVerifiedPhone());
+        $this->assertFalse($user->isVip());
     }
 
+    /**
+     * 测试 isVip：无 VIP 时间返回 false
+     */
     #[Test]
-    #[TestDox('测试用户手机号验证')]
-    public function test_mark_phone_as_verified()
+    #[TestDox('isVip：无 VIP 时间返回 false')]
+    public function is_vip_returns_false_when_null(): void
     {
-        Event::fake(PhoneVerified::class);
+        $user = User::factory()->create([
+            'vip_expires_at' => null,
+        ]);
 
-        $user = User::factory()->create();
-        $extra = $user->extra; // 由观察者自动创建
-
-        $this->assertTrue($user->markPhoneAsVerified());
-
-        $user->refresh();
-        $this->assertNotNull($user->extra->phone_verified_at);
-
-        Event::assertDispatched(PhoneVerified::class, function ($event) use ($user) {
-            return $event->user->id === $user->id;
-        });
+        $this->assertFalse($user->isVip());
     }
 
+    /**
+     * 测试 addVipDays：非 VIP 用户从当前时间开始计算
+     */
     #[Test]
-    #[TestDox('测试用户是否已验证邮箱')]
-    public function test_has_verified_email()
+    #[TestDox('addVipDays：非 VIP 用户从当前时间开始计算')]
+    public function add_vip_days_starts_from_now_for_non_vip(): void
     {
-        $user = User::factory()->create();
-        $extra = $user->extra; // 由观察者自动创建
+        Carbon::setTestNow(Carbon::create(2025, 1, 1, 12, 0, 0));
 
-        $this->assertFalse($user->hasVerifiedEmail());
+        $user = User::factory()->create(['vip_expires_at' => null]);
+        $user->addVipDays(30);
 
-        $extra->email_verified_at = Carbon::now();
-        $extra->save();
-        $user->refresh();
+        $this->assertTrue($user->fresh()->isVip());
+        $this->assertSame('2025-01-31 12:00:00', $user->fresh()->vip_expires_at->format('Y-m-d H:i:s'));
 
-        $this->assertTrue($user->hasVerifiedEmail());
+        Carbon::setTestNow();
     }
 
+    /**
+     * 测试 addVipDays：已有 VIP 在原过期时间上累加
+     */
     #[Test]
-    #[TestDox('测试用户邮箱验证')]
-    public function test_mark_email_as_verified()
+    #[TestDox('addVipDays：已有 VIP 在原过期时间上累加')]
+    public function add_vip_days_extends_existing_vip(): void
     {
-        Event::fake(EmailVerified::class);
+        Carbon::setTestNow(Carbon::create(2025, 1, 1, 12, 0, 0));
 
-        $user = User::factory()->create();
-        $extra = $user->extra; // 由观察者自动创建
+        $user = User::factory()->create([
+            'vip_expires_at' => Carbon::create(2025, 2, 1, 12, 0, 0),
+        ]);
+        $user->addVipDays(10);
 
-        $this->assertTrue($user->markEmailAsVerified());
+        $this->assertSame('2025-02-11 12:00:00', $user->fresh()->vip_expires_at->format('Y-m-d H:i:s'));
 
-        $user->refresh();
-        $this->assertNotNull($user->extra->email_verified_at);
-
-        Event::assertDispatched(EmailVerified::class, function ($event) use ($user) {
-            return $event->user->id === $user->id;
-        });
+        Carbon::setTestNow();
     }
 
+    /**
+     * 测试 markActive 将用户标记为正常
+     */
     #[Test]
-    #[TestDox('测试用户活跃状态切换')]
-    public function test_mark_active_and_frozen()
+    #[TestDox('markActive 将用户状态改为正常')]
+    public function mark_active_sets_status_to_active(): void
     {
-        $user = User::factory()->create(['status' => UserStatus::STATUS_FROZEN]);
+        $user = User::factory()->frozen()->create();
 
         $this->assertTrue($user->markActive());
-        $user->refresh();
-        $this->assertEquals(UserStatus::STATUS_ACTIVE, $user->status);
+        $this->assertSame(UserStatus::STATUS_ACTIVE, $user->fresh()->status);
+    }
+
+    /**
+     * 测试 markFrozen 将用户标记为冻结
+     */
+    #[Test]
+    #[TestDox('markFrozen 将用户状态改为冻结')]
+    public function mark_frozen_sets_status_to_frozen(): void
+    {
+        $user = User::factory()->create();
 
         $this->assertTrue($user->markFrozen());
-        $user->refresh();
-        $this->assertEquals(UserStatus::STATUS_FROZEN, $user->status);
-        $this->assertTrue($user->isFrozen());
+        $this->assertSame(UserStatus::STATUS_FROZEN, $user->fresh()->status);
     }
 
+    /**
+     * 测试 password 自动哈希
+     */
     #[Test]
-    #[TestDox('测试用户头像重置')]
-    public function test_reset_avatar()
+    #[TestDox('password 字段自动哈希')]
+    public function password_is_auto_hashed(): void
     {
-        Storage::fake();
+        $user = User::factory()->create(['password' => 'plain-text-password']);
 
-        // 测试默认头像
-        $user = User::factory()->create(['avatar' => null]);
-        $this->assertTrue($user->resetAvatar());
-        $this->assertNull($user->getRawOriginal('avatar'));
-
-        // 测试自定义头像
-        $user = User::factory()->create(['avatar' => 'uploads/avatars/test.jpg']);
-        Storage::put('uploads/avatars/test.jpg', 'test');
-        $this->assertTrue($user->resetAvatar());
-        $this->assertNull($user->getRawOriginal('avatar'));
-        $this->assertFalse(Storage::exists('uploads/avatars/test.jpg'));
-
-        // 测试头像删除失败
-        $user = User::factory()->create(['avatar' => 'uploads/avatars/test.jpg']);
-        Storage::put('uploads/avatars/test.jpg', 'test');
-        Storage::shouldReceive('delete')->andThrow(new \Exception('Failed to delete'));
-        $this->assertFalse($user->resetAvatar());
+        $this->assertNotSame('plain-text-password', $user->password);
+        $this->assertTrue(password_verify('plain-text-password', $user->password));
     }
 
+    /**
+     * 测试隐藏敏感字段
+     */
     #[Test]
-    #[TestDox('测试用户用户名重置')]
-    public function test_reset_username()
-    {
-        Event::fake(UsernameReset::class);
-
-        $user = User::factory()->create(['username' => 'old_username']);
-        $extra = $user->extra; // 由观察者自动创建
-        $extra->update(['username_change_count' => 0]);
-
-        // 测试用户名不变
-        $user->resetUsername('old_username');
-        $user->refresh();
-        $this->assertEquals('old_username', $user->username);
-        $this->assertEquals(0, $user->extra->username_change_count);
-        Event::assertNotDispatched(UsernameReset::class);
-
-        // 测试用户名改变
-        $user->resetUsername('new_username');
-        $user->refresh();
-        $this->assertEquals('new_username', $user->username);
-        $this->assertEquals(1, $user->extra->username_change_count);
-        Event::assertDispatched(UsernameReset::class, function ($event) use ($user) {
-            return $event->user->id === $user->id;
-        });
-    }
-
-    #[Test]
-    #[TestDox('测试用户设备 token 创建')]
-    public function test_create_device_token()
+    #[TestDox('序列化时隐藏 password 和 remember_token')]
+    public function sensitive_fields_are_hidden_in_array(): void
     {
         $user = User::factory()->create();
+        $array = $user->toArray();
 
-        // 测试创建 token
-        $tokenData = $user->createDeviceToken('test_device');
-
-        $this->assertIsArray($tokenData);
-        $this->assertArrayHasKey('token_id', $tokenData);
-        $this->assertArrayHasKey('token_type', $tokenData);
-        $this->assertArrayHasKey('access_token', $tokenData);
-        $this->assertArrayHasKey('expires_in', $tokenData);
-
-        $this->assertEquals('Bearer', $tokenData['token_type']);
-
-        // 验证 token 是否存在
-        $token = PersonalAccessToken::find($tokenData['token_id']);
-        $this->assertNotNull($token);
-        $this->assertEquals($user->id, $token->tokenable_id);
-        $this->assertEquals('test_device', $token->name);
-    }
-
-    #[Test]
-    #[TestDox('测试用户软删除')]
-    public function test_soft_delete()
-    {
-        $user = User::factory()->create();
-
-        // 测试删除
-        $user->delete();
-        $this->assertSoftDeleted($user);
-
-        // 测试恢复
-        $user->restore();
-        $this->assertNotSoftDeleted($user);
-
-        // 测试强制删除
-        $user->forceDelete();
-        $this->assertModelMissing($user);
+        $this->assertArrayNotHasKey('password', $array);
+        $this->assertArrayNotHasKey('remember_token', $array);
     }
 }

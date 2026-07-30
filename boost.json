@@ -1,13 +1,17 @@
 {
     "agents": [
-        "cursor"
+        "trae"
     ],
+    "cloud": false,
     "guidelines": true,
-    "herd_mcp": true,
     "mcp": true,
-    "nightwatch_mcp": false,
+    "nightwatch": false,
     "sail": false,
     "skills": [
-        "tailwindcss-development"
+        "laravel-best-practices",
+        "configuring-horizon",
+        "octane-development",
+        "pulse-development",
+        "scout-development"
     ]
 }

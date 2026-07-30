@@ -1,11 +1,5 @@
 <?php
 
-/**
- * This is NOT a freeware, use is subject to license terms.
- */
-
-declare(strict_types=1);
-
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -79,44 +73,10 @@ return [
             'replace_placeholders' => true,
         ],
 
-        'tls' => [
-            'driver' => 'monolog',
-            'level' => env('LOG_LEVEL', 'debug'),
-            'handler' => \Larva\Volc\MonologHandler::class,
-            'handler_with' => [
-                'ak' => env('VOLC_ACCESS_KEY'),
-                'sk' => env('VOLC_SECRET_KEY'),
-                'endpoint' => env('TLS_ENDPOINT', 'https://tls-cn-beijing.volces.com'),
-                'topicId' => env('TLS_TOPIC', ''),
-                'region' => env('TLS_REGION', 'cn-beijing'),
-            ],
-            'formatter' => \Larva\Volc\TlsLoggingFormatter::class,
-        ],
-
-        'kafka' => [
-            'driver' => 'monolog',
-            'level' => env('LOG_LEVEL', 'debug'),
-            'handler' => \Monolog\Handler\SocketHandler::class,
-            'handler_with' => [
-                'connectionString' => 'tcp://'.env('LOGSTASH_HOST', '192.168.0.116').':'.env('LOGSTASH_PORT', 8601),
-            ],
-            'formatter' => \Monolog\Formatter\JsonFormatter::class,
-        ],
-
-        'logstash' => [
-            'driver' => 'monolog',
-            'level' => env('LOG_LEVEL', 'debug'),
-            'handler' => \Monolog\Handler\SocketHandler::class,
-            'handler_with' => [
-                'connectionString' => 'tcp://'.env('LOGSTASH_HOST', '192.168.0.116').':'.env('LOGSTASH_PORT', 8601),
-            ],
-            'formatter' => \Monolog\Formatter\JsonFormatter::class,
-        ],
-
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => env('LOG_SLACK_USERNAME', 'Laravel Log'),
+            'username' => env('LOG_SLACK_USERNAME', env('APP_NAME', 'Laravel')),
             'emoji' => env('LOG_SLACK_EMOJI', ':boom:'),
             'level' => env('LOG_LEVEL', 'critical'),
             'replace_placeholders' => true,

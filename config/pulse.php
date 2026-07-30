@@ -3,8 +3,6 @@
 use Laravel\Pulse\Http\Middleware\Authorize;
 use Laravel\Pulse\Pulse;
 use Laravel\Pulse\Recorders;
-use Laravel\Reverb\Pulse\Recorders\ReverbConnections;
-use Laravel\Reverb\Pulse\Recorders\ReverbMessages;
 
 return [
 
@@ -32,7 +30,7 @@ return [
     |
     */
 
-    'path' => env('PULSE_PATH', 'admin/pulse'),
+    'path' => env('PULSE_PATH', 'pulse'),
 
     /*
     |--------------------------------------------------------------------------
@@ -124,7 +122,6 @@ return [
 
     'middleware' => [
         'web',
-        'auth:admin',
         Authorize::class,
     ],
 
@@ -140,13 +137,6 @@ return [
     */
 
     'recorders' => [
-        ReverbConnections::class => [
-            'sample_rate' => 1,
-        ],
-
-        ReverbMessages::class => [
-            'sample_rate' => 1,
-        ],
         Recorders\CacheInteractions::class => [
             'enabled' => env('PULSE_CACHE_INTERACTIONS_ENABLED', true),
             'sample_rate' => env('PULSE_CACHE_INTERACTIONS_SAMPLE_RATE', 1),

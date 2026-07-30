@@ -49,7 +49,8 @@ class PasswordLoginRequest extends FormRequest
         if (! $user || ! Hash::check($this->string('password')->toString(), $user->password)) {
             validation_exception('password', trans('auth.failed'));
         }
-        if ($user->isFrozen()) {// 禁止掉的用户不允许登录
+        // 禁止掉的用户不允许登录
+        if ($user->status->isFrozen()) {
             $user->tokens()->delete();
             validation_exception('account', trans('user.blocked'));
         }

@@ -3,45 +3,34 @@
     "name": "larva/laravel-skel-pro",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": [
-        "laravel",
-        "framework",
-        "kit",
-        "skel",
-        "skeleton",
-        "api"
-    ],
+    "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "ext-pdo": "*",
-        "intervention/image-laravel": "^1.5",
-        "jenssegers/agent": "^2.6",
-        "laravel/framework": "^12.0",
-        "laravel/horizon": "^5.46",
-        "laravel/octane": "^2.15",
+        "ext-redis": "*",
+        "intervention/image": "^4.0",
+        "laravel/framework": "^13.8",
+        "laravel/horizon": "^5.48",
+        "laravel/octane": "^2.18",
         "laravel/pulse": "^1.7",
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
-        "laravel/scout": "^11.1",
-        "laravel/tinker": "^2.10.1",
-        "league/flysystem-aws-s3-v3": "^3.0",
-        "maatwebsite/excel": "^3.1",
-        "overtrue/easy-sms": "^3.2",
-        "predis/predis": "^3.4",
-        "spatie/laravel-permission": "^6.25",
-        "zhuzhichao/ip-location-zh": "^2.4"
+        "laravel/scout": "^11.4",
+        "laravel/tinker": "^3.0",
+        "predis/predis": "^3.5",
+        "spatie/laravel-permission": "^8.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
-        "laravel/boost": "^2.3",
-        "laravel/pail": "^1.2.2",
-        "laravel/pint": "^1.29",
-        "laravel/sail": "^1.41",
-        "laravel/telescope": "^5.20",
+        "laravel/boost": "^2.4",
+        "laravel/pail": "^1.2.5",
+        "laravel/pao": "^1.0.6",
+        "laravel/pint": "^1.27",
+        "laravel/telescope": "^5.21",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^11.5.55"
+        "phpunit/phpunit": "^12.5.12"
     },
     "autoload": {
         "psr-4": {
@@ -61,11 +50,11 @@
     "scripts": {
         "setup": [
             "composer install",
-            "@php -r \"file_exists('.env') || copy('.env.develop', '.env');\"",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
             "@php artisan migrate --force",
             "@php artisan storage:link",
-            "npm install",
+            "npm install --ignore-scripts",
             "npm run build"
         ],
         "dev": [
@@ -73,7 +62,7 @@
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
         ],
         "test": [
-            "@php artisan config:clear --ansi",
+            "@php artisan config:clear --ansi @no_additional_args",
             "@php artisan test"
         ],
         "post-autoload-dump": [
@@ -82,10 +71,10 @@
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
-            "vendor/bin/pint --config pint.json"
+            "@php artisan boost:update --ansi"
         ],
         "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.develop', '.env');\""
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi",

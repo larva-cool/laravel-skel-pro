@@ -3,24 +3,24 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\Admin\StoreAdminRoleRequest;
+use App\Http\Requests\Admin\Role\RoleSaveRequest;
 use App\Http\Resources\Admin\RoleResource;
-use App\Models\System\Permission;
+use App\Models\Admin\AdminMenu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 /**
- * 角色管理
+ * 后台角色管理控制器
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
-class RoleController extends AbstractController
+class RoleController extends Controller
 {
     /**
      * Constructor.
@@ -28,97 +28,159 @@ class RoleController extends AbstractController
     public function __construct()
     {
         $this->middleware('auth:admin');
-        $this->middleware('permission:roles.index')->only(['index']);
-        $this->middleware('permission:roles.create')->only(['create', 'store']);
-        $this->middleware('permission:roles.edit')->only(['edit', 'update']);
-        $this->middleware('permission:roles.delete')->only(['destroy']);
     }
 
     /**
-     * Display a listing of the resource.
+     * 角色列表（分页）
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        if ($request->expectsJson()) {
-            $items = Role::query()->orderBy('id')->paginate(per_page($request, 15));
+        $current = (int) $request->integer('current', 1);
+        $size = per_page($request);
 
-            return RoleResource::collection($items);
+        $query = Role::where('guard_name', AdminMenu::GUARD_NAME);
+
+        if ($name = $request->query('role_name')) {
+            $query->where('name', 'like', "%{$name}%");
+        }
+        if ($code = $request->query('role_code')) {
+            $query->where('name', 'like', "%{$code}%");
         }
 
-        return view('admin.role.index');
-    }
+        $roles = $query->orderByDesc('id')->paginate($size, ['*'], 'current', $current);
 
-    /**
-     * xm-select 选择器
-     */
-    public function select(): JsonResponse
-    {
-        $items = Role::query()->select(['name as value', 'name'])->orderBy('id')->get();
-
-        return response()->json($items);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $permissions = Permission::query()->select('name', 'display_name')->orderBy('id')->get()->toArray();
-
-        return view('admin.role.create', [
-            'permissions' => $permissions,
+        return $this->success([
+            'records' => RoleResource::collection($roles),
+            'current' => $roles->currentPage(),
+            'size' => $roles->perPage(),
+            'total' => $roles->total(),
         ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 创建角色
      */
-    public function store(StoreAdminRoleRequest $request): JsonResponse
+    public function store(RoleSaveRequest $request): JsonResponse
     {
-        /** @var Role $role */
-        $role = Role::create($request->safe()->except('permissions'));
-        $role->givePermissionTo($request->permissions);
-
-        return $this->success(trans('system.create_success'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Role $role)
-    {
-        $rolePermissions = $role->getAllPermissions()->pluck('name')->toArray();
-        $permissions = Permission::query()->select('name', 'display_name')->orderBy('id')->get()->toArray();
-
-        return view('admin.role.edit', [
-            'item' => $role,
-            'permissions' => $permissions,
-            'rolePermissions' => $rolePermissions,
-            'update_url' => route('admin.roles.update', $role->id),
+        $role = Role::create([
+            'name' => $request->validated('name'),
+            'guard_name' => AdminMenu::GUARD_NAME,
         ]);
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(StoreAdminRoleRequest $request, Role $role): JsonResponse
-    {
-        $role->update($request->safe()->except('permissions'));
-        $role->syncPermissions($request->permissions);
-
-        return $this->success(trans('system.update_success'));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Role $role): JsonResponse
-    {
-        if ($role->name == 'Super Admin') {
-            return $this->fail(trans('system.default_role_cannot_delete'));
+        $permissions = $request->validated('permissions', []);
+        if ($permissions) {
+            $role->syncPermissions($permissions);
         }
+
+        return $this->success(new RoleResource($role), __('role.create_success'));
+    }
+
+    /**
+     * 获取角色详情
+     */
+    public function show(int $id): JsonResponse
+    {
+        $role = $this->findRole($id);
+
+        return $this->success(new RoleResource($role));
+    }
+
+    /**
+     * 更新角色
+     */
+    public function update(RoleSaveRequest $request, int $id): JsonResponse
+    {
+        $role = $this->findRole($id);
+
+        // 超级管理员角色不允许修改名称
+        if ($role->name === 'super_admin') {
+            return $this->error(__('role.cannot_modify_super'), 403);
+        }
+
+        $role->update(['name' => $request->validated('name')]);
+
+        if ($request->has('permissions')) {
+            $role->syncPermissions($request->validated('permissions'));
+        }
+
+        return $this->success(new RoleResource($role), __('role.update_success'));
+    }
+
+    /**
+     * 删除角色
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        $role = $this->findRole($id);
+
+        if ($role->name === 'super_admin') {
+            return $this->error(__('role.cannot_delete_super'), 403);
+        }
+
+        // 检查是否有管理员使用此角色
+        if ($role->users()->count() > 0) {
+            return $this->error(__('role.in_use'));
+        }
+
         $role->delete();
 
-        return $this->success(trans('system.delete_success'));
+        return $this->success(null, __('role.delete_success'));
+    }
+
+    /**
+     * 获取角色已分配的权限 ID 列表
+     */
+    public function permissions(int $id): JsonResponse
+    {
+        $role = $this->findRole($id);
+
+        return $this->success($role->permissions()->pluck('id'));
+    }
+
+    /**
+     * 分配角色权限
+     */
+    public function assignPermissions(Request $request, int $id): JsonResponse
+    {
+        $role = $this->findRole($id);
+
+        if ($role->name === 'super_admin') {
+            return $this->error(__('role.cannot_modify_super'), 403);
+        }
+
+        $data = $request->validate([
+            'permissions' => ['required', 'array'],
+            'permissions.*' => ['integer', 'exists:permissions,id'],
+        ]);
+
+        // 校验权限 guard 是否匹配
+        $validPermissionIds = Permission::whereIn('id', $data['permissions'])
+            ->where('guard_name', AdminMenu::GUARD_NAME)
+            ->pluck('id')
+            ->toArray();
+
+        $role->syncPermissions($validPermissionIds);
+
+        return $this->success(null, __('role.assign_permissions_success'));
+    }
+
+    /**
+     * 获取所有权限列表（用于权限分配）
+     */
+    public function allPermissions(): JsonResponse
+    {
+        $permissions = Permission::where('guard_name', AdminMenu::GUARD_NAME)
+            ->orderBy('id')
+            ->get(['id', 'name', 'display_name']);
+
+        return $this->success($permissions);
+    }
+
+    /**
+     * 根据 ID 获取角色
+     */
+    private function findRole(int $id): Role
+    {
+        return Role::where('guard_name', AdminMenu::GUARD_NAME)->findOrFail($id);
     }
 }

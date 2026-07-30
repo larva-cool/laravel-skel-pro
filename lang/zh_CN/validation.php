@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 return [
@@ -30,6 +29,7 @@ return [
     'any_of' => ':attribute字段无效。',
     'array' => ':attribute必须是一个数组。',
     'ascii' => ':attribute必须仅包含单字节字母数字字符和符号。',
+    'base64' => ':attribute 必须是有效的 Base64 字符串。',
     'before' => ':attribute必须要早于:date。',
     'before_or_equal' => ':attribute必须要等于:date或更早。',
     'between' => [
@@ -58,13 +58,13 @@ return [
     'doesnt_end_with' => ':attribute不能以以下之一结尾::values。',
     'doesnt_start_with' => ':attribute不能以下列之一开头::values。',
     'email' => ':attribute不是一个合法的邮箱。',
-    'encoding' => 'The :attribute field must be encoded in :encoding.',
-    'ends_with' => 'The :attribute field must end with one of the following: :values.',
+    'encoding' => ':attribute 字段必须使用 :encoding 编码。',
+    'ends_with' => ':attribute 必须以以下之一结尾：:values。',
     'enum' => ':attribute值不正确。',
-    'exists' => '所选的:attribute无效',
-    'extensions' => 'The :attribute field must have one of the following extensions: :values.',
-    'file' => 'The :attribute field must be a file.',
-    'filled' => 'The :attribute field must have a value.',
+    'exists' => '所选的:attribute无效。',
+    'extensions' => ':attribute 必须具有以下扩展名之一：:values。',
+    'file' => ':attribute 必须是一个文件。',
+    'filled' => ':attribute 字段必须有值。',
     'gt' => [
         'array' => ':attribute必须多于:value个元素。',
         'file' => ':attribute必须大于:valueKB。',
@@ -177,16 +177,6 @@ return [
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
     |--------------------------------------------------------------------------
-    */
-    'username' => ':attribute格式不正确，请重新输入。',
-    'phone' => ':attribute不正确，请重新输入。',
-    'verify_code' => ':attribute不正确，请重新输入。',
-    'pay_password' => ':attribute不正确，请重新输入。',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Language Lines
-    |--------------------------------------------------------------------------
     |
     | Here you may specify custom validation messages for attributes using the
     | convention "attribute.rule" to name the lines. This makes it quick to
@@ -194,10 +184,11 @@ return [
     |
     */
 
+    'username' => ':attribute格式不正确，请重新输入。',
+    'phone' => ':attribute不正确，请重新输入。',
+    'verify_code' => ':attribute不正确，请重新输入。',
+
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
-        ],
         'source_type' => [
             'incorrect' => '内容类型不正确。',
         ],
@@ -235,15 +226,7 @@ return [
         'user_id' => '用户ID',
         'username' => '用户名',
         'device' => '设备',
-        'real_name' => '真实姓名',
-        'id_card' => '身份证号',
         'verify_code' => '验证码',
-        'pay_password' => '支付密码',
-        'amount' => '金额',
-        'status' => '状态',
-        'effective_start_time' => '生效开始时间',
-        'effective_end_time' => '生效结束时间',
-        'remark' => '备注',
     ],
 
 ];

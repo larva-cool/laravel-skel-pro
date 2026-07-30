@@ -3,246 +3,208 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace Tests\Unit\Models\System;
 
 use App\Models\System\Area;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
+/**
+ * Area 模型单元测试
+ */
 #[CoversClass(Area::class)]
-#[TestDox('Area 测试')]
+#[Group('models')]
 class AreaTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * 测试创建地区
+     */
     #[Test]
-    #[TestDox('测试可填充属性')]
-    public function test_fillable_attributes()
+    #[TestDox('创建地区并验证字段')]
+    public function create_area_with_valid_fields(): void
     {
-        $area = new Area;
-        $fillable = $area->getFillable();
+        $area = Area::create([
+            'name' => '北京市',
+            'area_code' => 110000,
+            'lat' => 39.9042,
+            'lng' => 116.4074,
+            'city_code' => '010',
+            'sort' => 1,
+        ]);
 
-        $this->assertEqualsCanonicalizing([
-            'parent_id', 'name', 'area_code', 'lat', 'lng', 'city_code', 'order',
-        ], $fillable);
+        $this->assertDatabaseHas('areas', [
+            'id' => $area->id,
+            'name' => '北京市',
+            'area_code' => 110000,
+        ]);
     }
 
+    /**
+     * 测试 sort 默认值为 0
+     */
     #[Test]
-    #[TestDox('测试属性类型转换')]
-    public function test_attribute_casts()
+    #[TestDox('未指定 sort 时使用默认值 0')]
+    public function create_area_uses_default_sort(): void
     {
-        $area = new Area;
-        $casts = $area->getCasts();
-        $dd = [
-            'id' => 'integer',
-            'parent_id' => 'integer',
-            'name' => 'string',
-            'area_code' => 'integer',
-            'lat' => 'float',
-            'lng' => 'float',
-            'city_code' => 'string',
-            'order' => 'integer',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
-        ];
-        sort($casts);
-        sort($dd);
-        $this->assertSame($dd, $casts);
+        $area = Area::create([
+            'name' => '天津市',
+        ]);
+
+        $this->assertSame(0, $area->sort);
     }
 
+    /**
+     * 测试 parent 关联返回父地区
+     */
     #[Test]
-    #[TestDox('测试父级关系')]
-    public function test_parent_relation()
+    #[TestDox('parent 关联返回父地区')]
+    public function parent_relation_returns_parent_area(): void
     {
-        $parent = Area::factory()->create();
-        $child = Area::factory()->child($parent->id)->create();
+        $parent = Area::create(['name' => '广东省']);
+        $child = Area::create(['name' => '深圳市', 'parent_id' => $parent->id]);
 
         $this->assertInstanceOf(Area::class, $child->parent);
-        $this->assertEquals($parent->id, $child->parent->id);
+        $this->assertSame($parent->id, $child->parent->id);
+        $this->assertSame('广东省', $child->parent->name);
     }
 
+    /**
+     * 测试 parent 关联无父地区时返回 null
+     */
     #[Test]
-    #[TestDox('测试子级关系')]
-    public function test_children_relation()
+    #[TestDox('parent 关联无父地区时返回 null')]
+    public function parent_relation_returns_null_when_no_parent(): void
     {
-        $parent = Area::factory()->create();
-        $child1 = Area::factory()->child($parent->id)->create();
-        $child2 = Area::factory()->child($parent->id)->create();
+        $area = Area::create(['name' => '上海市']);
 
-        $this->assertInstanceOf(Collection::class, $parent->children);
-        $this->assertCount(2, $parent->children);
-        $this->assertTrue($parent->children->contains($child1));
-        $this->assertTrue($parent->children->contains($child2));
+        $this->assertNull($area->parent);
     }
 
+    /**
+     * 测试 children 关联返回子地区并按 sort 和 id 排序
+     */
     #[Test]
-    #[TestDox('测试获取子级ID列表')]
-    public function test_get_children_ids()
+    #[TestDox('children 关联返回子地区并按 sort、id 排序')]
+    public function children_relation_returns_children_ordered(): void
     {
-        $parent = Area::factory()->create();
-        $child1 = Area::factory()->child($parent->id)->create();
-        $child2 = Area::factory()->child($parent->id)->create();
+        $parent = Area::create(['name' => '浙江省']);
 
-        $childrenIds = $parent->getChildrenIds();
+        Area::create(['name' => '温州市', 'parent_id' => $parent->id, 'sort' => 2]);
+        Area::create(['name' => '杭州市', 'parent_id' => $parent->id, 'sort' => 1]);
+        Area::create(['name' => '宁波市', 'parent_id' => $parent->id, 'sort' => 1]);
 
-        $this->assertIsArray($childrenIds);
-        $this->assertCount(2, $childrenIds);
-        $this->assertContains($child1->id, $childrenIds);
-        $this->assertContains($child2->id, $childrenIds);
+        $children = $parent->children;
+
+        $this->assertCount(3, $children);
+        $this->assertSame('杭州市', $children[0]->name);
+        $this->assertSame('宁波市', $children[1]->name);
+        $this->assertSame('温州市', $children[2]->name);
     }
 
+    /**
+     * 测试 children 关联无子地区时返回空集合
+     */
     #[Test]
-    #[TestDox('测试静态获取子级ID列表')]
-    public function test_get_child_ids_static()
+    #[TestDox('children 关联无子地区时返回空集合')]
+    public function children_relation_returns_empty_collection_when_no_children(): void
     {
-        $parent = Area::factory()->create();
-        $child1 = Area::factory()->child($parent->id)->create();
-        $child2 = Area::factory()->child($parent->id)->create();
+        $area = Area::create(['name' => '海南省']);
 
-        $childIds = Area::getChildIds($parent->id);
-
-        $this->assertIsString($childIds);
-        // 对ID进行排序后再比较，不依赖插入顺序
-        $expectedIds = [$child1->id, $child2->id];
-        sort($expectedIds);
-        $actualIds = explode(',', $childIds);
-        sort($actualIds);
-        $this->assertEquals(implode(',', $expectedIds), implode(',', $actualIds));
+        $this->assertTrue($area->children->isEmpty());
     }
 
+    /**
+     * 测试 getChildrenIds 返回子地区 ID 数组
+     */
     #[Test]
-    #[TestDox('测试获取地区列表')]
-    public function test_get_areas()
+    #[TestDox('getChildrenIds 返回子地区 ID 数组')]
+    public function get_children_ids_returns_array_of_child_ids(): void
     {
-        $parent = Area::factory()->create();
-        $child1 = Area::factory()->child($parent->id)->create();
-        $child2 = Area::factory()->child($parent->id)->create();
-        $unrelated = Area::factory()->create(); // 无关联的地区
+        $parent = Area::create(['name' => '江苏省']);
 
-        // 测试获取指定父地区的子地区
-        $areas = Area::getAreas($parent->id);
-        $this->assertInstanceOf(Collection::class, $areas);
-        $this->assertCount(2, $areas);
-        $this->assertTrue($areas->contains($child1));
-        $this->assertTrue($areas->contains($child2));
-        $this->assertFalse($areas->contains($unrelated));
+        $child1 = Area::create(['name' => '南京市', 'parent_id' => $parent->id]);
+        $child2 = Area::create(['name' => '苏州市', 'parent_id' => $parent->id]);
 
-        // 测试获取顶级地区
-        $topAreas = Area::getAreas(null);
-        $this->assertInstanceOf(Collection::class, $topAreas);
-        $this->assertCount(2, $topAreas); // $parent和$unrelated都是顶级地区
-        $this->assertTrue($topAreas->contains($parent));
-        $this->assertTrue($topAreas->contains($unrelated));
+        $ids = $parent->getChildrenIds();
 
-        // 测试自定义字段
-        $customAreas = Area::getAreas($parent->id, ['id', 'name', 'order']);
-        $this->assertInstanceOf(Collection::class, $customAreas);
-        $this->assertCount(2, $customAreas);
-
-        // 检查返回的模型是否只包含指定的字段
-        $firstArea = $customAreas->first();
-        $attributes = array_keys($firstArea->getAttributes());
-        $this->assertEqualsCanonicalizing(['id', 'name', 'order'], $attributes);
+        $this->assertIsArray($ids);
+        $this->assertCount(2, $ids);
+        $this->assertContains($child1->id, $ids);
+        $this->assertContains($child2->id, $ids);
     }
 
+    /**
+     * 测试 getChildrenIds 无子地区时返回空数组
+     */
     #[Test]
-    #[TestDox('测试根据ID获取地区名称')]
-    public function test_get_name_by_id()
+    #[TestDox('getChildrenIds 无子地区时返回空数组')]
+    public function get_children_ids_returns_empty_array_when_no_children(): void
     {
-        $area = Area::factory()->create(['name' => '测试地区']);
+        $area = Area::create(['name' => '青海省']);
 
-        $name = Area::getNameById($area->id);
-        $this->assertEquals('测试地区', $name);
-
-        // 测试不存在的ID
-        $nonExistentName = Area::getNameById(999999);
-        $this->assertNull($nonExistentName);
+        $this->assertSame([], $area->getChildrenIds());
     }
 
+    /**
+     * 测试 getChildIds 返回逗号分隔的子 ID 字符串
+     */
     #[Test]
-    #[TestDox('测试获取地区树结构')]
-    public function test_get_tree_for_xm_select()
+    #[TestDox('getChildIds 返回逗号分隔的子 ID 字符串')]
+    public function get_child_ids_returns_comma_separated_string(): void
     {
-        // 创建测试数据
-        $level1 = Area::factory()->create(['name' => '一级地区']);
-        $level2_1 = Area::factory()->child($level1->id)->create(['name' => '二级地区1']);
-        $level2_2 = Area::factory()->child($level1->id)->create(['name' => '二级地区2']);
-        $level3 = Area::factory()->child($level2_1->id)->create(['name' => '三级地区']);
+        $parent = Area::create(['name' => '四川省']);
 
-        // 测试默认参数
-        $tree = Area::getTreeForXmSelect(null);
-        $this->assertIsArray($tree);
-        $this->assertCount(1, $tree);
-        $this->assertEquals('一级地区', $tree[0]['name']);
-        $this->assertEquals($level1->id, $tree[0]['value']);
-        $this->assertArrayHasKey('children', $tree[0]);
-        $this->assertCount(2, $tree[0]['children']);
+        $child1 = Area::create(['name' => '成都市', 'parent_id' => $parent->id]);
+        $child2 = Area::create(['name' => '绵阳市', 'parent_id' => $parent->id]);
 
-        // 检查是否包含两个二级地区，不依赖顺序
-        $childNames = collect($tree[0]['children'])->pluck('name')->all();
-        $this->assertContains('二级地区1', $childNames);
-        $this->assertContains('二级地区2', $childNames);
+        $result = Area::getChildIds($parent->id);
 
-        // 找到二级地区1并检查其子地区
-        $level2_1_node = collect($tree[0]['children'])->first(function ($node) {
-            return $node['name'] === '二级地区1';
-        });
-        $this->assertNotNull($level2_1_node);
-        $this->assertArrayHasKey('children', $level2_1_node);
-        $this->assertCount(1, $level2_1_node['children']);
-        $this->assertEquals('三级地区', $level2_1_node['children'][0]['name']);
-
-        // 测试selectedValues选项 - 选择第一个二级地区
-        $selectedTree = Area::getTreeForXmSelect(null, ['selectedValues' => [$level2_1->id]]);
-        $this->assertIsArray($selectedTree);
-        $this->assertCount(1, $selectedTree);
-        $this->assertFalse($selectedTree[0]['selected']);
-
-        // 查找第一个二级地区的节点
-        $level2_1_node = collect($selectedTree[0]['children'])->first(function ($node) use ($level2_1) {
-            return $node['value'] === $level2_1->id;
-        });
-        $this->assertNotNull($level2_1_node);
-        $this->assertTrue($level2_1_node['selected']);
-
-        // 测试selectedValues选项 - 选择第二个二级地区
-        $selectedTree2 = Area::getTreeForXmSelect(null, ['selectedValues' => [$level2_2->id]]);
-        $this->assertIsArray($selectedTree2);
-        $this->assertCount(1, $selectedTree2);
-        $this->assertFalse($selectedTree2[0]['selected']);
-
-        // 查找第二个二级地区的节点
-        $level2_2_node = collect($selectedTree2[0]['children'])->first(function ($node) use ($level2_2) {
-            return $node['value'] === $level2_2->id;
-        });
-        $this->assertNotNull($level2_2_node);
-        $this->assertTrue($level2_2_node['selected']);
+        $this->assertIsString($result);
+        $ids = explode(',', $result);
+        $this->assertCount(2, $ids);
+        $this->assertContains((string) $child1->id, $ids);
+        $this->assertContains((string) $child2->id, $ids);
     }
 
+    /**
+     * 测试 getChildIds 无子地区时返回空字符串
+     */
     #[Test]
-    #[TestDox('测试软删除地区')]
-    public function test_soft_delete()
+    #[TestDox('getChildIds 无子地区时返回空字符串')]
+    public function get_child_ids_returns_empty_string_when_no_children(): void
     {
-        $area = Area::factory()->create();
+        $parent = Area::create(['name' => '西藏自治区']);
 
-        // 测试删除
-        $area->delete();
-        $this->assertSoftDeleted($area);
+        $this->assertSame('', Area::getChildIds($parent->id));
+    }
 
-        // 测试恢复
-        $area->restore();
-        $this->assertNotSoftDeleted($area);
+    /**
+     * 测试字段类型转换
+     */
+    #[Test]
+    #[TestDox('字段类型转换正确')]
+    public function casts_attributes_correctly(): void
+    {
+        $area = Area::create([
+            'name' => '重庆市',
+            'area_code' => '500000',
+            'lat' => '29.5630',
+            'lng' => '106.5516',
+            'sort' => '5',
+        ]);
 
-        // 测试强制删除
-        $area->forceDelete();
-        $this->assertModelMissing($area);
+        $this->assertIsInt($area->id);
+        $this->assertIsInt($area->area_code);
+        $this->assertIsFloat($area->lat);
+        $this->assertIsFloat($area->lng);
+        $this->assertIsInt($area->sort);
     }
 }

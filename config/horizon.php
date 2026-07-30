@@ -1,9 +1,4 @@
 <?php
-/**
- * This is NOT a freeware, use is subject to license terms.
- */
-
-declare(strict_types=1);
 
 use Illuminate\Support\Str;
 
@@ -46,7 +41,7 @@ return [
     |
     */
 
-    'path' => env('HORIZON_PATH', 'admin/horizon'),
+    'path' => env('HORIZON_PATH', 'horizon'),
 
     /*
     |--------------------------------------------------------------------------
@@ -88,10 +83,7 @@ return [
     |
     */
 
-    'middleware' => [
-        'web',
-        'auth:admin',
-    ],
+    'middleware' => ['web'],
 
     /*
     |--------------------------------------------------------------------------
@@ -214,8 +206,8 @@ return [
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 128,
-            'tries' => 30,
-            'timeout' => 120,
+            'tries' => 1,
+            'timeout' => 60,
             'nice' => 0,
         ],
     ],

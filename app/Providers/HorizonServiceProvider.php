@@ -3,14 +3,19 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
+use Laravel\Horizon\Horizon;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 
+/**
+ * Horizon 队列监控服务提供者
+ *
+ * @author Tongle Xu <xutongle@msn.com>
+ */
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
 {
     /**
@@ -33,7 +38,9 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewHorizon', function ($user = null) {
-            return $user->hasRole('Super Admin') || $user->hasPermissionTo('horizon');
+            return in_array(optional($user)->email, [
+                //
+            ]);
         });
     }
 }

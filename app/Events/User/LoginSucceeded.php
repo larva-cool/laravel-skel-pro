@@ -31,21 +31,21 @@ class LoginSucceeded implements ShouldBroadcast
      *
      * @var Authenticatable
      */
-    public $user;
+    public Authenticatable $user;
 
     /**
      * The user ip.
      *
      * @var string
      */
-    public $ip;
+    public string $ip;
 
     /**
      * The user ip port.
      *
      * @var string
      */
-    public $port;
+    public string $port;
 
     /**
      * The user agent.
@@ -57,11 +57,10 @@ class LoginSucceeded implements ShouldBroadcast
      *
      * @param  Authenticatable  $user
      * @param  string  $ip
-     * @param  int  $port
-     * @param  string  $ua
-     * @return void
+     * @param  string  $port
+     * @param  string  $userAgent
      */
-    public function __construct($user, $ip, $port, $userAgent)
+    public function __construct(Authenticatable $user, string $ip, string $port, string $userAgent)
     {
         $this->user = $user;
         $this->ip = $ip;

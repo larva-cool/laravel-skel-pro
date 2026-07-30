@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Services;
@@ -116,7 +115,7 @@ class SettingManagerService
     protected function getAllFromDatabase(): array
     {
         $settings = [];
-        Setting::all()->each(function ($setting) use (&$settings) {
+        Setting::query()->orderBy('sort')->get()->each(function ($setting) use (&$settings) {
             $value = match ($setting['cast_type']) {
                 SettingType::CAST_TYPE_INT, 'integer' => (int) $setting['value'],
                 SettingType::CAST_TYPE_FLOAT => (float) $setting['value'],

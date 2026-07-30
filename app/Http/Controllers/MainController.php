@@ -3,11 +3,12 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 /**
@@ -18,7 +19,9 @@ use Illuminate\Http\Request;
 class MainController extends Controller
 {
     /**
-     * Displays homepage.
+     * 显示首页视图。
+     *
+     * @return View|Factory
      */
     public function index()
     {
@@ -26,21 +29,13 @@ class MainController extends Controller
     }
 
     /**
-     * Displays redirect.
+     * 显示重定向页面。
+     *
+     * @param  Request  $request  HTTP 请求实例，包含重定向 URL
+     * @return View|Factory
      */
     public function redirect(Request $request)
     {
-        return view('main.redirect', ['url' => $request->get('url')]);
-    }
-
-    public function headers(Request $request)
-    {
-        $headers = $request->headers;
-
-        return [
-            'is_secure' => $request->isSecure(),
-            'servers' => $request->server(),
-            'headers' => $headers->all(),
-        ];
+        return view('main.redirect', ['url' => $request->query('url')]);
     }
 }

@@ -3,18 +3,22 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
+ * 用户模型工厂
+ *
  * @extends Factory<User>
+ *
+ * @author Tongle Xu <xutongle@msn.com>
  */
 class UserFactory extends Factory
 {
@@ -30,44 +34,35 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $username = fake()->unique()->userName();
-        $username = str_replace(' ', '', $username);
-
         return [
-            'username' => $username,
-            'name' => fake()->userName(),
+            'username' => fake()->userName(),
+            'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'phone' => fake()->numerify('+8613#########'),
+            'avatar' => null,
+            'status' => UserStatus::STATUS_ACTIVE,
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Indicate that the user is frozen.
      */
-    public function email(): static
+    public function frozen(): static
     {
         return $this->state(fn (array $attributes) => [
-            'email' => fake()->unique()->safeEmail(),
+            'status' => UserStatus::STATUS_FROZEN,
         ]);
     }
 
     /**
-     * Indicate that the model's phone number should be unverified.
+     * Indicate that the user is not active.
      */
-    public function phone(): static
+    public function notActive(): static
     {
         return $this->state(fn (array $attributes) => [
-            'phone' => fake()->unique()->phoneNumber(),
-        ]);
-    }
-
-    /**
-     * Indicate that the model's empty password should be unverified.
-     */
-    public function empty_password(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'password' => null,
+            'status' => UserStatus::STATUS_NOT_ACTIVE,
         ]);
     }
 }

@@ -60,18 +60,6 @@ return [
             'report' => false,
         ],
 
-        'tos' => [
-            'driver' => 'tos',
-            'access_key' => env('VOLC_ACCESS_KEY'),
-            'access_secret' => env('VOLC_SECRET_KEY'),
-            'region' => env('TOS_REGION'),
-            'bucket' => env('TOS_BUCKET'),
-            'endpoint' => env('TOS_ENDPOINT'),
-            'url' => env('TOS_URL'),
-            'ssl' => true,
-            'throw' => false,
-            'report' => false,
-        ],
     ],
 
     /*

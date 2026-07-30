@@ -22,7 +22,6 @@ return [
     'failed' => '用户名或密码错误。',
     'password' => '密码错误',
     'throttle' => '您尝试的登录次数过多，请 :seconds 秒后再试。',
-    'account_does_not_exist' => '该手机号不存在，请先注册',
+
     'blocked' => '该账号已被禁止登录，请联系客服',
-    'get_phone_failed' => '获取手机号失败',
 ];

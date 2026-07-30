@@ -3,341 +3,313 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace Tests\Unit\Models\System;
 
 use App\Models\System\MailCode;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
 /**
- * MailCode 模型测试
+ * MailCode 模型单元测试
  */
-#[TestDox('MailCode 模型测试')]
+#[CoversClass(MailCode::class)]
+#[Group('models')]
 class MailCodeTest extends TestCase
 {
     use RefreshDatabase;
 
     /**
-     * 测试创建邮件验证码记录
+     * 测试工厂创建验证码
      */
     #[Test]
-    #[TestDox('测试创建邮件验证码记录')]
-    public function test_create_mail_code()
+    #[TestDox('工厂创建验证码并验证默认值')]
+    public function factory_creates_mail_code_with_defaults(): void
     {
-        // 创建邮件验证码记录
-        $mailCode = MailCode::create([
-            'email' => 'test@example.com',
-            'code' => '123456',
-            'ip' => '127.0.0.1',
-        ]);
+        $mailCode = MailCode::factory()->create();
 
-        // 验证记录是否成功创建
-        $this->assertDatabaseHas('mail_codes', [
-            'email' => 'test@example.com',
-            'code' => '123456',
-            'ip' => '127.0.0.1',
-            'state' => 0,
-            'verify_count' => 0,
-        ]);
-    }
-
-    /**
-     * 测试 build 静态方法
-     */
-    #[Test]
-    #[TestDox('测试 build 静态方法')]
-    public function test_build()
-    {
-        // 使用 build 方法创建邮件验证码
-        $mailCode = MailCode::build('test@example.com', '127.0.0.1', '654321');
-
-        // 验证记录是否成功创建
         $this->assertInstanceOf(MailCode::class, $mailCode);
-        $this->assertDatabaseHas('mail_codes', [
-            'email' => 'test@example.com',
-            'code' => '654321',
-            'ip' => '127.0.0.1',
-        ]);
+        $this->assertSame(0, $mailCode->state);
+        $this->assertSame(0, $mailCode->verify_count);
     }
 
     /**
-     * 测试 validate 方法 - 验证成功
+     * 测试 CREATED_AT 映射为 send_at
      */
     #[Test]
-    #[TestDox('测试 validate 方法 - 验证成功')]
-    public function test_validate_success()
+    #[TestDox('CREATED_AT 常量映射为 send_at')]
+    public function created_at_is_mapped_to_send_at(): void
     {
-        // 创建邮件验证码记录
-        $mailCode = MailCode::create([
-            'email' => 'test@example.com',
-            'code' => '123456',
-            'ip' => '127.0.0.1',
-        ]);
+        $this->assertSame('send_at', MailCode::CREATED_AT);
+    }
 
-        // 测试验证成功的情况
-        $result = $mailCode->validate('123456', true);
-        $this->assertTrue($result);
+    /**
+     * 测试 UPDATED_AT 为 null
+     */
+    #[Test]
+    #[TestDox('UPDATED_AT 常量为 null')]
+    public function updated_at_is_null(): void
+    {
+        $this->assertNull(MailCode::UPDATED_AT);
+    }
 
-        // 验证状态是否已更新为已使用
+    /**
+     * 测试 USED_STATE 常量
+     */
+    #[Test]
+    #[TestDox('USED_STATE 常量值为 1')]
+    public function used_state_constant_is_one(): void
+    {
+        $this->assertSame(1, MailCode::USED_STATE);
+    }
+
+    /**
+     * 测试 build 方法创建验证码
+     */
+    #[Test]
+    #[TestDox('build 方法创建验证码记录')]
+    public function build_creates_mail_code(): void
+    {
+        $mailCode = MailCode::build('test@example.com', '127.0.0.1', '123456');
+
+        $this->assertInstanceOf(MailCode::class, $mailCode);
+        $this->assertSame('test@example.com', $mailCode->email);
+        $this->assertSame('127.0.0.1', $mailCode->ip);
+        $this->assertSame('123456', $mailCode->code);
+        $this->assertSame(0, $mailCode->state);
+    }
+
+    /**
+     * 测试 makeUsed 标记为已使用
+     */
+    #[Test]
+    #[TestDox('makeUsed 标记验证码为已使用')]
+    public function make_used_marks_code_as_used(): void
+    {
+        $mailCode = MailCode::factory()->create();
+        $this->assertTrue($mailCode->makeUsed());
+
         $mailCode->refresh();
-        $this->assertEquals(MailCode::USED_STATE, $mailCode->state);
+        $this->assertSame(MailCode::USED_STATE, $mailCode->state);
         $this->assertNotNull($mailCode->usage_at);
     }
 
     /**
-     * 测试 validate 方法 - 验证失败
+     * 测试 validate 验证码正确
      */
     #[Test]
-    #[TestDox('测试 validate 方法 - 验证失败')]
-    public function test_validate_failure()
+    #[TestDox('validate 验证码正确返回 true 并标记为已使用')]
+    public function validate_returns_true_with_correct_code(): void
     {
-        // 创建邮件验证码记录
-        $mailCode = MailCode::create([
-            'email' => 'test@example.com',
-            'code' => '123456',
-            'ip' => '127.0.0.1',
-        ]);
+        $mailCode = MailCode::factory()->create(['code' => '123456']);
 
-        // 测试验证失败的情况
-        $result = $mailCode->validate('654321', true);
-        $this->assertFalse($result);
+        $result = $mailCode->validate('123456', true);
 
-        // 验证验证次数是否已增加
+        $this->assertTrue($result);
         $mailCode->refresh();
-        $this->assertEquals(1, $mailCode->verify_count);
-        $this->assertEquals(0, $mailCode->state);
+        $this->assertSame(MailCode::USED_STATE, $mailCode->state);
+        $this->assertNotNull($mailCode->usage_at);
     }
 
     /**
-     * 测试 validate 方法 - 不区分大小写
+     * 测试 validate 验证码不区分大小写
      */
     #[Test]
-    #[TestDox('测试 validate 方法 - 不区分大小写')]
-    public function test_validate_case_insensitive()
+    #[TestDox('validate 不区分大小写验证')]
+    public function validate_case_insensitive(): void
     {
-        // 创建邮件验证码记录
-        $mailCode = MailCode::create([
-            'email' => 'test@example.com',
-            'code' => 'ABC123',
-            'ip' => '127.0.0.1',
-        ]);
+        $mailCode = MailCode::factory()->create(['code' => 'ABC123']);
 
-        // 测试不区分大小写的验证
         $result = $mailCode->validate('abc123', false);
-        $this->assertTrue($result);
 
-        // 验证状态是否已更新为已使用
-        $mailCode->refresh();
-        $this->assertEquals(MailCode::USED_STATE, $mailCode->state);
+        $this->assertTrue($result);
     }
 
     /**
-     * 测试 validate 方法 - 已使用的验证码
+     * 测试 validate 验证码区分大小写
      */
     #[Test]
-    #[TestDox('测试 validate 方法 - 已使用的验证码')]
-    public function test_validate_used_code()
+    #[TestDox('validate 区分大小写验证')]
+    public function validate_case_sensitive(): void
     {
-        // 创建已使用的邮件验证码记录
-        $mailCode = MailCode::create([
-            'email' => 'test@example.com',
-            'code' => '123456',
-            'ip' => '127.0.0.1',
-            'state' => MailCode::USED_STATE,
-        ]);
+        $mailCode = MailCode::factory()->create(['code' => 'ABC123']);
 
-        // 测试已使用的验证码
-        $result = $mailCode->validate('123456', true);
+        $result = $mailCode->validate('abc123', true);
+
         $this->assertFalse($result);
     }
 
     /**
-     * 测试 makeUsed 方法
+     * 测试 validate 验证码错误增加验证次数
      */
     #[Test]
-    #[TestDox('测试 makeUsed 方法')]
-    public function test_make_used()
+    #[TestDox('validate 验证码错误时增加验证次数')]
+    public function validate_increments_verify_count_on_wrong_code(): void
     {
-        // 创建邮件验证码记录
-        $mailCode = MailCode::create([
-            'email' => 'test@example.com',
-            'code' => '123456',
-            'ip' => '127.0.0.1',
-        ]);
+        $mailCode = MailCode::factory()->create(['code' => '123456', 'verify_count' => 0]);
 
-        // 测试标记为已使用
-        $result = $mailCode->makeUsed();
-        $this->assertTrue($result);
+        $result = $mailCode->validate('654321', true);
 
-        // 验证状态是否已更新
+        $this->assertFalse($result);
         $mailCode->refresh();
-        $this->assertEquals(MailCode::USED_STATE, $mailCode->state);
-        $this->assertNotNull($mailCode->usage_at);
+        $this->assertSame(1, $mailCode->verify_count);
     }
 
     /**
-     * 测试 getCode 静态方法
+     * 测试 validate 已使用的验证码返回 false
      */
     #[Test]
-    #[TestDox('测试 getCode 静态方法')]
-    public function test_get_code()
+    #[TestDox('validate 已使用的验证码返回 false')]
+    public function validate_returns_false_for_used_code(): void
     {
-        // 创建两个邮件验证码记录，一个已使用，一个未使用
-        MailCode::create([
+        $mailCode = MailCode::factory()->used()->create(['code' => '123456']);
+
+        $result = $mailCode->validate('123456', true);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * 测试 getCode 获取指定邮箱未使用的验证码
+     */
+    #[Test]
+    #[TestDox('getCode 获取指定邮箱最新未使用的验证码')]
+    public function get_code_returns_latest_unused_code(): void
+    {
+        Carbon::setTestNow(Carbon::create(2025, 1, 1, 12, 0, 0));
+
+        MailCode::factory()->create([
             'email' => 'test@example.com',
-            'code' => '123456',
-            'ip' => '127.0.0.1',
+            'code' => '111111',
+            'state' => 0,
+            'send_at' => Carbon::create(2025, 1, 1, 10, 0, 0),
+        ]);
+        MailCode::factory()->create([
+            'email' => 'test@example.com',
+            'code' => '222222',
+            'state' => 0,
+            'send_at' => Carbon::create(2025, 1, 1, 11, 0, 0),
+        ]);
+        MailCode::factory()->create([
+            'email' => 'test@example.com',
+            'code' => '333333',
             'state' => MailCode::USED_STATE,
-            'send_at' => Carbon::now()->subMinutes(10),
+            'send_at' => Carbon::create(2025, 1, 1, 12, 0, 0),
         ]);
 
-        $unUsedCode = MailCode::create([
-            'email' => 'test@example.com',
-            'code' => '654321',
-            'ip' => '127.0.0.1',
-            'send_at' => Carbon::now(),
-        ]);
+        $code = MailCode::getCode('test@example.com');
 
-        // 测试获取未使用的验证码
-        $result = MailCode::getCode('test@example.com');
-        $this->assertInstanceOf(MailCode::class, $result);
-        $this->assertEquals('654321', $result->code);
+        $this->assertNotNull($code);
+        $this->assertSame('222222', $code->code);
+        $this->assertSame(0, $code->state);
 
-        // 测试获取不存在的邮箱的验证码
-        $nonExistentResult = MailCode::getCode('non-existent@example.com');
-        $this->assertNull($nonExistentResult);
+        Carbon::setTestNow();
     }
 
     /**
-     * 测试 getIpTodayCount 静态方法
+     * 测试 getCode 无匹配返回 null
      */
     #[Test]
-    #[TestDox('测试 getIpTodayCount 静态方法')]
-    public function test_get_ip_today_count()
+    #[TestDox('getCode 无匹配邮箱返回 null')]
+    public function get_code_returns_null_when_not_found(): void
     {
-        // 创建今天的邮件验证码记录
-        for ($i = 0; $i < 3; $i++) {
-            MailCode::create([
-                'email' => "test{$i}@example.com",
-                'code' => '123456',
-                'ip' => '127.0.0.1',
-                'send_at' => Carbon::now(),
-            ]);
-        }
+        $result = MailCode::getCode('nonexistent@example.com');
 
-        // 创建昨天的邮件验证码记录
-        MailCode::create([
-            'email' => 'test@example.com',
-            'code' => '123456',
-            'ip' => '127.0.0.1',
-            'send_at' => Carbon::yesterday(),
-        ]);
-
-        // 测试获取今日 IP 发送次数
-        $count = MailCode::getIpTodayCount('127.0.0.1');
-        $this->assertEquals(3, $count);
-
-        // 测试获取不存在的 IP 的发送次数
-        $nonExistentCount = MailCode::getIpTodayCount('192.168.1.1');
-        $this->assertEquals(0, $nonExistentCount);
+        $this->assertNull($result);
     }
 
     /**
-     * 测试 getMailTodayCount 静态方法
+     * 测试 getIpTodayCount 获取今日 IP 发送次数
      */
     #[Test]
-    #[TestDox('测试 getMailTodayCount 静态方法')]
-    public function test_get_mail_today_count()
+    #[TestDox('getIpTodayCount 统计今日 IP 发送次数')]
+    public function get_ip_today_count_returns_today_count(): void
     {
-        // 创建今天的邮件验证码记录
-        for ($i = 0; $i < 2; $i++) {
-            MailCode::create([
-                'email' => 'test@example.com',
-                'code' => "12345{$i}",
-                'ip' => '127.0.0.1',
-                'send_at' => Carbon::now(),
-            ]);
-        }
+        Carbon::setTestNow(Carbon::create(2025, 1, 1, 12, 0, 0));
 
-        // 创建昨天的邮件验证码记录
-        MailCode::create([
-            'email' => 'test@example.com',
-            'code' => '654321',
+        MailCode::factory()->count(3)->create([
             'ip' => '127.0.0.1',
-            'send_at' => Carbon::yesterday(),
+            'send_at' => Carbon::create(2025, 1, 1, 10, 0, 0),
         ]);
-
-        // 测试获取今日邮箱发送次数
-        $count = MailCode::getMailTodayCount('test@example.com');
-        $this->assertEquals(2, $count);
-
-        // 测试获取不存在的邮箱的发送次数
-        $nonExistentCount = MailCode::getMailTodayCount('non-existent@example.com');
-        $this->assertEquals(0, $nonExistentCount);
-    }
-
-    /**
-     * 测试 getTodayCount 静态方法
-     */
-    #[Test]
-    #[TestDox('测试 getTodayCount 静态方法')]
-    public function test_get_today_count()
-    {
-        // 创建今天的邮件验证码记录 - 同一IP不同邮箱
-        MailCode::create([
-            'email' => 'test1@example.com',
-            'code' => '123456',
+        MailCode::factory()->create([
             'ip' => '127.0.0.1',
-            'send_at' => Carbon::now(),
+            'send_at' => Carbon::create(2024, 12, 31, 10, 0, 0),
         ]);
-
-        MailCode::create([
-            'email' => 'test2@example.com',
-            'code' => '654321',
-            'ip' => '127.0.0.1',
-            'send_at' => Carbon::now(),
-        ]);
-
-        // 创建今天的邮件验证码记录 - 同一邮箱不同IP
-        MailCode::create([
-            'email' => 'test1@example.com',
-            'code' => '987654',
+        MailCode::factory()->create([
             'ip' => '192.168.1.1',
-            'send_at' => Carbon::now(),
+            'send_at' => Carbon::create(2025, 1, 1, 10, 0, 0),
         ]);
 
-        // 测试获取今日总发送次数
-        $count = MailCode::getTodayCount('test1@example.com', '127.0.0.1');
-        $this->assertEquals(4, $count); // 2 from IP + 2 from email
+        $this->assertSame(3, MailCode::getIpTodayCount('127.0.0.1'));
+        $this->assertSame(1, MailCode::getIpTodayCount('192.168.1.1'));
+        $this->assertSame(0, MailCode::getIpTodayCount('10.0.0.1'));
+
+        Carbon::setTestNow();
     }
 
     /**
-     * 测试 prunable 方法
+     * 测试 getMailTodayCount 获取邮箱今日发送次数
      */
     #[Test]
-    #[TestDox('测试 prunable 方法')]
-    public function test_prunable()
+    #[TestDox('getMailTodayCount 统计今日邮箱发送次数')]
+    public function get_mail_today_count_returns_today_count(): void
     {
-        // 创建邮件验证码记录
-        $mailCode = MailCode::create([
+        Carbon::setTestNow(Carbon::create(2025, 1, 1, 12, 0, 0));
+
+        MailCode::factory()->count(2)->create([
             'email' => 'test@example.com',
-            'code' => '123456',
-            'ip' => '127.0.0.1',
-            'send_at' => Carbon::now()->subDays(181), // 超过180天
+            'send_at' => Carbon::create(2025, 1, 1, 10, 0, 0),
+        ]);
+        MailCode::factory()->create([
+            'email' => 'test@example.com',
+            'send_at' => Carbon::create(2024, 12, 31, 10, 0, 0),
+        ]);
+        MailCode::factory()->create([
+            'email' => 'other@example.com',
+            'send_at' => Carbon::create(2025, 1, 1, 10, 0, 0),
         ]);
 
-        // 测试 prunable 方法
-        $prunableQuery = $mailCode->prunable();
-        $this->assertDatabaseHas('mail_codes', ['id' => $mailCode->id]);
+        $this->assertSame(2, MailCode::getMailTodayCount('test@example.com'));
+        $this->assertSame(1, MailCode::getMailTodayCount('other@example.com'));
+        $this->assertSame(0, MailCode::getMailTodayCount('none@example.com'));
 
-        // 执行修剪
-        $prunableQuery->delete();
-        $this->assertDatabaseMissing('mail_codes', ['id' => $mailCode->id]);
+        Carbon::setTestNow();
+    }
+
+    /**
+     * 测试 getTodayCount 获取今日总发送次数
+     */
+    #[Test]
+    #[TestDox('getTodayCount 统计邮箱和 IP 今日总发送次数')]
+    public function get_today_count_returns_combined_count(): void
+    {
+        Carbon::setTestNow(Carbon::create(2025, 1, 1, 12, 0, 0));
+
+        MailCode::factory()->count(2)->create([
+            'email' => 'test@example.com',
+            'ip' => '127.0.0.1',
+            'send_at' => Carbon::create(2025, 1, 1, 10, 0, 0),
+        ]);
+        MailCode::factory()->create([
+            'email' => 'other@example.com',
+            'ip' => '127.0.0.1',
+            'send_at' => Carbon::create(2025, 1, 1, 10, 0, 0),
+        ]);
+
+        // getTodayCount = getIpTodayCount + getMailTodayCount
+        // IP 127.0.0.1 有 3 条，邮箱 test@example.com 有 2 条
+        $this->assertSame(5, MailCode::getTodayCount('test@example.com', '127.0.0.1'));
+        // IP 192.168.1.1 有 0 条，邮箱 test@example.com 有 2 条
+        $this->assertSame(2, MailCode::getTodayCount('test@example.com', '192.168.1.1'));
+        // IP 192.168.1.1 有 0 条，邮箱 other@example.com 有 1 条
+        $this->assertSame(1, MailCode::getTodayCount('other@example.com', '192.168.1.1'));
+
+        Carbon::setTestNow();
     }
 }

@@ -3,17 +3,17 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Models\System;
 
 use App\Models\Model;
-use App\Models\User;
+use Database\Factories\System\MailCodeFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\MassPrunable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -28,36 +28,22 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at 创建时间
  * @property Carbon|null $usage_at 使用时间
  * @property Carbon $send_at 发送时间
- * @property User $user 用户模型
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
+#[Table('mail_codes')]
+#[Fillable(['email', 'code', 'ip', 'state', 'verify_count', 'usage_at', 'send_at'])]
 class MailCode extends Model
 {
+    /** @use HasFactory<MailCodeFactory> */
     use HasFactory, MassPrunable;
 
     // 使用状态
-    public const USED_STATE = 1;
+    public const int USED_STATE = 1;
 
     // 时间定义
     public const CREATED_AT = 'send_at';
     public const UPDATED_AT = null;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'mail_codes';
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'email', 'code', 'ip', 'state', 'verify_count', 'usage_at', 'send_at',
-    ];
 
     /**
      * The model's attributes.
@@ -78,20 +64,14 @@ class MailCode extends Model
     {
         return [
             'id' => 'integer',
-            'ip' => 'string',
+            'email' => 'string',
+            'code' => 'string',
             'state' => 'integer',
             'verify_count' => 'integer',
+            'ip' => 'string',
             'send_at' => 'datetime',
             'usage_at' => 'datetime',
         ];
-    }
-
-    /**
-     * Get the user relation.
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'email', 'email');
     }
 
     /**
@@ -99,7 +79,7 @@ class MailCode extends Model
      */
     public function prunable(): Builder
     {
-        return static::query()->where('send_at', '<=', now()->subDays(180));
+        return static::query()->where('send_at', '<=', now()->subDays(settings('sms_captcha.prunable_days', 10)));
     }
 
     /**

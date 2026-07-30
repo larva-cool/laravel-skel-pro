@@ -3,350 +3,319 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace Tests\Unit\Services;
 
 use App\Enums\CacheKey;
+use App\Enums\SettingType;
 use App\Models\System\Setting;
 use App\Services\SettingManagerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\TestDox;
 use Tests\TestCase;
 
+/**
+ * SettingManagerService 单元测试
+ *
+ * @author Tongle Xu <xutongle@gmail.com>
+ */
 #[CoversClass(SettingManagerService::class)]
-#[TestDox('测试 SettingManagerService 类的设置管理服务方法')]
+#[Group('services')]
 class SettingManagerServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected SettingManagerService $service;
+    private SettingManagerService $service;
 
     /**
-     * 测试初始化
+     * Setup the test environment.
      */
     protected function setUp(): void
     {
         parent::setUp();
+
+        Cache::forget(CacheKey::SETTINGS);
+        Setting::query()->delete();
         $this->service = new SettingManagerService;
     }
 
     /**
-     * 测试构造函数是否正确初始化settings集合
+     * 测试空数据库时 all 返回空集合
      */
     #[Test]
-    #[TestDox('测试构造函数初始化 settings 集合不为空')]
-    public function test_constructor_initializes_settings_collection()
+    #[TestDox('空数据库时 all 返回空集合并写入缓存')]
+    public function all_returns_empty_collection_when_no_settings(): void
     {
-        $this->assertInstanceOf(Collection::class, $this->service->all());
-        $this->assertNotEmpty($this->service->all());
+        $result = $this->service->all();
+
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertTrue($result->isEmpty());
+        $this->assertTrue(Cache::has(CacheKey::SETTINGS));
     }
 
     /**
-     * 测试all()方法是否从数据库加载配置
+     * 测试 all 从数据库加载配置并按类型转换
      */
     #[Test]
-    #[TestDox('测试 all 方法加载数据库中的所有设置')]
-    public function test_all_loads_settings_from_database()
+    #[TestDox('all 从数据库加载配置并按 cast_type 正确转换类型')]
+    public function all_loads_from_database_and_casts_values(): void
     {
-        // 创建测试数据
-        Setting::create([
-            'name' => '站点名称',
-            'key' => 'site.name',
-            'value' => '测试站点',
-            'cast_type' => 'string',
-            'order' => 1,
-            'remark' => '网站名称',
-        ]);
-        Setting::create([
-            'name' => '站点版本',
-            'key' => 'site.version',
-            'value' => '1.0.0',
-            'cast_type' => 'string',
-            'order' => 2,
-            'remark' => '网站版本',
-        ]);
+        Setting::create(['name' => '站点名称', 'key' => 'site_name', 'value' => 'My Site', 'cast_type' => 'string']);
+        Setting::create(['name' => '每页条数', 'key' => 'page_size', 'value' => '20', 'cast_type' => SettingType::CAST_TYPE_INT]);
+        Setting::create(['name' => '版本号', 'key' => 'version', 'value' => '1.5', 'cast_type' => SettingType::CAST_TYPE_FLOAT]);
+        Setting::create(['name' => '是否开启', 'key' => 'enabled', 'value' => '1', 'cast_type' => SettingType::CAST_TYPE_BOOL]);
+        Setting::create(['name' => '整型别名', 'key' => 'alt_int', 'value' => '42', 'cast_type' => 'integer']);
+        Setting::create(['name' => '布尔别名', 'key' => 'alt_bool', 'value' => '0', 'cast_type' => 'boolean']);
 
-        // 调用all方法
-        $settings = $this->service->all();
+        $result = $this->service->all();
 
-        // 调试信息 - 打印实际结构
-        // var_dump($settings);
-
-        // 验证结果
-        // 注意：根据Service实现，这里可能有不同的结构
-        $this->assertTrue(isset($settings['site']));
-        $this->assertIsArray($settings['site']);
-        $this->assertCount(2, $settings['site']);
-        $this->assertEquals('测试站点', $settings['site']['name']);
-        $this->assertEquals('1.0.0', $settings['site']['version']);
+        $this->assertSame('My Site', $result->get('site_name'));
+        $this->assertSame(20, $result->get('page_size'));
+        $this->assertSame(1.5, $result->get('version'));
+        $this->assertTrue($result->get('enabled'));
+        $this->assertSame(42, $result->get('alt_int'));
+        $this->assertFalse($result->get('alt_bool'));
     }
 
     /**
-     * 测试all()方法是否使用缓存
+     * 测试 all 使用内存缓存，不重复查询数据库
      */
     #[Test]
-    #[TestDox('测试 all 方法使用缓存加载设置')]
-    public function test_all_uses_cache()
+    #[TestDox('all 已加载时直接返回内存缓存，不重新查库')]
+    public function all_returns_in_memory_cached_collection_without_reload(): void
     {
-        // 模拟缓存数据
-        Cache::shouldReceive('get')
-            ->with(CacheKey::SETTINGS)
-            ->andReturn(['site.name' => '缓存站点']);
-
-        Cache::shouldReceive('put')->never();
-
-        // 调用all方法
-        $settings = $this->service->all();
-
-        // 验证结果
-        $this->assertEquals('缓存站点', $settings['site.name']);
-    }
-
-    /**
-     * 测试all()方法在强制重载时更新缓存
-     */
-    #[Test]
-    #[TestDox('测试 all 方法在强制重载时更新缓存')]
-    public function test_all_refreshes_cache_when_forced()
-    {
-        // 创建测试数据
-        Setting::create([
-            'name' => '站点名称',
-            'key' => 'site.name',
-            'value' => '新站点',
-            'cast_type' => 'string',
-            'order' => 1,
-            'remark' => '网站名称',
-        ]);
-
-        // 第一次调用all方法加载数据到缓存
+        Setting::create(['name' => 'A', 'key' => 'a', 'value' => '1']);
         $this->service->all();
 
-        // 修改数据库中的数据
-        Setting::where('key', 'site.name')->update(['value' => '更新后的站点']);
+        Setting::create(['name' => 'B', 'key' => 'b', 'value' => '2']);
 
-        // 强制重载
-        $settings = $this->service->all(true);
-
-        // 验证结果
-        $this->assertEquals('更新后的站点', $settings['site.name']);
+        $result = $this->service->all();
+        $this->assertTrue($result->has('a'));
+        $this->assertFalse($result->has('b'));
     }
 
     /**
-     * 测试get()方法获取配置值
+     * 测试 all(reload=true) 强制重载
      */
     #[Test]
-    #[TestDox('测试 get 方法返回配置值')]
-    public function test_get_returns_setting_value()
+    #[TestDox('all(reload=true) 强制从数据库重新加载')]
+    public function all_forces_reload_when_reload_flag_is_true(): void
     {
-        // 创建测试数据
-        Setting::create([
-            'name' => '站点名称',
-            'key' => 'site.name',
-            'value' => '测试站点',
-            'cast_type' => 'string',
-            'order' => 1,
-            'remark' => '网站名称',
-        ]);
+        Setting::create(['name' => 'A', 'key' => 'a', 'value' => '1']);
+        $this->service->all();
 
-        // 测试存在的配置
-        $this->assertEquals('测试站点', $this->service->get('site.name'));
+        Setting::create(['name' => 'B', 'key' => 'b', 'value' => '2']);
 
-        // 测试不存在的配置，使用默认值
-        $this->assertEquals('默认值', $this->service->get('non.existent', '默认值'));
+        $result = $this->service->all(true);
+        $this->assertTrue($result->has('a'));
+        $this->assertTrue($result->has('b'));
     }
 
     /**
-     * 测试has()方法判断配置是否存在
+     * 测试 all 使用缓存命中时不查库
      */
     #[Test]
-    #[TestDox('测试 has 方法判断配置是否存在')]
-    public function test_has_checks_setting_existence()
+    #[TestDox('all 命中应用缓存时直接从缓存读取')]
+    public function all_reads_from_application_cache_when_available(): void
     {
-        // 创建测试数据
-        Setting::create([
-            'name' => '站点名称',
-            'key' => 'site.name',
-            'value' => '测试站点',
-            'cast_type' => 'string',
-            'order' => 1,
-            'remark' => '网站名称',
-        ]);
+        Cache::put(CacheKey::SETTINGS, ['cached_key' => 'cached_value']);
 
-        // 测试存在的配置
-        $this->assertTrue($this->service->has('site.name'));
+        $result = $this->service->all();
 
-        // 测试不存在的配置
-        $this->assertFalse($this->service->has('non.existent'));
+        $this->assertSame('cached_value', $result->get('cached_key'));
     }
 
     /**
-     * 测试tag()方法获取配置组
+     * 测试 get 返回配置值
      */
     #[Test]
-    #[TestDox('测试 tag 方法返回配置组')]
-    public function test_tag_returns_settings_group()
+    #[TestDox('get 返回已存在配置的值')]
+    public function get_returns_value_for_existing_key(): void
     {
-        // 创建测试数据
-        Setting::create([
-            'name' => '站点名称',
-            'key' => 'site.name',
-            'value' => '测试站点',
-            'cast_type' => 'string',
-            'order' => 1,
-            'remark' => '网站名称',
-        ]);
-        Setting::create([
-            'name' => '站点版本',
-            'key' => 'site.version',
-            'value' => '1.0.0',
-            'cast_type' => 'string',
-            'order' => 2,
-            'remark' => '网站版本',
-        ]);
+        Setting::create(['name' => '站点名', 'key' => 'site_name', 'value' => 'Foo']);
 
-        // 测试获取配置组
-        $siteSettings = $this->service->tag('site');
-        $this->assertIsArray($siteSettings);
-        $this->assertEquals('测试站点', $siteSettings['name']);
-        $this->assertEquals('1.0.0', $siteSettings['version']);
-
-        // 额外测试直接从all()方法获取嵌套结构
-        $settings = $this->service->all();
-        $this->assertEquals('测试站点', $settings['site']['name']);
+        $this->assertSame('Foo', $this->service->get('site_name'));
     }
 
     /**
-     * 测试set()方法保存配置
+     * 测试 get 不存在时返回默认值
      */
     #[Test]
-    #[TestDox('测试 set 方法保存配置')]
-    public function test_set_saves_setting()
+    #[TestDox('get 配置不存在时返回默认值')]
+    public function get_returns_default_for_missing_key(): void
     {
-        // 测试新增配置
-        $this->assertTrue($this->service->set('site.name', '新站点', 'string'));
-        $this->assertEquals('新站点', $this->service->get('site.name'));
-
-        // 测试更新配置
-        $this->assertTrue($this->service->set('site.name', '更新站点', 'string'));
-        $this->assertEquals('更新站点', $this->service->get('site.name'));
-
-        // 测试数组值（应该返回false）
-        $this->assertFalse($this->service->set('site.config', ['key' => 'value'], 'string'));
+        $this->assertSame('default_val', $this->service->get('missing.key', 'default_val'));
+        $this->assertNull($this->service->get('missing.key'));
     }
 
     /**
-     * 测试forge()方法删除配置
+     * 测试 get 支持点号分隔的嵌套键
      */
     #[Test]
-    #[TestDox('测试 forge 方法删除配置')]
-    public function test_forge_deletes_setting()
+    #[TestDox('get 支持通过点号访问嵌套键（由 Arr::set 构建）')]
+    public function get_supports_dot_notation_for_nested_keys(): void
     {
-        // 创建测试数据
-        Setting::create([
-            'name' => '站点名称',
-            'key' => 'site.name',
-            'value' => '测试站点',
-            'cast_type' => 'string',
-            'order' => 1,
-            'remark' => '网站名称',
-        ]);
+        Setting::create(['name' => 'SMTP 主机', 'key' => 'mail.host', 'value' => 'smtp.example.com']);
+        Setting::create(['name' => 'SMTP 端口', 'key' => 'mail.port', 'value' => '465', 'cast_type' => SettingType::CAST_TYPE_INT]);
 
-        // 测试删除配置
-        $this->assertTrue($this->service->forge('site.name'));
-        $this->assertFalse($this->service->has('site.name'));
+        $mail = $this->service->get('mail');
+
+        $this->assertIsArray($mail);
+        $this->assertSame('smtp.example.com', $mail['host']);
+        $this->assertSame(465, $mail['port']);
+        $this->assertSame('smtp.example.com', $this->service->get('mail.host'));
+        $this->assertSame(465, $this->service->get('mail.port'));
     }
 
     /**
-     * 测试castTypes()方法获取配置项类型
+     * 测试 has 判断配置存在
      */
     #[Test]
-    #[TestDox('测试 castTypes 方法返回配置项类型')]
-    public function test_cast_types_returns_setting_types()
+    #[TestDox('has 正确判断配置项是否存在')]
+    public function has_correctly_checks_key_existence(): void
     {
-        // 创建测试数据
-        Setting::create([
-            'name' => '站点名称',
-            'key' => 'site.name',
-            'value' => '测试站点',
-            'cast_type' => 'string',
-            'order' => 1,
-            'remark' => '网站名称',
-        ]);
-        Setting::create([
-            'name' => '站点激活状态',
-            'key' => 'site.active',
-            'value' => '1',
-            'cast_type' => 'bool',
-            'order' => 2,
-            'remark' => '站点是否激活',
-        ]);
+        Setting::create(['name' => 'A', 'key' => 'exists_key', 'value' => 'x']);
 
-        // 测试获取配置类型
+        $this->assertTrue($this->service->has('exists_key'));
+        $this->assertFalse($this->service->has('not_exists_key'));
+    }
+
+    /**
+     * 测试 tag 获取配置组
+     */
+    #[Test]
+    #[TestDox('tag 返回指定标签分组下的配置数组')]
+    public function tag_returns_nested_array_under_tag(): void
+    {
+        Setting::create(['name' => 'host', 'key' => 'db.host', 'value' => '127.0.0.1']);
+        Setting::create(['name' => 'port', 'key' => 'db.port', 'value' => '3306', 'cast_type' => SettingType::CAST_TYPE_INT]);
+
+        $db = $this->service->tag('db');
+
+        $this->assertIsArray($db);
+        $this->assertSame('127.0.0.1', $db['host']);
+        $this->assertSame(3306, $db['port']);
+    }
+
+    /**
+     * 测试 tag 默认标签为 default
+     */
+    #[Test]
+    #[TestDox('tag 未传参时使用 default 分组')]
+    public function tag_default_tag_is_default(): void
+    {
+        Setting::create(['name' => '时区', 'key' => 'default.timezone', 'value' => 'Asia/Shanghai']);
+
+        $defaultGroup = $this->service->tag();
+
+        $this->assertIsArray($defaultGroup);
+        $this->assertSame('Asia/Shanghai', $defaultGroup['timezone']);
+    }
+
+    /**
+     * 测试 set 插入新配置
+     */
+    #[Test]
+    #[TestDox('set 插入新配置后可通过 get 读取到')]
+    public function set_inserts_new_setting_and_reloads_cache(): void
+    {
+        $result = $this->service->set('new_key', 'new_value');
+
+        $this->assertTrue($result);
+        $this->assertDatabaseHas('settings', ['key' => 'new_key', 'value' => 'new_value', 'cast_type' => 'string']);
+        $this->assertSame('new_value', $this->service->get('new_key'));
+    }
+
+    /**
+     * 测试 set 更新已存在配置
+     */
+    #[Test]
+    #[TestDox('set 更新已存在配置并可立即读到新值')]
+    public function set_updates_existing_setting(): void
+    {
+        Setting::create(['name' => '旧值', 'key' => 'update_key', 'value' => 'old']);
+        Cache::forget(CacheKey::SETTINGS);
+
+        $result = $this->service->set('update_key', 'new_value', SettingType::CAST_TYPE_STRING);
+
+        $this->assertTrue($result);
+        $this->assertSame('new_value', $this->service->get('update_key'));
+        $this->assertSame(1, Setting::query()->where('key', '=', 'update_key')->count());
+    }
+
+    /**
+     * 测试 set 数组值返回 false
+     */
+    #[Test]
+    #[TestDox('set 传入数组值时返回 false 且不写入')]
+    public function set_returns_false_for_array_value(): void
+    {
+        $result = $this->service->set('arr_key', ['a', 'b']);
+
+        $this->assertFalse($result);
+        $this->assertDatabaseMissing('settings', ['key' => 'arr_key']);
+    }
+
+    /**
+     * 测试 set 支持指定类型转换
+     */
+    #[Test]
+    #[TestDox('set 使用指定 cast_type 写入并正确转换读取')]
+    public function set_respects_cast_type_and_is_cast_on_read(): void
+    {
+        $this->service->set('int_key', '100', SettingType::CAST_TYPE_INT);
+
+        $this->assertSame(100, $this->service->get('int_key'));
+    }
+
+    /**
+     * 测试 forge 删除配置
+     */
+    #[Test]
+    #[TestDox('forge 删除配置并从缓存中失效')]
+    public function forge_deletes_setting_and_reloads(): void
+    {
+        Setting::create(['name' => 'TBD', 'key' => 'del_key', 'value' => 'to_delete']);
+        $this->service->all();
+        $this->assertTrue($this->service->has('del_key'));
+
+        $result = $this->service->forge('del_key');
+
+        $this->assertTrue($result);
+        $this->assertDatabaseMissing('settings', ['key' => 'del_key']);
+        $this->assertFalse($this->service->has('del_key'));
+    }
+
+    /**
+     * 测试 forge 删除不存在的键返回 true
+     */
+    #[Test]
+    #[TestDox('forge 删除不存在的键仍返回 true')]
+    public function forge_returns_true_even_when_key_not_exists(): void
+    {
+        $this->assertTrue($this->service->forge('not_exists'));
+    }
+
+    /**
+     * 测试 castTypes 返回各配置项类型映射
+     */
+    #[Test]
+    #[TestDox('castTypes 返回 key 到 cast_type 的映射数组')]
+    public function cast_types_returns_key_to_cast_type_map(): void
+    {
+        Setting::create(['name' => '站点', 'key' => 'site', 'value' => 'S', 'cast_type' => 'string']);
+        Setting::create(['name' => '数量', 'key' => 'count', 'value' => '5', 'cast_type' => SettingType::CAST_TYPE_INT]);
+
         $castTypes = $this->service->castTypes();
+
         $this->assertIsArray($castTypes);
-        $this->assertEquals('string', $castTypes['site.name']);
-        $this->assertEquals('bool', $castTypes['site.active']);
-    }
-
-    /**
-     * 测试配置值的类型转换
-     */
-    #[Test]
-    #[TestDox('测试配置值的类型转换')]
-    public function test_setting_value_casting()
-    {
-        // 创建不同类型的测试数据
-        Setting::create([
-            'name' => '整数配置',
-            'key' => 'int.setting',
-            'value' => '123',
-            'cast_type' => 'int',
-            'order' => 1,
-            'remark' => '整数类型配置',
-        ]);
-        Setting::create([
-            'name' => '浮点数配置',
-            'key' => 'float.setting',
-            'value' => '123.45',
-            'cast_type' => 'float',
-            'order' => 2,
-            'remark' => '浮点数类型配置',
-        ]);
-        Setting::create([
-            'name' => '布尔值配置',
-            'key' => 'bool.setting',
-            'value' => '1',
-            'cast_type' => 'bool',
-            'order' => 3,
-            'remark' => '布尔类型配置',
-        ]);
-        Setting::create([
-            'name' => '字符串配置',
-            'key' => 'string.setting',
-            'value' => 'string value',
-            'cast_type' => 'string',
-            'order' => 4,
-            'remark' => '字符串类型配置',
-        ]);
-
-        // 验证类型转换
-        $this->assertIsInt($this->service->get('int.setting'));
-        $this->assertEquals(123, $this->service->get('int.setting'));
-
-        $this->assertIsFloat($this->service->get('float.setting'));
-        $this->assertEquals(123.45, $this->service->get('float.setting'));
-
-        $this->assertIsBool($this->service->get('bool.setting'));
-        $this->assertTrue($this->service->get('bool.setting'));
-
-        $this->assertIsString($this->service->get('string.setting'));
-        $this->assertEquals('string value', $this->service->get('string.setting'));
+        $this->assertSame('string', $castTypes['site']);
+        $this->assertSame(SettingType::CAST_TYPE_INT, $castTypes['count']);
     }
 }
