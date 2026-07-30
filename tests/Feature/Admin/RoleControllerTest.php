@@ -45,7 +45,7 @@ class RoleControllerTest extends TestCase
             'account' => 'admin',
             'password' => '123456',
         ]);
-        $this->token = $loginResponse->json('data.token');
+        $this->token = $loginResponse->json('data.access_token');
         $this->admin = Admin::query()->where('username', 'admin')->first();
     }
 
@@ -73,7 +73,7 @@ class RoleControllerTest extends TestCase
         $response->assertOk()
             ->assertJsonStructure([
                 'code',
-                'data' => ['records', 'current', 'size', 'total'],
+                'data' => ['data', 'current_page', 'per_page', 'total', 'last_page'],
             ])
             ->assertJsonPath('data.total', 1);
     }
@@ -84,7 +84,7 @@ class RoleControllerTest extends TestCase
     {
         $response = $this->getJson('/admin/roles?role_name=super', $this->authHeaders());
         $response->assertOk()
-            ->assertJsonPath('data.records.0.role_name', 'super_admin');
+            ->assertJsonPath('data.data.0.name', 'super_admin');
     }
 
     #[Test]

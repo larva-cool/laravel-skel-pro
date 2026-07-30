@@ -55,8 +55,8 @@ class AuthControllerTest extends TestCase
                 'code',
                 'message',
                 'data' => [
-                    'token',
-                    'refresh_token',
+                    'access_token',
+                    'user',
                 ],
             ])
             ->assertJson(['code' => 200]);
@@ -108,7 +108,7 @@ class AuthControllerTest extends TestCase
             'password' => '123456',
         ]);
 
-        $token = $loginResponse->json('data.token');
+        $token = $loginResponse->json('data.access_token');
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->getJson('/admin/auth/info');
@@ -156,7 +156,7 @@ class AuthControllerTest extends TestCase
             'password' => '123456',
         ]);
 
-        $token = $loginResponse->json('data.token');
+        $token = $loginResponse->json('data.access_token');
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/admin/auth/logout');
@@ -179,7 +179,7 @@ class AuthControllerTest extends TestCase
             'password' => '123456',
         ]);
 
-        $token = $loginResponse->json('data.token');
+        $token = $loginResponse->json('data.access_token');
 
         // 退出前 token 存在
         $this->assertDatabaseCount('personal_access_tokens', 1);

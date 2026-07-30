@@ -12,6 +12,7 @@ use App\Http\Resources\Admin\MenuResource;
 use App\Models\Admin\AdminMenu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * 后台菜单管理控制器
@@ -31,7 +32,7 @@ class MenuController extends Controller
     /**
      * 菜单列表（分页）
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $query = AdminMenu::query();
 
@@ -45,9 +46,9 @@ class MenuController extends Controller
             $query->where('is_enable', (bool) $request->query('is_enable'));
         }
 
-        $menus = $query->ordered()->get();
+        $items = $query->ordered()->get();
 
-        return $this->success(MenuResource::collection($menus));
+        return MenuResource::collection($items);
     }
 
     /**

@@ -13,6 +13,7 @@ use App\Http\Resources\Admin\AdminResource;
 use App\Models\Admin\Admin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * 后台管理员账号管理控制器
@@ -32,10 +33,9 @@ class AdminController extends Controller
     /**
      * 管理员列表（分页）
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $current = (int) $request->integer('current', 1);
-        $size = per_page($request);
+        $perPage = per_page($request);
 
         $query = Admin::query()->with('roles');
 
@@ -51,14 +51,9 @@ class AdminController extends Controller
             $query->where('status', (int) $request->query('status'));
         }
 
-        $admins = $query->orderByDesc('id')->paginate($size, ['*'], 'current', $current);
+        $items = $query->orderByDesc('id')->paginate($perPage);
 
-        return $this->success([
-            'records' => AdminResource::collection($admins),
-            'current' => $admins->currentPage(),
-            'size' => $admins->perPage(),
-            'total' => $admins->total(),
-        ]);
+        return AdminResource::collection($items);
     }
 
     /**

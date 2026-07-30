@@ -12,6 +12,7 @@ use App\Http\Resources\Admin\RoleResource;
 use App\Models\Admin\AdminMenu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -33,28 +34,20 @@ class RoleController extends Controller
     /**
      * 角色列表（分页）
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $current = (int) $request->integer('current', 1);
-        $size = per_page($request);
+        $perPage = per_page($request);
 
         $query = Role::where('guard_name', AdminMenu::GUARD_NAME);
 
         if ($name = $request->query('role_name')) {
             $query->where('name', 'like', "%{$name}%");
         }
-        if ($code = $request->query('role_code')) {
-            $query->where('name', 'like', "%{$code}%");
-        }
 
-        $roles = $query->orderByDesc('id')->paginate($size, ['*'], 'current', $current);
+        $items = $query->orderByDesc('id')
+            ->paginate($perPage);
 
-        return $this->success([
-            'records' => RoleResource::collection($roles),
-            'current' => $roles->currentPage(),
-            'size' => $roles->perPage(),
-            'total' => $roles->total(),
-        ]);
+        return RoleResource::collection($items);
     }
 
     /**
