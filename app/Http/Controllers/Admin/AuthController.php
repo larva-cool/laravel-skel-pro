@@ -76,6 +76,6 @@ class AuthController extends Controller
     {
         $request->user()?->currentAccessToken()?->delete();
 
-        return $this->success(null, '退出成功');
+        return $this->success(null, __('user.logout_success'));
     }
 }
