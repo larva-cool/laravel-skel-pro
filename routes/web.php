@@ -16,7 +16,7 @@ Route::get('redirect', [\App\Http\Controllers\MainController::class, 'redirect']
 Route::get('login', function (): JsonResponse {
     return response()->json([
         'code' => 401,
-        'msg' => '登录已过期，请重新登录',
+        'message' => '登录已过期，请重新登录',
         'data' => null,
     ], 401);
 })->name('login');

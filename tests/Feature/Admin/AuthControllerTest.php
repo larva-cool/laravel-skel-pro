@@ -77,7 +77,7 @@ class AuthControllerTest extends TestCase
         $response->assertOk()
             ->assertJson([
                 'code' => 400,
-                'msg' => trans('auth.failed'),
+                'message' => '用户名或密码错误',
             ]);
     }
 
