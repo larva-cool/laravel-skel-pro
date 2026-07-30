@@ -72,7 +72,7 @@ class RoleController extends Controller
             $role->syncPermissions($permissions);
         }
 
-        return $this->success(new RoleResource($role), __('role.create_success'));
+        return $this->success(new RoleResource($role), __('admin.role.create_success'));
     }
 
     /**
@@ -94,7 +94,7 @@ class RoleController extends Controller
 
         // 超级管理员角色不允许修改名称
         if ($role->name === 'super_admin') {
-            return $this->error(__('role.cannot_modify_super'), 403);
+            return $this->error(__('admin.role.cannot_modify_super'), 403);
         }
 
         $role->update(['name' => $request->validated('name')]);
@@ -103,7 +103,7 @@ class RoleController extends Controller
             $role->syncPermissions($request->validated('permissions'));
         }
 
-        return $this->success(new RoleResource($role), __('role.update_success'));
+        return $this->success(new RoleResource($role), __('admin.role.update_success'));
     }
 
     /**
@@ -114,17 +114,17 @@ class RoleController extends Controller
         $role = $this->findRole($id);
 
         if ($role->name === 'super_admin') {
-            return $this->error(__('role.cannot_delete_super'), 403);
+            return $this->error(__('admin.role.cannot_delete_super'), 403);
         }
 
         // 检查是否有管理员使用此角色
         if ($role->users()->count() > 0) {
-            return $this->error(__('role.in_use'));
+            return $this->error(__('admin.role.in_use'));
         }
 
         $role->delete();
 
-        return $this->success(null, __('role.delete_success'));
+        return $this->success(null, __('admin.role.delete_success'));
     }
 
     /**
@@ -145,7 +145,7 @@ class RoleController extends Controller
         $role = $this->findRole($id);
 
         if ($role->name === 'super_admin') {
-            return $this->error(__('role.cannot_modify_super'), 403);
+            return $this->error(__('admin.role.cannot_modify_super'), 403);
         }
 
         $data = $request->validate([
@@ -161,7 +161,7 @@ class RoleController extends Controller
 
         $role->syncPermissions($validPermissionIds);
 
-        return $this->success(null, __('role.assign_permissions_success'));
+        return $this->success(null, __('admin.role.assign_permissions_success'));
     }
 
     /**

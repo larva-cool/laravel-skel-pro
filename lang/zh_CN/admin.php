@@ -6,13 +6,52 @@
 declare(strict_types=1);
 
 return [
-    'create_success' => '管理员创建成功',
-    'update_success' => '管理员更新成功',
-    'delete_success' => '管理员删除成功',
-    'cannot_delete_self' => '不能删除自己',
-    'cannot_delete_super' => '超级管理员不可删除',
-    'cannot_disable_self' => '不能禁用自己',
-    'assign_roles_success' => '角色分配成功',
-    'toggle_status_success' => '状态切换成功',
-    'reset_password_success' => '密码重置成功',
+
+    /*
+    |--------------------------------------------------------------------------
+    | 后台管理语言包
+    |--------------------------------------------------------------------------
+    |
+    | 以下语言行用于后台管理模块的各种提示消息。
+    | 按功能模块分组：auth（认证）、admin（管理员）、role（角色）、menu（菜单）。
+    |
+    */
+
+    // 认证
+    'login_success' => '登录成功',
+    'logout_success' => '退出成功',
+    'blocked' => '该账号已被禁用',
+
+    // 管理员管理
+    'admin' => [
+        'create_success' => '管理员创建成功',
+        'update_success' => '管理员更新成功',
+        'delete_success' => '管理员删除成功',
+        'cannot_delete_self' => '不能删除自己',
+        'cannot_delete_super' => '超级管理员不可删除',
+        'cannot_disable_self' => '不能禁用自己',
+        'assign_roles_success' => '角色分配成功',
+        'toggle_status_success' => '状态切换成功',
+        'reset_password_success' => '密码重置成功',
+    ],
+
+    // 角色管理
+    'role' => [
+        'create_success' => '角色创建成功',
+        'update_success' => '角色更新成功',
+        'delete_success' => '角色删除成功',
+        'assign_permissions_success' => '权限分配成功',
+        'cannot_modify_super' => '超级管理员角色不可修改',
+        'cannot_delete_super' => '超级管理员角色不可删除',
+        'in_use' => '该角色已被管理员使用，无法删除',
+    ],
+
+    // 菜单管理
+    'menu' => [
+        'create_success' => '菜单创建成功',
+        'update_success' => '菜单更新成功',
+        'delete_success' => '菜单删除成功',
+        'has_children' => '存在子菜单，无法删除',
+        'invalid_parent' => '父级菜单不能是自身或其下级菜单',
+    ],
 ];

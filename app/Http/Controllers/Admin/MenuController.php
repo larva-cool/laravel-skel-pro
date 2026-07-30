@@ -67,7 +67,7 @@ class MenuController extends Controller
     {
         $menu = AdminMenu::create($request->validated());
 
-        return $this->success(new MenuResource($menu), __('menu.create_success'));
+        return $this->success(new MenuResource($menu), __('admin.menu.create_success'));
     }
 
     /**
@@ -90,12 +90,12 @@ class MenuController extends Controller
         // 不允许将父级设为自身或自身的子级
         $parentId = (int) $request->validated('parent_id');
         if ($parentId !== 0 && $this->isDescendantOrSelf($menu, $parentId)) {
-            return $this->error(__('menu.invalid_parent'), 422);
+            return $this->error(__('admin.menu.invalid_parent'), 422);
         }
 
         $menu->update($request->validated());
 
-        return $this->success(new MenuResource($menu), __('menu.update_success'));
+        return $this->success(new MenuResource($menu), __('admin.menu.update_success'));
     }
 
     /**
@@ -107,12 +107,12 @@ class MenuController extends Controller
 
         // 存在子菜单时不允许删除
         if ($menu->children()->exists()) {
-            return $this->error(__('menu.has_children'));
+            return $this->error(__('admin.menu.has_children'));
         }
 
         $menu->delete();
 
-        return $this->success(null, __('menu.delete_success'));
+        return $this->success(null, __('admin.menu.delete_success'));
     }
 
     /**

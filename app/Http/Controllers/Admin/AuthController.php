@@ -64,7 +64,7 @@ class AuthController extends Controller
         return $this->success([
             'access_token' => $token->plainTextToken,
             'user' => new AdminInfoResource($admin),
-        ], __('user.login_success'));
+        ], __('admin.login_success'));
     }
 
     /**
@@ -76,6 +76,6 @@ class AuthController extends Controller
     {
         $request->user()?->currentAccessToken()?->delete();
 
-        return $this->success(null, __('user.logout_success'));
+        return $this->success(null, __('admin.logout_success'));
     }
 }
