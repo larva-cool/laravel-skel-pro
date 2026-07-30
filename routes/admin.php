@@ -5,7 +5,9 @@
  */
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\RoleController;
 use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Support\Facades\Route;
@@ -22,4 +24,15 @@ Route::get('roles/permissions', [RoleController::class, 'allPermissions'])->name
 Route::get('roles/{id}/permissions', [RoleController::class, 'permissions'])->name('roles.get-permissions');
 Route::put('roles/{id}/permissions', [RoleController::class, 'assignPermissions'])->name('roles.assign-permissions');
 Route::apiResource('roles', RoleController::class);
+
+// 菜单管理
+Route::get('menus/tree', [MenuController::class, 'tree'])->name('menus.tree');
+Route::apiResource('menus', MenuController::class);
+
+// 管理员管理
+Route::get('admins/{id}/roles', [AdminController::class, 'roles'])->name('admins.roles');
+Route::put('admins/{id}/roles', [AdminController::class, 'assignRoles'])->name('admins.assign-roles');
+Route::put('admins/{id}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admins.toggle-status');
+Route::put('admins/{id}/reset-password', [AdminController::class, 'resetPassword'])->name('admins.reset-password');
+Route::apiResource('admins', AdminController::class);
 

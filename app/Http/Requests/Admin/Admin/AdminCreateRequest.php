@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * This is NOT a freeware, use is subject to license terms.
+ */
+declare(strict_types=1);
+
+namespace App\Http\Requests\Admin\Admin;
+
+use App\Enums\AdminStatus;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
+
+/**
+ * 管理员创建请求
+ *
+ * @property-read string $username 用户名
+ * @property-read string|null $email 邮箱
+ * @property-read string|null $phone 手机号
+ * @property-read string $name 昵称
+ * @property-read string $password 密码
+ * @property-read int $status 状态
+ * @property-read string[]|null $roles 角色名称数组
+ *
+ * @author Tongle Xu <xutongle@msn.com>
+ */
+class AdminCreateRequest extends FormRequest
+{
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, mixed>
+     */
+    public function rules(): array
+    {
+        return [
+            'username' => ['required', 'string', 'min:3', 'max:50', 'unique:admin_users,username'],
+            'email' => ['nullable', 'email', 'max:100', 'unique:admin_users,email'],
+            'phone' => ['nullable', 'string', 'regex:/^1[2-9]\d{9}$/', 'unique:admin_users,phone'],
+            'name' => ['required', 'string', 'min:2', 'max:50'],
+            'password' => ['required', 'string', Password::defaults()],
+            'status' => ['required', 'integer', Rule::enum(AdminStatus::class)],
+            'roles' => ['sometimes', 'array'],
+            'roles.*' => ['string', 'max:50', 'exists:roles,name'],
+        ];
+    }
+}
