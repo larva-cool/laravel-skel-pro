@@ -5,36 +5,73 @@
  */
 declare(strict_types=1);
 
-namespace Database\Seeders;
-
+use App\Enums\AdminStatus;
 use App\Enums\MenuType;
+use App\Models\Admin\Admin;
 use App\Models\Admin\AdminMenu;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
-/**
- * 后台菜单与权限初始化填充器
- *
- * 菜单结构参考 art-design-pro：
- * - Dashboard (首页控制台)
- * - System (系统管理：用户/角色/菜单)
- * - 内嵌/外链示例
- *
- * @author Tongle Xu <xutongle@gmail.com>
- */
-class AdminMenuSeeder extends Seeder
+return new class extends Migration
 {
     /**
-     * Run the database seeds.
+     * Run the migrations.
      */
-    public function run(): void
+    public function up(): void
     {
-        $now = Carbon::now();
-        AdminMenu::query()->delete();
+        if (! Schema::hasTable('admin_users') || ! Schema::hasTable('admin_menus')) {
+            return;
+        }
 
+        // 1. 创建超级管理员角色
+        $superRole = Role::findOrCreate('super_admin', AdminMenu::GUARD_NAME);
+
+        // 2. 创建默认管理员账号
+        $admin = Admin::query()->firstOrCreate(
+            ['username' => 'admin'],
+            [
+                'name' => '超级管理员',
+                'email' => 'admin@example.com',
+                'phone' => '13800000000',
+                'password' => Hash::make('123456'),
+                'status' => AdminStatus::STATUS_ACTIVE,
+                'login_count' => 0,
+            ]
+        );
+
+        $admin->assignRole($superRole);
+
+        // 3. 初始化菜单与权限
+        $this->seedMenus();
+
+        // 4. 将所有权限赋给超级管理员角色
+        $permissions = Permission::where('guard_name', AdminMenu::GUARD_NAME)->pluck('name');
+        $superRole->syncPermissions($permissions);
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        if (! Schema::hasTable('admin_users')) {
+            return;
+        }
+
+        // 仅删除初始化创建的管理员账号，不删除角色和菜单
+        Admin::query()->where('username', 'admin')->forceDelete();
+    }
+
+    /**
+     * 初始化菜单数据
+     */
+    private function seedMenus(): void
+    {
         $menus = $this->menus();
 
-        // 扁平插入，按 parent_key→id 映射构建树形关系
         $idMap = [];
         foreach ($menus as $menu) {
             $children = $menu['children'] ?? [];
@@ -42,32 +79,25 @@ class AdminMenuSeeder extends Seeder
             $menuKey = $menu['key'] ?? null;
             unset($menu['children'], $menu['buttons'], $menu['key']);
 
-            $menu['created_at'] = $now;
-            $menu['updated_at'] = $now;
-            $parentKey = $menu['parent_key'] ?? null;
-            unset($menu['parent_key']);
-
-            $menu['parent_id'] = $parentKey && isset($idMap[$parentKey]) ? $idMap[$parentKey] : 0;
+            $menu['parent_id'] = 0;
 
             $model = AdminMenu::query()->create($menu);
             if ($menuKey !== null) {
                 $idMap[$menuKey] = $model->id;
             }
 
-            // 创建子菜单
             foreach ($children as $child) {
                 $childButtons = $child['buttons'] ?? [];
                 $childKey = $child['key'] ?? null;
                 unset($child['buttons'], $child['key']);
+
                 $child['parent_id'] = $model->id;
-                $child['created_at'] = $now;
-                $child['updated_at'] = $now;
                 $childModel = AdminMenu::query()->create($child);
                 if ($childKey !== null) {
                     $idMap[$childKey] = $childModel->id;
                 }
 
-                $this->createButtons($childModel->id, $childButtons, $now);
+                $this->createButtons($childModel->id, $childButtons);
             }
         }
     }
@@ -77,7 +107,7 @@ class AdminMenuSeeder extends Seeder
      *
      * @param  array<int, array<string, mixed>>  $buttons
      */
-    protected function createButtons(int $parentId, array $buttons, Carbon $now): void
+    private function createButtons(int $parentId, array $buttons): void
     {
         foreach ($buttons as $i => $btn) {
             AdminMenu::query()->create(array_merge([
@@ -85,24 +115,21 @@ class AdminMenuSeeder extends Seeder
                 'type' => MenuType::BUTTON,
                 'sort' => $i + 1,
                 'is_enable' => true,
-                'created_at' => $now,
-                'updated_at' => $now,
             ], $btn));
         }
     }
 
     /**
-     * 菜单数据（扁平声明，按 key 映射 parent_id）
+     * 菜单数据
      *
      * @return array<int, array<string, mixed>>
      */
-    protected function menus(): array
+    private function menus(): array
     {
         return [
             // ========== Dashboard ==========
             [
                 'key' => 'dashboard',
-                'parent_key' => null,
                 'path' => '/dashboard',
                 'name' => 'Dashboard',
                 'component' => '/index/index',
@@ -129,7 +156,6 @@ class AdminMenuSeeder extends Seeder
             // ========== 系统管理 ==========
             [
                 'key' => 'system',
-                'parent_key' => null,
                 'path' => '/system',
                 'name' => 'System',
                 'component' => '/index/index',
@@ -195,7 +221,6 @@ class AdminMenuSeeder extends Seeder
             // ========== 监控管理 ==========
             [
                 'key' => 'monitor',
-                'parent_key' => null,
                 'path' => '/monitor',
                 'name' => 'Monitor',
                 'component' => '/index/index',
@@ -224,7 +249,6 @@ class AdminMenuSeeder extends Seeder
             // ========== 外部页面示例 ==========
             [
                 'key' => 'outside',
-                'parent_key' => null,
                 'path' => '/outside',
                 'name' => 'Outside',
                 'component' => '/index/index',
@@ -260,4 +284,4 @@ class AdminMenuSeeder extends Seeder
             ],
         ];
     }
-}
+};
