@@ -4,6 +4,14 @@
   "priority": 1,
   "items": [
     {
+      "id": "auth-prerequisite",
+      "type": "STATIC_TEST_CASE",
+      "name": "前置登录",
+      "testCases": [
+        {"id": 399580935}
+      ]
+    },
+    {
       "id": "menu-group",
       "type": "STATIC_TEST_CASE",
       "name": "菜单管理",

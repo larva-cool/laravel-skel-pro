@@ -48,7 +48,7 @@ class MenuSaveRequest extends FormRequest
      */
     public function rules(): array
     {
-        $menuId = (int) $this->route('id');
+        $menuId = (int) $this->route('menu');
 
         return [
             'parent_id' => ['required', 'integer', 'min:0'],
