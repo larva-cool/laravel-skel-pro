@@ -9,6 +9,7 @@ namespace App\Providers;
 
 use App\Models\Sanctum\PersonalAccessToken;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
@@ -44,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale('zh');
         Model::shouldBeStrict(! $this->app->isProduction());
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+        JsonResource::withoutWrapping();
 
     }
 }

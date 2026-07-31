@@ -44,8 +44,7 @@ class RoleController extends Controller
             $query->where('name', 'like', "%{$name}%");
         }
 
-        $items = $query->orderByDesc('id')
-            ->paginate($perPage);
+        $items = $query->orderByDesc('id')->paginate($perPage);
 
         return RoleResource::collection($items);
     }
@@ -65,29 +64,26 @@ class RoleController extends Controller
             $role->syncPermissions($permissions);
         }
 
-        return $this->success(new RoleResource($role), __('admin.role.create_success'));
+        return response()->json(new RoleResource($role), 201);
     }
 
     /**
      * 获取角色详情
      */
-    public function show(int $id): JsonResponse
+    public function show(int $id): RoleResource
     {
-        $role = $this->findRole($id);
-
-        return $this->success(new RoleResource($role));
+        return new RoleResource($this->findRole($id));
     }
 
     /**
      * 更新角色
      */
-    public function update(RoleSaveRequest $request, int $id): JsonResponse
+    public function update(RoleSaveRequest $request, int $id): RoleResource
     {
         $role = $this->findRole($id);
 
-        // 超级管理员角色不允许修改名称
         if ($role->name === 'super_admin') {
-            return $this->error(__('admin.role.cannot_modify_super'), 403);
+            abort(403, __('admin.role.cannot_modify_super'));
         }
 
         $role->update(['name' => $request->validated('name')]);
@@ -96,7 +92,7 @@ class RoleController extends Controller
             $role->syncPermissions($request->validated('permissions'));
         }
 
-        return $this->success(new RoleResource($role), __('admin.role.update_success'));
+        return new RoleResource($role);
     }
 
     /**
@@ -107,17 +103,16 @@ class RoleController extends Controller
         $role = $this->findRole($id);
 
         if ($role->name === 'super_admin') {
-            return $this->error(__('admin.role.cannot_delete_super'), 403);
+            abort(403, __('admin.role.cannot_delete_super'));
         }
 
-        // 检查是否有管理员使用此角色
         if ($role->users()->count() > 0) {
-            return $this->error(__('admin.role.in_use'));
+            abort(400, __('admin.role.in_use'));
         }
 
         $role->delete();
 
-        return $this->success(null, __('admin.role.delete_success'));
+        return response()->json(status: 204);
     }
 
     /**
@@ -127,7 +122,7 @@ class RoleController extends Controller
     {
         $role = $this->findRole($id);
 
-        return $this->success($role->permissions()->pluck('id'));
+        return response()->json($role->permissions()->pluck('id'));
     }
 
     /**
@@ -138,7 +133,7 @@ class RoleController extends Controller
         $role = $this->findRole($id);
 
         if ($role->name === 'super_admin') {
-            return $this->error(__('admin.role.cannot_modify_super'), 403);
+            abort(403, __('admin.role.cannot_modify_super'));
         }
 
         $data = $request->validate([
@@ -146,7 +141,6 @@ class RoleController extends Controller
             'permissions.*' => ['integer', 'exists:permissions,id'],
         ]);
 
-        // 校验权限 guard 是否匹配
         $validPermissionIds = Permission::whereIn('id', $data['permissions'])
             ->where('guard_name', AdminMenu::GUARD_NAME)
             ->pluck('id')
@@ -154,7 +148,7 @@ class RoleController extends Controller
 
         $role->syncPermissions($validPermissionIds);
 
-        return $this->success(null, __('admin.role.assign_permissions_success'));
+        return response()->json($role->permissions()->pluck('id'));
     }
 
     /**
@@ -166,7 +160,7 @@ class RoleController extends Controller
             ->orderBy('id')
             ->get(['id', 'name', 'display_name']);
 
-        return $this->success($permissions);
+        return response()->json($permissions);
     }
 
     /**

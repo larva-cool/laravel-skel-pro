@@ -38,9 +38,6 @@ class AuthControllerTest extends TestCase
         $this->seed([AdminMenuSeeder::class, AdminSeeder::class]);
     }
 
-    /**
-     * 测试登录成功返回 token
-     */
     #[Test]
     #[TestDox('管理员使用正确凭证登录返回 200 和 token')]
     public function login_with_valid_credentials(): void
@@ -52,19 +49,11 @@ class AuthControllerTest extends TestCase
 
         $response->assertOk()
             ->assertJsonStructure([
-                'code',
-                'message',
-                'data' => [
-                    'access_token',
-                    'user',
-                ],
-            ])
-            ->assertJson(['code' => 200]);
+                'access_token',
+                'user' => ['user_id', 'user_name', 'email', 'avatar', 'roles', 'buttons'],
+            ]);
     }
 
-    /**
-     * 测试登录失败返回验证错误
-     */
     #[Test]
     #[TestDox('管理员使用错误密码登录返回 422 验证错误')]
     public function login_with_wrong_password(): void
@@ -78,9 +67,6 @@ class AuthControllerTest extends TestCase
             ->assertJsonPath('errors.password.0', trans('auth.failed'));
     }
 
-    /**
-     * 测试登录参数验证失败
-     */
     #[Test]
     #[TestDox('登录缺少必填字段返回 422 验证错误')]
     public function login_with_missing_fields(): void
@@ -96,44 +82,25 @@ class AuthControllerTest extends TestCase
             ]);
     }
 
-    /**
-     * 测试登录成功后获取用户信息
-     */
     #[Test]
     #[TestDox('使用有效 token 获取用户信息返回 200 和完整信息')]
     public function info_with_valid_token(): void
     {
-        $loginResponse = $this->postJson('/admin/auth/login', [
-            'account' => 'admin',
-            'password' => '123456',
-        ]);
+        $admin = Admin::query()->where('username', 'admin')->first();
 
-        $token = $loginResponse->json('data.access_token');
-
-        $response = $this->withHeader('Authorization', 'Bearer '.$token)
-            ->getJson('/admin/auth/info');
+        $response = $this->actingAs($admin, 'admin')->getJson('/admin/auth/info');
 
         $response->assertOk()
-            ->assertJson([
-                'code' => 200,
-            ])
             ->assertJsonStructure([
-                'code',
-                'message',
-                'data' => [
-                    'user_id',
-                    'user_name',
-                    'email',
-                    'avatar',
-                    'roles',
-                    'buttons',
-                ],
+                'user_id',
+                'user_name',
+                'email',
+                'avatar',
+                'roles',
+                'buttons',
             ]);
     }
 
-    /**
-     * 测试未登录时获取用户信息返回 401
-     */
     #[Test]
     #[TestDox('未登录时获取用户信息返回 401')]
     public function info_without_token(): void
@@ -144,11 +111,8 @@ class AuthControllerTest extends TestCase
             ->assertJsonStructure(['message']);
     }
 
-    /**
-     * 测试退出登录
-     */
     #[Test]
-    #[TestDox('退出登录成功返回 200')]
+    #[TestDox('退出登录返回 204')]
     public function logout_successfully(): void
     {
         $loginResponse = $this->postJson('/admin/auth/login', [
@@ -156,20 +120,14 @@ class AuthControllerTest extends TestCase
             'password' => '123456',
         ]);
 
-        $token = $loginResponse->json('data.access_token');
+        $token = $loginResponse->json('access_token');
 
         $response = $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/admin/auth/logout');
 
-        $response->assertOk()
-            ->assertJson([
-                'code' => 200,
-            ]);
+        $response->assertNoContent();
     }
 
-    /**
-     * 测试退出后 token 从数据库删除
-     */
     #[Test]
     #[TestDox('退出登录后 token 从数据库删除')]
     public function token_deleted_after_logout(): void
@@ -179,22 +137,19 @@ class AuthControllerTest extends TestCase
             'password' => '123456',
         ]);
 
-        $token = $loginResponse->json('data.access_token');
+        $token = $loginResponse->json('access_token');
 
         // 退出前 token 存在
         $this->assertDatabaseCount('personal_access_tokens', 1);
 
         $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/admin/auth/logout')
-            ->assertOk();
+            ->assertNoContent();
 
         // 退出后 token 已从数据库删除
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 
-    /**
-     * 测试被禁用账号无法登录
-     */
     #[Test]
     #[TestDox('被禁用的管理员账号返回验证错误')]
     public function login_with_disabled_admin(): void
@@ -212,6 +167,6 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertUnprocessable()
-            ->assertJsonPath('errors.account.0', trans('user.blocked'));
+            ->assertJsonPath('errors.account.0', trans('admin.blocked'));
     }
 }

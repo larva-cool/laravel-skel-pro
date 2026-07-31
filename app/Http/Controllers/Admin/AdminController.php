@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\AdminStatus;
 use App\Http\Requests\Admin\Admin\AdminCreateRequest;
 use App\Http\Requests\Admin\Admin\AdminUpdateRequest;
 use App\Http\Resources\Admin\AdminResource;
@@ -14,6 +15,7 @@ use App\Models\Admin\Admin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Validation\Rules\Password;
 
 /**
  * 后台管理员账号管理控制器
@@ -73,28 +75,25 @@ class AdminController extends Controller
             $admin->syncRoles($roles);
         }
 
-        return $this->success(new AdminResource($admin->load('roles')), __('admin.create_success'));
+        return response()->json(new AdminResource($admin->load('roles')), 201);
     }
 
     /**
      * 获取管理员详情
      */
-    public function show(int $id): JsonResponse
+    public function show(int $id): AdminResource
     {
-        $admin = Admin::with('roles')->findOrFail($id);
-
-        return $this->success(new AdminResource($admin));
+        return new AdminResource(Admin::with('roles')->findOrFail($id));
     }
 
     /**
      * 更新管理员
      */
-    public function update(AdminUpdateRequest $request, int $id): JsonResponse
+    public function update(AdminUpdateRequest $request, int $id): AdminResource
     {
         $admin = Admin::findOrFail($id);
         $data = $request->validated();
 
-        // 密码为空则不修改
         if (empty($data['password'])) {
             unset($data['password']);
         } else {
@@ -110,7 +109,7 @@ class AdminController extends Controller
             $admin->syncRoles($roles);
         }
 
-        return $this->success(new AdminResource($admin->load('roles')), __('admin.update_success'));
+        return new AdminResource($admin->load('roles'));
     }
 
     /**
@@ -120,20 +119,18 @@ class AdminController extends Controller
     {
         $admin = Admin::findOrFail($id);
 
-        // 禁止删除自己
         $currentAdmin = auth('admin')->user();
         if ($currentAdmin && $currentAdmin->id === $admin->id) {
-            return $this->error(__('admin.cannot_delete_self'), 403);
+            abort(403, __('admin.admin.cannot_delete_self'));
         }
 
-        // 超级管理员角色不允许删除
         if ($admin->hasRole('super_admin')) {
-            return $this->error(__('admin.cannot_delete_super'), 403);
+            abort(403, __('admin.admin.cannot_delete_super'));
         }
 
         $admin->delete();
 
-        return $this->success(null, __('admin.delete_success'));
+        return response()->json(status: 204);
     }
 
     /**
@@ -143,7 +140,7 @@ class AdminController extends Controller
     {
         $admin = Admin::findOrFail($id);
 
-        return $this->success($admin->getRoleNames());
+        return response()->json($admin->getRoleNames());
     }
 
     /**
@@ -160,25 +157,25 @@ class AdminController extends Controller
 
         $admin->syncRoles($data['roles']);
 
-        return $this->success(null, __('admin.assign_roles_success'));
+        return response()->json($admin->getRoleNames());
     }
 
     /**
      * 启用/禁用管理员
      */
-    public function toggleStatus(int $id): JsonResponse
+    public function toggleStatus(int $id): AdminResource
     {
         $admin = Admin::findOrFail($id);
 
         $currentAdmin = auth('admin')->user();
         if ($currentAdmin && $currentAdmin->id === $admin->id) {
-            return $this->error(__('admin.cannot_disable_self'), 403);
+            abort(403, __('admin.admin.cannot_disable_self'));
         }
 
-        $admin->status = $admin->status->isActive() ? \App\Enums\AdminStatus::STATUS_DISABLED : \App\Enums\AdminStatus::STATUS_ACTIVE;
+        $admin->status = $admin->status->isActive() ? AdminStatus::STATUS_DISABLED : AdminStatus::STATUS_ACTIVE;
         $admin->save();
 
-        return $this->success(null, __('admin.toggle_status_success'));
+        return new AdminResource($admin->fresh()->load('roles'));
     }
 
     /**
@@ -189,12 +186,12 @@ class AdminController extends Controller
         $admin = Admin::findOrFail($id);
 
         $data = $request->validate([
-            'password' => ['required', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
 
         $admin->resetPassword($data['password']);
 
-        return $this->success(null, __('admin.reset_password_success'));
+        return response()->json(status: 204);
     }
 
     /**

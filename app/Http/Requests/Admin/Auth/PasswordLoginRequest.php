@@ -47,10 +47,9 @@ class PasswordLoginRequest extends FormRequest
         }
         if ($admin->status->isFrozen()) {// 禁止掉的用户不允许登录
             $admin->tokens()->delete();
-            validation_exception('account', trans('user.blocked'));
+            validation_exception('account', trans('admin.blocked'));
         }
 
         return $admin;
     }
 }
-

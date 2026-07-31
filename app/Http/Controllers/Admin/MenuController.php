@@ -30,7 +30,7 @@ class MenuController extends Controller
     }
 
     /**
-     * 菜单列表（分页）
+     * 菜单列表
      */
     public function index(Request $request): AnonymousResourceCollection
     {
@@ -54,11 +54,11 @@ class MenuController extends Controller
     /**
      * 获取菜单树形结构
      */
-    public function tree(): JsonResponse
+    public function tree(): AnonymousResourceCollection
     {
         $menus = AdminMenu::tree();
 
-        return $this->success(MenuResource::collection($menus));
+        return MenuResource::collection($menus);
     }
 
     /**
@@ -68,35 +68,32 @@ class MenuController extends Controller
     {
         $menu = AdminMenu::create($request->validated());
 
-        return $this->success(new MenuResource($menu), __('admin.menu.create_success'));
+        return response()->json(new MenuResource($menu), 201);
     }
 
     /**
      * 获取菜单详情
      */
-    public function show(int $id): JsonResponse
+    public function show(int $id): MenuResource
     {
-        $menu = AdminMenu::findOrFail($id);
-
-        return $this->success(new MenuResource($menu));
+        return new MenuResource(AdminMenu::findOrFail($id));
     }
 
     /**
      * 更新菜单
      */
-    public function update(MenuSaveRequest $request, int $id): JsonResponse
+    public function update(MenuSaveRequest $request, int $id): MenuResource
     {
         $menu = AdminMenu::findOrFail($id);
 
-        // 不允许将父级设为自身或自身的子级
         $parentId = (int) $request->validated('parent_id');
         if ($parentId !== 0 && $this->isDescendantOrSelf($menu, $parentId)) {
-            return $this->error(__('admin.menu.invalid_parent'), 422);
+            abort(422, __('admin.menu.invalid_parent'));
         }
 
         $menu->update($request->validated());
 
-        return $this->success(new MenuResource($menu), __('admin.menu.update_success'));
+        return new MenuResource($menu);
     }
 
     /**
@@ -106,14 +103,13 @@ class MenuController extends Controller
     {
         $menu = AdminMenu::findOrFail($id);
 
-        // 存在子菜单时不允许删除
         if ($menu->children()->exists()) {
-            return $this->error(__('admin.menu.has_children'));
+            abort(400, __('admin.menu.has_children'));
         }
 
         $menu->delete();
 
-        return $this->success(null, __('admin.menu.delete_success'));
+        return response()->json(status: 204);
     }
 
     /**
