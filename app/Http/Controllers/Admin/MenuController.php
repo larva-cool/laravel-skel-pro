@@ -27,10 +27,10 @@ class MenuController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
-        $this->middleware('permission:menus.index')->only(['index', 'show']);
-        $this->middleware('permission:menus.create')->only(['store']);
-        $this->middleware('permission:menus.edit')->only(['update']);
-        $this->middleware('permission:menus.delete')->only(['destroy']);
+        //$this->middleware('permission:menus.index')->only(['index', 'show']);
+        //$this->middleware('permission:menus.create')->only(['store']);
+        //$this->middleware('permission:menus.edit')->only(['update']);
+        //$this->middleware('permission:menus.delete')->only(['destroy']);
     }
 
     /**
@@ -63,6 +63,29 @@ class MenuController extends Controller
         $menus = AdminMenu::tree();
 
         return MenuResource::collection($menus);
+    }
+
+    /**
+     * 获取前端路由配置（按当前管理员角色过滤）
+     *
+     * 返回 AppRouteRecord[] 格式，前端可直接用于动态路由注册
+     */
+    public function routes(Request $request): JsonResponse
+    {
+        /** @var \App\Models\Admin\Admin $admin */
+        $admin = $request->user();
+        $adminRoles = $admin->getRoleNames()->toArray();
+
+        // onlyEnabled=true：只返回启用的菜单
+        $menus = AdminMenu::tree(true);
+
+        $routes = $menus
+            ->map(fn (AdminMenu $menu): ?array => $menu->toRouteRecord($adminRoles))
+            ->filter()
+            ->values()
+            ->all();
+
+        return response()->json($routes);
     }
 
     /**

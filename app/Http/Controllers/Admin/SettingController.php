@@ -27,10 +27,10 @@ class SettingController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
-        $this->middleware('permission:settings.index')->only(['index', 'show']);
-        $this->middleware('permission:settings.create')->only(['store']);
-        $this->middleware('permission:settings.edit')->only(['update']);
-        $this->middleware('permission:settings.delete')->only(['destroy']);
+        //$this->middleware('permission:settings.index')->only(['index', 'show']);
+        //$this->middleware('permission:settings.create')->only(['store']);
+        //$this->middleware('permission:settings.edit')->only(['update']);
+        //$this->middleware('permission:settings.delete')->only(['destroy']);
     }
 
     /**

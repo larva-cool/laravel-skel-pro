@@ -205,43 +205,149 @@ class AdminMenu extends Model
     /**
      * 转换为前端路由配置格式（AppRouteRecord）
      *
-     * @return array<string, mixed>
+     * 递归处理子菜单，自动：
+     * - 过滤禁用菜单（is_enable=false）
+     * - 顶级目录 component 设为 "/index/index"（对应 Layout 视图）
+     * - 二级目录/页面直接返回数据库存储的 component 路径（如 "/system/admin"）
+     * - 按钮类型（type=BUTTON）不返回节点，而是收集到父级 meta.authList
+     * - snake_case 字段转换为前端 meta 所需的 camelCase
+     *
+     * @param  array<int, string>  $adminRoles  当前管理员角色列表，用于按角色过滤
+     * @return array<string, mixed>|null 返回 null 表示该节点被过滤掉
      */
-    public function toRouteRecord(): array
+    public function toRouteRecord(array $adminRoles = []): ?array
     {
-        $record = [
-            'path' => $this->path,
-            'name' => $this->name,
-            'component' => $this->component,
-            'redirect' => $this->redirect,
-            'meta' => array_filter([
-                'title' => $this->title,
-                'icon' => $this->icon,
-                'link' => $this->link,
-                'isHide' => $this->is_hide ?: null,
-                'isHideTab' => $this->is_hide_tab ?: null,
-                'isIframe' => $this->is_iframe ?: null,
-                'keepAlive' => $this->keep_alive ?: null,
-                'isFullPage' => $this->is_full_page ?: null,
-                'fixedTab' => $this->fixed_tab ?: null,
-                'showBadge' => $this->show_badge ?: null,
-                'showTextBadge' => $this->show_text_badge,
-                'activePath' => $this->active_path,
-                'roles' => $this->roles,
-                'authMark' => $this->isButton() ? $this->permission : null,
-                'isAuthButton' => $this->isButton() ?: null,
-            ], fn ($value): bool => ! is_null($value)),
-        ];
-
-        if ($this->children->isNotEmpty()) {
-            $record['children'] = $this->children
-                ->map(fn (self $child): array => $child->toRouteRecord())
-                ->values()
-                ->all();
+        // 过滤禁用菜单
+        if (! $this->is_enable) {
+            return null;
         }
 
-        // 过滤 null 值字段
-        return array_filter($record, fn ($value): bool => ! is_null($value));
+        // 角色过滤：如果菜单配置了 roles 且当前管理员不拥有其中任何角色，排除该节点
+        if (! empty($this->roles) && empty(array_intersect($adminRoles, $this->roles))) {
+            return null;
+        }
+
+        // 按钮类型：返回特殊标记，由父级收集到 authList
+        if ($this->isButton()) {
+            return [
+                '__button' => true,
+                'title' => $this->title,
+                'authMark' => $this->permission,
+            ];
+        }
+
+        // 处理子菜单
+        /** @var array<int, array<string, mixed>> $childRecords */
+        $childRecords = [];
+        /** @var array<int, array{title: string, authMark: string}> $authList */
+        $authList = [];
+
+        if ($this->children->isNotEmpty()) {
+            foreach ($this->children as $child) {
+                $result = $child->toRouteRecord($adminRoles);
+                if ($result === null) {
+                    continue;
+                }
+                // 按钮节点收集到 authList
+                if (! empty($result['__button'])) {
+                    if (! empty($result['authMark'])) {
+                        $authList[] = [
+                            'title' => $result['title'],
+                            'authMark' => $result['authMark'],
+                        ];
+                    }
+
+                    continue;
+                }
+                $childRecords[] = $result;
+            }
+        }
+
+        // 构建 meta
+        $meta = array_filter([
+            'title' => $this->title,
+            'icon' => $this->icon,
+            'link' => $this->link,
+            'isHide' => $this->is_hide ?: null,
+            'isHideTab' => $this->is_hide_tab ?: null,
+            'isIframe' => $this->is_iframe ?: null,
+            'keepAlive' => $this->keep_alive ?: null,
+            'isFullPage' => $this->is_full_page ?: null,
+            'fixedTab' => $this->fixed_tab ?: null,
+            'showBadge' => $this->show_badge ?: null,
+            'showTextBadge' => $this->show_text_badge,
+            'activePath' => $this->active_path,
+            'roles' => $this->roles ?: null,
+        ], fn ($value): bool => $value !== null);
+
+        // 按钮权限附加到 meta
+        if (! empty($authList)) {
+            $meta['authList'] = $authList;
+        }
+
+        // 确定 component：
+        // - 顶级目录（parent_id=0 且有子菜单）→ "/index/index" (Layout)
+        // - 顶级但无子菜单的页面 → "/index/index" (前端 RouteTransformer 会自动处理)
+        // - 非顶级节点 → 数据库存储的 component 值
+        $component = $this->isRoot() ? '/index/index' : $this->component;
+
+        $record = [
+            'id' => $this->id,
+            'path' => $this->path,
+            'name' => $this->name,
+            'component' => $component,
+            'redirect' => $this->redirect,
+            'meta' => $meta,
+        ];
+
+        // 重定向推导：目录且无显式 redirect 时，取第一个可导航子节点的全路径
+        if (empty($record['redirect']) && ! empty($childRecords)) {
+            $record['redirect'] = $this->resolveRedirect($this->path, $childRecords);
+        }
+
+        if (! empty($childRecords)) {
+            $record['children'] = $childRecords;
+        } elseif (! $this->isDirectory() && empty($this->component) && $this->type !== MenuType::LINK && ! $this->is_iframe) {
+            // 非目录、无子节点、无 component、非外链、非 iframe → 空节点，过滤掉
+            return null;
+        }
+
+        return array_filter($record, fn ($value): bool => $value !== null && $value !== '');
+    }
+
+    /**
+     * 从子节点中推导默认重定向路径
+     *
+     * @param  array<int, array<string, mixed>>  $children
+     */
+    private function resolveRedirect(string $parentPath, array $children): ?string
+    {
+        foreach ($children as $child) {
+            // 外链和 iframe 不作为重定向目标
+            if (! empty($child['meta']['link']) || ! empty($child['meta']['isIframe'])) {
+                continue;
+            }
+            $childPath = $child['path'] ?? '';
+            if ($childPath === '') {
+                continue;
+            }
+            // 子路径以 / 开头为绝对路径，否则拼接父路径
+            $fullPath = str_starts_with($childPath, '/')
+                ? $childPath
+                : rtrim($parentPath, '/').'/'.ltrim($childPath, '/');
+
+            // 如果子节点还有子节点，继续深入
+            if (! empty($child['children'])) {
+                $deep = $this->resolveRedirect($fullPath, $child['children']);
+                if ($deep !== null) {
+                    return $deep;
+                }
+            }
+
+            return $fullPath;
+        }
+
+        return null;
     }
 
     /**

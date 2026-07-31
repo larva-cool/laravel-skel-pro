@@ -29,6 +29,7 @@ Route::apiResource('roles', RoleController::class);
 
 // 菜单管理
 Route::get('menus/tree', [MenuController::class, 'tree'])->name('menus.tree');
+Route::get('menus/routes', [MenuController::class, 'routes'])->name('menus.routes');
 Route::apiResource('menus', MenuController::class);
 
 // 管理员管理
