@@ -74,17 +74,17 @@ class MenuController extends Controller
     /**
      * 获取菜单详情
      */
-    public function show(int $id): MenuResource
+    public function show(string $id): MenuResource
     {
-        return new MenuResource(AdminMenu::findOrFail($id));
+        return new MenuResource(AdminMenu::findOrFail((int) $id));
     }
 
     /**
      * 更新菜单
      */
-    public function update(MenuSaveRequest $request, int $id): MenuResource
+    public function update(MenuSaveRequest $request, string $id): MenuResource
     {
-        $menu = AdminMenu::findOrFail($id);
+        $menu = AdminMenu::findOrFail((int) $id);
 
         $parentId = (int) $request->validated('parent_id');
         if ($parentId !== 0 && $this->isDescendantOrSelf($menu, $parentId)) {
@@ -99,9 +99,9 @@ class MenuController extends Controller
     /**
      * 删除菜单
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $id): JsonResponse
     {
-        $menu = AdminMenu::findOrFail($id);
+        $menu = AdminMenu::findOrFail((int) $id);
 
         if ($menu->children()->exists()) {
             abort(400, __('admin.menu.has_children'));

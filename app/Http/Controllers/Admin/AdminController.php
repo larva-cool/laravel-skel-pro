@@ -81,17 +81,17 @@ class AdminController extends Controller
     /**
      * 获取管理员详情
      */
-    public function show(int $id): AdminResource
+    public function show(string $id): AdminResource
     {
-        return new AdminResource(Admin::with('roles')->findOrFail($id));
+        return new AdminResource(Admin::with('roles')->findOrFail((int) $id));
     }
 
     /**
      * 更新管理员
      */
-    public function update(AdminUpdateRequest $request, int $id): AdminResource
+    public function update(AdminUpdateRequest $request, string $id): AdminResource
     {
-        $admin = Admin::findOrFail($id);
+        $admin = Admin::findOrFail((int) $id);
         $data = $request->validated();
 
         if (empty($data['password'])) {
@@ -115,9 +115,9 @@ class AdminController extends Controller
     /**
      * 删除管理员
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $id): JsonResponse
     {
-        $admin = Admin::findOrFail($id);
+        $admin = Admin::findOrFail((int) $id);
 
         $currentAdmin = auth('admin')->user();
         if ($currentAdmin && $currentAdmin->id === $admin->id) {
@@ -136,9 +136,9 @@ class AdminController extends Controller
     /**
      * 获取管理员已分配角色列表
      */
-    public function roles(int $id): JsonResponse
+    public function roles(string $id): JsonResponse
     {
-        $admin = Admin::findOrFail($id);
+        $admin = Admin::findOrFail((int) $id);
 
         return response()->json($admin->getRoleNames());
     }
@@ -146,9 +146,9 @@ class AdminController extends Controller
     /**
      * 分配管理员角色
      */
-    public function assignRoles(Request $request, int $id): JsonResponse
+    public function assignRoles(Request $request, string $id): JsonResponse
     {
-        $admin = Admin::findOrFail($id);
+        $admin = Admin::findOrFail((int) $id);
 
         $data = $request->validate([
             'roles' => ['required', 'array'],
@@ -163,9 +163,9 @@ class AdminController extends Controller
     /**
      * 启用/禁用管理员
      */
-    public function toggleStatus(int $id): AdminResource
+    public function toggleStatus(string $id): AdminResource
     {
-        $admin = Admin::findOrFail($id);
+        $admin = Admin::findOrFail((int) $id);
 
         $currentAdmin = auth('admin')->user();
         if ($currentAdmin && $currentAdmin->id === $admin->id) {
@@ -181,9 +181,9 @@ class AdminController extends Controller
     /**
      * 重置管理员密码
      */
-    public function resetPassword(Request $request, int $id): JsonResponse
+    public function resetPassword(Request $request, string $id): JsonResponse
     {
-        $admin = Admin::findOrFail($id);
+        $admin = Admin::findOrFail((int) $id);
 
         $data = $request->validate([
             'password' => ['required', 'string', 'confirmed', Password::defaults()],

@@ -70,7 +70,7 @@ class RoleController extends Controller
     /**
      * 获取角色详情
      */
-    public function show(int $id): RoleResource
+    public function show(string $id): RoleResource
     {
         return new RoleResource($this->findRole($id));
     }
@@ -78,7 +78,7 @@ class RoleController extends Controller
     /**
      * 更新角色
      */
-    public function update(RoleSaveRequest $request, int $id): RoleResource
+    public function update(RoleSaveRequest $request, string $id): RoleResource
     {
         $role = $this->findRole($id);
 
@@ -98,7 +98,7 @@ class RoleController extends Controller
     /**
      * 删除角色
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $id): JsonResponse
     {
         $role = $this->findRole($id);
 
@@ -118,7 +118,7 @@ class RoleController extends Controller
     /**
      * 获取角色已分配的权限 ID 列表
      */
-    public function permissions(int $id): JsonResponse
+    public function permissions(string $id): JsonResponse
     {
         $role = $this->findRole($id);
 
@@ -128,7 +128,7 @@ class RoleController extends Controller
     /**
      * 分配角色权限
      */
-    public function assignPermissions(Request $request, int $id): JsonResponse
+    public function assignPermissions(Request $request, string $id): JsonResponse
     {
         $role = $this->findRole($id);
 
@@ -166,8 +166,8 @@ class RoleController extends Controller
     /**
      * 根据 ID 获取角色
      */
-    private function findRole(int $id): Role
+    private function findRole(string $id): Role
     {
-        return Role::where('guard_name', AdminMenu::GUARD_NAME)->findOrFail($id);
+        return Role::where('guard_name', AdminMenu::GUARD_NAME)->findOrFail((int) $id);
     }
 }
