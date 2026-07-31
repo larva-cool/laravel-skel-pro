@@ -256,7 +256,11 @@ class AdminMenu extends Model
             return;
         }
 
-        Permission::findOrCreate($this->permission, self::GUARD_NAME);
+        $permission = Permission::findOrCreate($this->permission, self::GUARD_NAME);
+
+        if ($permission->display_name !== $this->title) {
+            $permission->update(['display_name' => $this->title]);
+        }
     }
 
     /**
