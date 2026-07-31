@@ -27,7 +27,7 @@ class AreaController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
-        $this->middleware('permission:areas.index')->only(['index', 'show']);
+        $this->middleware('permission:areas.index')->only(['index', 'show', 'tree']);
         $this->middleware('permission:areas.create')->only(['store']);
         $this->middleware('permission:areas.edit')->only(['update']);
         $this->middleware('permission:areas.delete')->only(['destroy']);
