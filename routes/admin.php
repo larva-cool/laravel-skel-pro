@@ -6,6 +6,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\RoleController;
@@ -39,4 +40,8 @@ Route::apiResource('admins', AdminController::class);
 
 // 配置管理
 Route::apiResource('settings', SettingController::class);
+
+// 地区管理
+Route::get('areas/tree', [AreaController::class, 'tree'])->name('areas.tree');
+Route::apiResource('areas', AreaController::class);
 
