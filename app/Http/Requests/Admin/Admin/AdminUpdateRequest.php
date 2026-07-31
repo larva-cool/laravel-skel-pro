@@ -8,9 +8,11 @@ declare(strict_types=1);
 namespace App\Http\Requests\Admin\Admin;
 
 use App\Enums\AdminStatus;
+use App\Models\Admin\AdminMenu;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Spatie\Permission\Models\Role;
 
 /**
  * 管理员更新请求
@@ -48,7 +50,7 @@ class AdminUpdateRequest extends FormRequest
             'password' => ['nullable', 'string', Password::defaults()],
             'status' => ['required', 'integer', Rule::enum(AdminStatus::class)],
             'roles' => ['sometimes', 'array'],
-            'roles.*' => ['string', 'max:50', 'exists:roles,name'],
+            'roles.*' => ['string', 'max:50', Rule::exists(Role::class, 'name')->where('guard_name', AdminMenu::GUARD_NAME)],
         ];
     }
 }

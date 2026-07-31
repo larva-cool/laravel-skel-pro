@@ -32,7 +32,7 @@ class AreaSaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'parent_id' => ['nullable', 'integer', 'min:1', 'exists:areas,id'],
+            'parent_id' => ['nullable', 'integer', 'min:1', Rule::exists(Area::class, 'id')],
             'name' => ['required', 'string', 'max:100'],
             'area_code' => ['nullable', 'integer'],
             'lat' => ['nullable', 'numeric'],
