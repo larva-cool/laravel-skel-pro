@@ -121,11 +121,11 @@ class AdminController extends Controller
 
         $currentAdmin = auth('admin')->user();
         if ($currentAdmin && $currentAdmin->id === $admin->id) {
-            abort(403, __('admin.admin.cannot_delete_self'));
+            abort(403, __('admin.admin_cannot_delete_self'));
         }
 
         if ($admin->hasRole('super_admin')) {
-            abort(403, __('admin.admin.cannot_delete_super'));
+            abort(403, __('admin.admin_cannot_delete_super'));
         }
 
         $admin->delete();
@@ -169,7 +169,7 @@ class AdminController extends Controller
 
         $currentAdmin = auth('admin')->user();
         if ($currentAdmin && $currentAdmin->id === $admin->id) {
-            abort(403, __('admin.admin.cannot_disable_self'));
+            abort(403, __('admin.admin_cannot_disable_self'));
         }
 
         $admin->status = $admin->status->isActive() ? AdminStatus::STATUS_DISABLED : AdminStatus::STATUS_ACTIVE;

@@ -88,7 +88,7 @@ class MenuController extends Controller
 
         $parentId = (int) $request->validated('parent_id');
         if ($parentId !== 0 && $this->isDescendantOrSelf($menu, $parentId)) {
-            abort(422, __('admin.menu.invalid_parent'));
+            abort(422, __('admin.menu_invalid_parent'));
         }
 
         $menu->update($request->validated());
@@ -104,7 +104,7 @@ class MenuController extends Controller
         $menu = AdminMenu::findOrFail((int) $id);
 
         if ($menu->children()->exists()) {
-            abort(400, __('admin.menu.has_children'));
+            abort(400, __('admin.menu_has_children'));
         }
 
         $menu->delete();

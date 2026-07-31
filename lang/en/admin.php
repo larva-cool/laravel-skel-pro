@@ -13,8 +13,6 @@ return [
     |--------------------------------------------------------------------------
     |
     | The following language lines are used for admin module messages.
-    | Grouped by feature: auth (authentication), admin (administrator),
-    | role (role management), menu (menu management).
     |
     */
 
@@ -24,35 +22,29 @@ return [
     'blocked' => 'This account has been disabled.',
 
     // Administrator management
-    'admin' => [
-        'create_success' => 'Administrator created successfully.',
-        'update_success' => 'Administrator updated successfully.',
-        'delete_success' => 'Administrator deleted successfully.',
-        'cannot_delete_self' => 'You cannot delete yourself.',
-        'cannot_delete_super' => 'Super admin cannot be deleted.',
-        'cannot_disable_self' => 'You cannot disable yourself.',
-        'assign_roles_success' => 'Roles assigned successfully.',
-        'toggle_status_success' => 'Status toggled successfully.',
-        'reset_password_success' => 'Password reset successfully.',
-    ],
+    'admin_create_success' => 'Administrator created successfully.',
+    'admin_update_success' => 'Administrator updated successfully.',
+    'admin_delete_success' => 'Administrator deleted successfully.',
+    'admin_cannot_delete_self' => 'You cannot delete yourself.',
+    'admin_cannot_delete_super' => 'Super admin cannot be deleted.',
+    'admin_cannot_disable_self' => 'You cannot disable yourself.',
+    'admin_assign_roles_success' => 'Roles assigned successfully.',
+    'admin_toggle_status_success' => 'Status toggled successfully.',
+    'admin_reset_password_success' => 'Password reset successfully.',
 
     // Role management
-    'role' => [
-        'create_success' => 'Role created successfully.',
-        'update_success' => 'Role updated successfully.',
-        'delete_success' => 'Role deleted successfully.',
-        'assign_permissions_success' => 'Permissions assigned successfully.',
-        'cannot_modify_super' => 'Super admin role cannot be modified.',
-        'cannot_delete_super' => 'Super admin role cannot be deleted.',
-        'in_use' => 'This role is in use and cannot be deleted.',
-    ],
+    'role_create_success' => 'Role created successfully.',
+    'role_update_success' => 'Role updated successfully.',
+    'role_delete_success' => 'Role deleted successfully.',
+    'role_assign_permissions_success' => 'Permissions assigned successfully.',
+    'role_cannot_modify_super' => 'Super admin role cannot be modified.',
+    'role_cannot_delete_super' => 'Super admin role cannot be deleted.',
+    'role_in_use' => 'This role is in use and cannot be deleted.',
 
     // Menu management
-    'menu' => [
-        'create_success' => 'Menu created successfully.',
-        'update_success' => 'Menu updated successfully.',
-        'delete_success' => 'Menu deleted successfully.',
-        'has_children' => 'Cannot delete: menu has children.',
-        'invalid_parent' => 'Parent menu cannot be itself or its descendants.',
-    ],
+    'menu_create_success' => 'Menu created successfully.',
+    'menu_update_success' => 'Menu updated successfully.',
+    'menu_delete_success' => 'Menu deleted successfully.',
+    'menu_has_children' => 'Cannot delete: menu has children.',
+    'menu_invalid_parent' => 'Parent menu cannot be itself or its descendants.',
 ];

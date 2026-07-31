@@ -83,7 +83,7 @@ class RoleController extends Controller
         $role = $this->findRole($id);
 
         if ($role->name === 'super_admin') {
-            abort(403, __('admin.role.cannot_modify_super'));
+            abort(403, __('admin.role_cannot_modify_super'));
         }
 
         $role->update(['name' => $request->validated('name')]);
@@ -103,11 +103,11 @@ class RoleController extends Controller
         $role = $this->findRole($id);
 
         if ($role->name === 'super_admin') {
-            abort(403, __('admin.role.cannot_delete_super'));
+            abort(403, __('admin.role_cannot_delete_super'));
         }
 
         if ($role->users()->count() > 0) {
-            abort(400, __('admin.role.in_use'));
+            abort(400, __('admin.role_in_use'));
         }
 
         $role->delete();
@@ -133,7 +133,7 @@ class RoleController extends Controller
         $role = $this->findRole($id);
 
         if ($role->name === 'super_admin') {
-            abort(403, __('admin.role.cannot_modify_super'));
+            abort(403, __('admin.role_cannot_modify_super'));
         }
 
         $data = $request->validate([
