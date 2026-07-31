@@ -1,0 +1,58 @@
+{
+  "requestBody": {
+    "type": "application/json",
+    "required": true,
+    "jsonSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "角色名称（同时作为编码，2-50个字符，同一 guard 下唯一）",
+          "minLength": 2,
+          "maxLength": 50
+        },
+        "permissions": {
+          "type": "array",
+          "description": "权限ID数组（可选，传入后将同步分配给角色）",
+          "items": {
+            "type": "integer",
+            "description": "权限ID"
+          }
+        }
+      },
+      "required": ["name"]
+    }
+  },
+  "responses": [
+    {
+      "id": 1,
+      "name": "创建成功",
+      "code": 201,
+      "contentType": "json",
+      "jsonSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "角色ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "角色名称"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "创建时间",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "更新时间",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "name"]
+      }
+    }
+  ]
+}

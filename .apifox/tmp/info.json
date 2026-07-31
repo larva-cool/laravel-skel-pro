@@ -1,0 +1,17 @@
+{
+  "parameters": {
+    "path": [],
+    "query": []
+  },
+  "responses": [
+    {
+      "id": "116055151",
+      "name": "成功",
+      "code": 200,
+      "contentType": "json",
+      "jsonSchema": {
+        "$ref": "#/definitions/299875403"
+      }
+    }
+  ]
+}

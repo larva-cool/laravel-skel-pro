@@ -1,0 +1,22 @@
+{
+  "parameters": {
+    "path": [
+      {
+        "id": "role_id#0",
+        "name": "role_id",
+        "required": true,
+        "type": "integer",
+        "description": "角色ID",
+        "enable": true
+      }
+    ]
+  },
+  "responses": [
+    {
+      "id": 1,
+      "name": "删除成功",
+      "code": 204,
+      "contentType": "noContent"
+    }
+  ]
+}

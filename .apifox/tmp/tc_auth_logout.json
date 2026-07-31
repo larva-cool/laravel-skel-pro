@@ -1,0 +1,51 @@
+{
+  "name": "退出登录",
+  "apiDetailId": 495050428,
+  "categoryId": 12473039,
+  "method": "post",
+  "path": "/admin/auth/logout",
+  "parameters": {
+    "path": [],
+    "query": [],
+    "header": [
+      {
+        "id": "authorization#0",
+        "name": "Authorization",
+        "required": true,
+        "type": "string",
+        "value": "Bearer {{admin_access_token}}",
+        "description": "认证令牌",
+        "enable": true
+      }
+    ],
+    "cookie": []
+  },
+  "commonParameters": {},
+  "requestBody": {
+    "type": "none",
+    "data": ""
+  },
+  "preProcessors": [],
+  "postProcessors": [
+    {
+      "id": "postProcessors.0.assertion",
+      "type": "assertion",
+      "data": {
+        "name": "HTTP 状态码为 204",
+        "subject": "httpCode",
+        "comparison": "equal",
+        "value": "204",
+        "path": "",
+        "extractSettings": {
+          "expression": "",
+          "continueExtractorSettings": {
+            "isContinueExtractValue": false
+          }
+        }
+      },
+      "defaultEnable": true,
+      "enable": true
+    }
+  ],
+  "tagIds": []
+}

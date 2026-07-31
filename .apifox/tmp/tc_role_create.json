@@ -1,0 +1,88 @@
+{
+  "name": "创建角色",
+  "apiDetailId": 495089511,
+  "categoryId": 12473039,
+  "method": "post",
+  "path": "/admin/roles",
+  "parameters": {
+    "path": [],
+    "query": [],
+    "header": [
+      {
+        "id": "authorization#0",
+        "name": "Authorization",
+        "required": true,
+        "type": "string",
+        "value": "Bearer {{admin_access_token}}",
+        "description": "认证令牌"
+      }
+    ],
+    "cookie": []
+  },
+  "commonParameters": {},
+  "requestBody": {
+    "type": "application/json",
+    "data": "{\n  \"name\": \"测试角色\",\n  \"permissions\": []\n}"
+  },
+  "preProcessors": [],
+  "postProcessors": [
+    {
+      "id": "postProcessors.0.assertion",
+      "type": "assertion",
+      "data": {
+        "name": "HTTP 状态码为 201",
+        "subject": "httpCode",
+        "comparison": "equal",
+        "value": "201",
+        "path": "",
+        "extractSettings": {
+          "expression": "",
+          "continueExtractorSettings": {
+            "isContinueExtractValue": false
+          }
+        }
+      },
+      "defaultEnable": true,
+      "enable": true
+    },
+    {
+      "id": "postProcessors.1.assertion",
+      "type": "assertion",
+      "data": {
+        "name": "响应包含 id 字段",
+        "subject": "responseJson",
+        "comparison": "exists",
+        "value": "",
+        "path": "$.id",
+        "extractSettings": {
+          "expression": "$.id",
+          "continueExtractorSettings": {
+            "isContinueExtractValue": false
+          }
+        }
+      },
+      "defaultEnable": true,
+      "enable": true
+    },
+    {
+      "id": "postProcessors.2.extractor",
+      "type": "extractor",
+      "data": {
+        "variableName": "test_role_id",
+        "variableType": "globals",
+        "shareScope": "PROJECT",
+        "subject": "responseJson",
+        "expression": "$.id",
+        "extractSettings": {
+          "expression": "$.id",
+          "continueExtractorSettings": {
+            "isContinueExtractValue": false
+          }
+        }
+      },
+      "defaultEnable": true,
+      "enable": true
+    }
+  ],
+  "tagIds": []
+}

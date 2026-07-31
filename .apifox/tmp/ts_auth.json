@@ -1,0 +1,18 @@
+{
+  "name": "认证模块测试",
+  "description": "后台认证模块接口测试套件，包含登录、登出、获取登录信息",
+  "priority": 0,
+  "items": [
+    {
+      "id": "auth-group",
+      "type": "STATIC_TEST_CASE",
+      "name": "认证模块",
+      "testCases": [
+        {"id": 399580935},
+        {"id": 399580938},
+        {"id": 399580939},
+        {"id": 399580940}
+      ]
+    }
+  ]
+}

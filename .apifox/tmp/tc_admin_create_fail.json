@@ -1,0 +1,44 @@
+{
+  "name": "创建管理员-验证失败",
+  "apiDetailId": 495128202,
+  "categoryId": 12473040,
+  "method": "post",
+  "path": "/admin/admins",
+  "parameters": {
+    "path": [],
+    "query": [],
+    "header": [
+      {
+        "id": "authorization#0",
+        "name": "Authorization",
+        "required": true,
+        "type": "string",
+        "value": "Bearer {{admin_access_token}}",
+        "description": "认证令牌"
+      }
+    ],
+    "cookie": []
+  },
+  "commonParameters": {},
+  "requestBody": {
+    "type": "application/json",
+    "data": "{\n  \"username\": \"\"\n}"
+  },
+  "preProcessors": [],
+  "postProcessors": [
+    {
+      "id": "postProcessors.0.assertion",
+      "type": "assertion",
+      "data": {
+        "name": "HTTP 状态码为 422",
+        "subject": "httpCode",
+        "comparison": "equal",
+        "value": "422",
+        "path": ""
+      },
+      "defaultEnable": true,
+      "enable": true
+    }
+  ],
+  "tagIds": []
+}

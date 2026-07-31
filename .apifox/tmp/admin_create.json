@@ -1,0 +1,135 @@
+{
+  "requestBody": {
+    "type": "application/json",
+    "required": true,
+    "jsonSchema": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "用户名（3-50个字符，唯一）",
+          "minLength": 3,
+          "maxLength": 50
+        },
+        "email": {
+          "type": "string",
+          "description": "邮箱（可选，邮箱格式，唯一）",
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "description": "手机号（可选，中国手机号格式，唯一）",
+          "pattern": "^1[2-9]\\d{9}$"
+        },
+        "name": {
+          "type": "string",
+          "description": "昵称（2-50个字符）",
+          "minLength": 2,
+          "maxLength": 50
+        },
+        "password": {
+          "type": "string",
+          "description": "密码（至少8位，包含字母和数字）",
+          "minLength": 8
+        },
+        "status": {
+          "type": "integer",
+          "description": "状态（0=禁用, 1=正常）",
+          "enum": [0, 1]
+        },
+        "roles": {
+          "type": "array",
+          "description": "角色名称数组（可选）",
+          "items": {
+            "type": "string",
+            "maxLength": 50
+          }
+        }
+      },
+      "required": [
+        "username",
+        "name",
+        "password",
+        "status"
+      ]
+    }
+  },
+  "responses": [
+    {
+      "id": 1,
+      "name": "创建成功",
+      "code": 201,
+      "contentType": "json",
+      "jsonSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "管理员ID"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名"
+          },
+          "email": {
+            "type": "string",
+            "description": "邮箱"
+          },
+          "phone": {
+            "type": "string",
+            "description": "手机号"
+          },
+          "name": {
+            "type": "string",
+            "description": "昵称"
+          },
+          "status": {
+            "type": "object",
+            "description": "管理员状态",
+            "properties": {
+              "value": {
+                "type": "integer",
+                "description": "状态值（0=禁用, 1=正常）"
+              },
+              "label": {
+                "type": "string",
+                "description": "状态标签"
+              }
+            }
+          },
+          "login_count": {
+            "type": "integer",
+            "description": "登录次数"
+          },
+          "last_login_ip": {
+            "type": "string",
+            "description": "最后登录IP"
+          },
+          "last_login_at": {
+            "type": "string",
+            "description": "最后登录时间"
+          },
+          "last_active_at": {
+            "type": "string",
+            "description": "最后活跃时间"
+          },
+          "roles": {
+            "type": "array",
+            "description": "角色名称数组",
+            "items": {
+              "type": "string"
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "description": "创建时间"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "更新时间"
+          }
+        }
+      }
+    }
+  ]
+}

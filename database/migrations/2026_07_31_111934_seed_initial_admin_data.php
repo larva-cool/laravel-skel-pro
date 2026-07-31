@@ -36,7 +36,7 @@ return new class extends Migration
                 'name' => '超级管理员',
                 'email' => 'admin@example.com',
                 'phone' => '13800000000',
-                'password' => Hash::make('123456'),
+                'password' => Hash::make('12345678'),
                 'status' => AdminStatus::STATUS_ACTIVE,
                 'login_count' => 0,
             ]

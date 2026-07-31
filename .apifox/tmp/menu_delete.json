@@ -1,0 +1,23 @@
+{
+  "parameters": {
+    "path": [
+      {
+        "id": "menu_id#0",
+        "name": "menu_id",
+        "required": true,
+        "type": "integer",
+        "description": "菜单ID"
+      }
+    ],
+    "query": []
+  },
+  "responses": [
+    {
+      "id": 1,
+      "name": "No Content",
+      "code": 204,
+      "contentType": "noContent",
+      "description": "删除成功，无返回内容"
+    }
+  ]
+}

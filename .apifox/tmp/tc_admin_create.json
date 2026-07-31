@@ -1,0 +1,57 @@
+{
+  "name": "创建管理员",
+  "apiDetailId": 495128202,
+  "categoryId": 12473039,
+  "method": "post",
+  "path": "/admin/admins",
+  "parameters": {
+    "path": [],
+    "query": [],
+    "header": [
+      {
+        "id": "authorization#0",
+        "name": "Authorization",
+        "required": true,
+        "type": "string",
+        "value": "Bearer {{admin_access_token}}",
+        "description": "认证令牌"
+      }
+    ],
+    "cookie": []
+  },
+  "commonParameters": {},
+  "requestBody": {
+    "type": "application/json",
+    "data": "{\n  \"username\": \"testadmin\",\n  \"name\": \"测试管理员\",\n  \"password\": \"12345678\",\n  \"password_confirmation\": \"12345678\",\n  \"status\": 1,\n  \"roles\": []\n}"
+  },
+  "preProcessors": [],
+  "postProcessors": [
+    {
+      "id": "postProcessors.0.assertion",
+      "type": "assertion",
+      "data": {
+        "name": "HTTP 状态码为 201",
+        "subject": "httpCode",
+        "comparison": "equal",
+        "value": "201",
+        "path": ""
+      },
+      "defaultEnable": true,
+      "enable": true
+    },
+    {
+      "id": "postProcessors.1.extractor",
+      "type": "extractor",
+      "data": {
+        "variableName": "test_admin_id",
+        "variableType": "globals",
+        "shareScope": "PROJECT",
+        "subject": "responseJson",
+        "expression": "$.id"
+      },
+      "defaultEnable": true,
+      "enable": true
+    }
+  ],
+  "tagIds": []
+}

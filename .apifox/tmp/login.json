@@ -1,0 +1,103 @@
+{
+  "parameters": {
+    "path": [],
+    "query": []
+  },
+  "requestBody": {
+    "type": "application/json",
+    "jsonSchema": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "title": "账号",
+          "description": "登录账号"
+        },
+        "password": {
+          "type": "string",
+          "title": "密码",
+          "description": "登录密码"
+        }
+      },
+      "x-apifox-orders": [
+        "account",
+        "password"
+      ],
+      "required": [
+        "account",
+        "password"
+      ]
+    },
+    "required": true
+  },
+  "responses": [
+    {
+      "id": "150002569",
+      "name": "成功",
+      "code": 200,
+      "contentType": "json",
+      "jsonSchema": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "访问令牌",
+            "description": "Sanctum Bearer 令牌"
+          },
+          "user": {
+            "$ref": "#/definitions/299875403"
+          }
+        },
+        "x-apifox-orders": [
+          "access_token",
+          "user"
+        ],
+        "required": [
+          "access_token",
+          "user"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "name": "验证失败",
+      "code": 422,
+      "contentType": "json",
+      "jsonSchema": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "错误信息",
+            "description": "验证失败的提示信息"
+          },
+          "errors": {
+            "type": "object",
+            "title": "字段错误",
+            "description": "各字段的验证错误列表",
+            "properties": {
+              "account": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "账号字段错误信息"
+              },
+              "password": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "密码字段错误信息"
+              }
+            }
+          }
+        },
+        "required": [
+          "message",
+          "errors"
+        ]
+      }
+    }
+  ]
+}

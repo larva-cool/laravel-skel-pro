@@ -1,0 +1,78 @@
+{
+  "parameters": {
+    "query": [
+      {
+        "id": "role_name#0",
+        "name": "role_name",
+        "required": false,
+        "type": "string",
+        "description": "角色名称搜索关键词（模糊匹配）",
+        "enable": true
+      }
+    ]
+  },
+  "responses": [
+    {
+      "id": 1,
+      "name": "成功",
+      "code": 200,
+      "contentType": "json",
+      "jsonSchema": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "角色数据列表",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "角色ID"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "角色名称"
+                },
+                "created_at": {
+                  "type": "string",
+                  "description": "创建时间",
+                  "format": "date-time"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "description": "更新时间",
+                  "format": "date-time"
+                }
+              },
+              "required": ["id", "name"]
+            }
+          },
+          "links": {
+            "type": "object",
+            "description": "分页链接",
+            "properties": {
+              "first": { "type": "string", "description": "第一页链接" },
+              "last": { "type": "string", "description": "最后一页链接" },
+              "prev": { "type": "string", "description": "上一页链接" },
+              "next": { "type": "string", "description": "下一页链接" }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "description": "分页元信息",
+            "properties": {
+              "current_page": { "type": "integer", "description": "当前页码" },
+              "from": { "type": "integer", "description": "起始条数" },
+              "last_page": { "type": "integer", "description": "最后一页页码" },
+              "per_page": { "type": "integer", "description": "每页条数" },
+              "to": { "type": "integer", "description": "结束条数" },
+              "total": { "type": "integer", "description": "总条数" }
+            }
+          }
+        },
+        "required": ["data", "links", "meta"]
+      }
+    }
+  ]
+}
