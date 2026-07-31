@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 return [
@@ -215,18 +214,42 @@ return [
 
     'attributes' => [
         'account' => 'Account',
+        'active_path' => 'Active Path',
         'area_code' => 'Area Code',
         'avatar' => 'Avatar',
         'city_code' => 'City Code',
+        'component' => 'Component',
         'count' => 'Count',
+        'device' => 'Device',
         'email' => 'Email',
+        'fixed_tab' => 'Fixed Tab',
         'gender' => 'Gender',
+        'icon' => 'Icon',
         'invite_code' => 'Invite Code',
+        'is_enable' => 'Enabled',
+        'is_full_page' => 'Full Page',
+        'is_hide' => 'Hidden',
+        'is_hide_tab' => 'Hide Tab',
+        'is_iframe' => 'Iframe',
+        'keep_alive' => 'Keep Alive',
+        'link' => 'Link',
+        'name' => 'Name',
+        'parent_id' => 'Parent ID',
         'password' => 'Password',
+        'path' => 'Path',
+        'permission' => 'Permission',
+        'permissions' => 'Permissions',
         'phone' => 'Phone',
+        'redirect' => 'Redirect',
+        'roles' => 'Roles',
+        'show_badge' => 'Show Badge',
+        'show_text_badge' => 'Text Badge',
+        'sort' => 'Sort',
+        'status' => 'Status',
+        'title' => 'Title',
+        'type' => 'Type',
         'user_id' => 'User ID',
         'username' => 'Username',
-        'device' => 'Device',
         'verify_code' => 'Verify Code',
     ],
 
