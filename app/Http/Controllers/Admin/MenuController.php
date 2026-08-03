@@ -12,6 +12,7 @@ use App\Http\Resources\Admin\MenuResource;
 use App\Models\Admin\AdminMenu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * 后台菜单管理控制器
@@ -31,13 +32,11 @@ class MenuController extends Controller
     /**
      * 菜单列表
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $menus = AdminMenu::tree()->filter()
-            ->values()
-            ->all();
+        $items = AdminMenu::with(['children']);
 
-        return response()->json($menus);
+        return MenuResource::collection($items);
     }
 
     /**

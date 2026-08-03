@@ -149,7 +149,7 @@ class AdminMenu extends Model
      */
     public function scopeOrdered(Builder $query): Builder
     {
-        return $query->orderBy('parent_id')->orderBy('sort');
+        return $query->orderBy('sort');
     }
 
     /**
@@ -157,7 +157,7 @@ class AdminMenu extends Model
      */
     public function scopeRoot(Builder $query): Builder
     {
-        return $query->where('parent_id', 0);
+        return $query->whereNull('parent_id');
     }
 
     /**
@@ -165,7 +165,7 @@ class AdminMenu extends Model
      */
     public function isRoot(): bool
     {
-        return $this->parent_id === 0;
+        return $this->parent_id === null;
     }
 
     /**
