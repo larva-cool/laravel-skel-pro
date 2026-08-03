@@ -8,6 +8,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
@@ -27,8 +28,10 @@ Route::get('roles/{id}/permissions', [RoleController::class, 'permissions'])->na
 Route::put('roles/{id}/permissions', [RoleController::class, 'assignPermissions'])->name('roles.assign-permissions');
 Route::apiResource('roles', RoleController::class);
 
+// 前端路由配置
+Route::get('routes', [MainController::class, 'routes'])->name('routes');
+
 // 菜单管理
-Route::get('menus/routes', [MenuController::class, 'routes'])->name('menus.routes');
 Route::apiResource('menus', MenuController::class);
 
 // 管理员管理
