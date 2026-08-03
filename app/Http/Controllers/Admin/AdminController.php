@@ -8,7 +8,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\AdminStatus;
+use App\Http\Requests\Admin\Admin\AdminChangePasswordRequest;
 use App\Http\Requests\Admin\Admin\AdminCreateRequest;
+use App\Http\Requests\Admin\Admin\AdminProfileRequest;
 use App\Http\Requests\Admin\Admin\AdminUpdateRequest;
 use App\Http\Resources\Admin\AdminResource;
 use App\Models\Admin\Admin;
@@ -30,10 +32,10 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
-        //$this->middleware('permission:admins.index')->only(['index', 'show']);
-        //$this->middleware('permission:admins.create')->only(['store']);
-        //$this->middleware('permission:admins.edit')->only(['update', 'toggleStatus', 'assignRoles', 'resetPassword']);
-        //$this->middleware('permission:admins.delete')->only(['destroy']);
+        // $this->middleware('permission:admins.index')->only(['index', 'show']);
+        // $this->middleware('permission:admins.create')->only(['store']);
+        // $this->middleware('permission:admins.edit')->only(['update', 'toggleStatus', 'assignRoles', 'resetPassword']);
+        // $this->middleware('permission:admins.delete')->only(['destroy']);
     }
 
     /**
@@ -196,6 +198,47 @@ class AdminController extends Controller
         $admin->resetPassword($data['password']);
 
         return response()->json(status: 204);
+    }
+
+    /**
+     * 修改当前登录管理员密码
+     */
+    public function changePassword(AdminChangePasswordRequest $request): JsonResponse
+    {
+        /** @var \App\Models\Admin\Admin $admin */
+        $admin = $request->user();
+
+        $data = $request->validated();
+
+        $admin->resetPassword($data['password']);
+
+        return response()->json(status: 204);
+    }
+
+    /**
+     * 获取当前登录管理员资料
+     */
+    public function profile(Request $request): AdminResource
+    {
+        /** @var \App\Models\Admin\Admin $admin */
+        $admin = $request->user();
+
+        return new AdminResource($admin->load('roles'));
+    }
+
+    /**
+     * 更新当前登录管理员资料
+     */
+    public function updateProfile(AdminProfileRequest $request): AdminResource
+    {
+        /** @var \App\Models\Admin\Admin $admin */
+        $admin = $request->user();
+
+        $data = $request->validated();
+
+        $admin->update($data);
+
+        return new AdminResource($admin->fresh()->load('roles'));
     }
 
     /**

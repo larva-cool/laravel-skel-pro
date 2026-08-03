@@ -35,10 +35,13 @@ Route::get('routes', [MainController::class, 'routes'])->name('routes');
 Route::apiResource('menus', MenuController::class);
 
 // 管理员管理
+Route::get('admins/profile', [AdminController::class, 'profile'])->name('admins.profile');
+Route::put('admins/profile', [AdminController::class, 'updateProfile'])->name('admins.update-profile');
 Route::get('admins/{id}/roles', [AdminController::class, 'roles'])->name('admins.roles');
 Route::put('admins/{id}/roles', [AdminController::class, 'assignRoles'])->name('admins.assign-roles');
 Route::put('admins/{id}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admins.toggle-status');
 Route::put('admins/{id}/reset-password', [AdminController::class, 'resetPassword'])->name('admins.reset-password');
+Route::put('admins/change-password', [AdminController::class, 'changePassword'])->name('admins.change-password');
 Route::apiResource('admins', AdminController::class);
 
 // 配置管理
