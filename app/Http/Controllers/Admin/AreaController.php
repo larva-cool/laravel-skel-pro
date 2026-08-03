@@ -35,7 +35,7 @@ class AreaController extends Controller
     /**
      * 获取地区树形结构
      */
-    public function tree(): AnonymousResourceCollection
+    public function index(): AnonymousResourceCollection
     {
         $areas = Area::tree();
 

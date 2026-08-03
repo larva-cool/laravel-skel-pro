@@ -42,9 +42,5 @@ Route::apiResource('admins', AdminController::class);
 Route::apiResource('settings', SettingController::class);
 
 // 地区管理
-Route::get('areas/tree', [AreaController::class, 'tree'])->name('areas.tree');
-Route::post('areas', [AreaController::class, 'store'])->name('areas.store');
-Route::get('areas/{area}', [AreaController::class, 'show'])->name('areas.show');
-Route::put('areas/{area}', [AreaController::class, 'update'])->name('areas.update');
-Route::delete('areas/{area}', [AreaController::class, 'destroy'])->name('areas.destroy');
+Route::apiResource('areas', AreaController::class);
 
