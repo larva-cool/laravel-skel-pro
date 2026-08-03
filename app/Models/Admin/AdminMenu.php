@@ -226,19 +226,19 @@ class AdminMenu extends Model
             return null;
         }
 
-        // 按钮类型：返回特殊标记，由父级收集到 authList
+        // 按钮类型：返回特殊标记，由父级收集到 auth_list
         if ($this->isButton()) {
             return [
                 '__button' => true,
                 'title' => $this->title,
-                'authMark' => $this->permission,
+                'auth_mark' => $this->permission,
             ];
         }
 
         // 处理子菜单
         /** @var array<int, array<string, mixed>> $childRecords */
         $childRecords = [];
-        /** @var array<int, array{title: string, authMark: string}> $authList */
+        /** @var array<int, array{title: string, auth_mark: string}> $authList */
         $authList = [];
 
         if ($this->children->isNotEmpty()) {
@@ -247,12 +247,12 @@ class AdminMenu extends Model
                 if ($result === null) {
                     continue;
                 }
-                // 按钮节点收集到 authList
+                // 按钮节点收集到 auth_list
                 if (! empty($result['__button'])) {
-                    if (! empty($result['authMark'])) {
+                    if (! empty($result['auth_mark'])) {
                         $authList[] = [
                             'title' => $result['title'],
-                            'authMark' => $result['authMark'],
+                            'auth_mark' => $result['auth_mark'],
                         ];
                     }
 
@@ -267,20 +267,20 @@ class AdminMenu extends Model
             'title' => $this->title,
             'icon' => $this->icon,
             'link' => $this->link,
-            'isHide' => $this->is_hide ?: null,
-            'isHideTab' => $this->is_hide_tab ?: null,
-            'isIframe' => $this->is_iframe ?: null,
-            'keepAlive' => $this->keep_alive ?: null,
-            'isFullPage' => $this->is_full_page ?: null,
-            'fixedTab' => $this->fixed_tab ?: null,
-            'showBadge' => $this->show_badge ?: null,
-            'showTextBadge' => $this->show_text_badge,
-            'activePath' => $this->active_path,
+            'is_hide' => $this->is_hide ?: null,
+            'is_hide_tab' => $this->is_hide_tab ?: null,
+            'is_iframe' => $this->is_iframe ?: null,
+            'keep_alive' => $this->keep_alive ?: null,
+            'is_full_page' => $this->is_full_page ?: null,
+            'fixed_tab' => $this->fixed_tab ?: null,
+            'show_badge' => $this->show_badge ?: null,
+            'show_text_badge' => $this->show_text_badge,
+            'active_path' => $this->active_path,
         ], fn ($value): bool => $value !== null);
 
         // 按钮权限附加到 meta
         if (! empty($authList)) {
-            $meta['authList'] = $authList;
+            $meta['auth_list'] = $authList;
         }
 
         // 确定 component：
