@@ -56,8 +56,7 @@ return new class extends Migration
             $table->boolean('show_badge')->default(false)->comment('是否显示红点徽章');
             $table->string('show_text_badge', 50)->nullable()->comment('文本徽章内容');
             $table->string('active_path', 255)->nullable()->comment('激活菜单高亮路径');
-            $table->string('permission', 100)->nullable()->comment('按钮权限标识（authMark）');
-            $table->json('roles')->nullable()->comment('可访问角色列表（前端权限模式）');
+            $table->string('permission', 100)->nullable()->comment('权限标识（authMark）');
             $table->timestamps();
             $table->softDeletes()->comment('删除时间');
 

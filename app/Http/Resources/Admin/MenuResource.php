@@ -50,7 +50,6 @@ class MenuResource extends JsonResource
             'show_text_badge' => $this->show_text_badge,
             'active_path' => $this->active_path,
             'permission' => $this->permission,
-            'roles' => $this->roles,
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
             'children' => self::collection($this->whenLoaded('children')),

@@ -42,8 +42,7 @@ use Spatie\Permission\Models\Permission;
  * @property bool $show_badge 是否显示红点徽章
  * @property string|null $show_text_badge 文本徽章内容
  * @property string|null $active_path 激活菜单高亮路径
- * @property string|null $permission 按钮权限标识
- * @property array|null $roles 可访问角色列表
+ * @property string|null $permission 权限标识
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at 更新时间
  * @property Carbon|null $deleted_at 删除时间
@@ -58,7 +57,7 @@ use Spatie\Permission\Models\Permission;
     'title', 'icon', 'link', 'type', 'sort',
     'is_enable', 'is_hide', 'is_hide_tab', 'is_iframe',
     'keep_alive', 'is_full_page', 'fixed_tab', 'show_badge',
-    'show_text_badge', 'active_path', 'permission', 'roles',
+    'show_text_badge', 'active_path', 'permission',
 ])]
 class AdminMenu extends Model
 {
@@ -95,7 +94,6 @@ class AdminMenu extends Model
             'show_text_badge' => 'string',
             'active_path' => 'string',
             'permission' => 'string',
-            'roles' => 'json',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',
@@ -109,12 +107,12 @@ class AdminMenu extends Model
     {
         parent::booted();
 
-        // 保存菜单时，按钮类型自动同步到 permissions 表
+        // 保存菜单时，同步到 permissions 表
         static::saved(function (self $menu): void {
             $menu->syncPermission();
         });
 
-        // 删除菜单时，按钮类型同步删除对应 permission
+        // 删除菜单时，同步删除对应 permission
         static::deleted(function (self $menu): void {
             $menu->deletePermission();
         });
@@ -207,23 +205,24 @@ class AdminMenu extends Model
      *
      * 递归处理子菜单，自动：
      * - 过滤禁用菜单（is_enable=false）
+     * - 通过 Spatie 权限系统过滤菜单可见性（permission 字段）
      * - 顶级目录 component 设为 "/index/index"（对应 Layout 视图）
      * - 二级目录/页面直接返回数据库存储的 component 路径（如 "/system/admin"）
      * - 按钮类型（type=BUTTON）不返回节点，而是收集到父级 meta.authList
      * - snake_case 字段转换为前端 meta 所需的 camelCase
      *
-     * @param  array<int, string>  $adminRoles  当前管理员角色列表，用于按角色过滤
+     * @param  \App\Models\Admin\Admin|null  $admin  当前管理员，用于权限过滤；null 表示不过滤
      * @return array<string, mixed>|null 返回 null 表示该节点被过滤掉
      */
-    public function toRouteRecord(array $adminRoles = []): ?array
+    public function toRouteRecord(?Admin $admin = null): ?array
     {
         // 过滤禁用菜单
         if (! $this->is_enable) {
             return null;
         }
 
-        // 角色过滤：如果菜单配置了 roles 且当前管理员不拥有其中任何角色，排除该节点
-        if (! empty($this->roles) && empty(array_intersect($adminRoles, $this->roles))) {
+        // 权限过滤：如果菜单配置了 permission 且当前管理员不具备该权限，排除该节点
+        if ($admin !== null && ! blank($this->permission) && ! $admin->can($this->permission)) {
             return null;
         }
 
@@ -244,7 +243,7 @@ class AdminMenu extends Model
 
         if ($this->children->isNotEmpty()) {
             foreach ($this->children as $child) {
-                $result = $child->toRouteRecord($adminRoles);
+                $result = $child->toRouteRecord($admin);
                 if ($result === null) {
                     continue;
                 }
@@ -277,7 +276,6 @@ class AdminMenu extends Model
             'showBadge' => $this->show_badge ?: null,
             'showTextBadge' => $this->show_text_badge,
             'activePath' => $this->active_path,
-            'roles' => $this->roles ?: null,
         ], fn ($value): bool => $value !== null);
 
         // 按钮权限附加到 meta
@@ -351,12 +349,15 @@ class AdminMenu extends Model
     }
 
     /**
-     * 将按钮菜单同步到 permissions 表
+     * 将菜单同步到 permissions 表
+     *
+     * 任何配置了 permission 标识的菜单都会同步到 Spatie permissions 表，
+     * 以便通过角色-权限关联统一控制菜单可见性。
      */
     protected function syncPermission(): void
     {
-        // 非按钮类型或权限标识为空：删除历史 permission（如果存在）
-        if (! $this->isButton() || blank($this->permission)) {
+        // 权限标识为空：删除历史 permission（如果存在）
+        if (blank($this->permission)) {
             $this->deletePermission();
 
             return;
@@ -383,7 +384,6 @@ class AdminMenu extends Model
         // 其他菜单仍在使用该权限标识时不删除
         $stillUsed = static::query()
             ->where('id', '!=', $this->id)
-            ->where('type', MenuType::BUTTON->value)
             ->where('permission', $oldPermission)
             ->exists();
 

@@ -34,8 +34,7 @@ use Illuminate\Validation\Rule;
  * @property-read bool $show_badge 是否显示红点徽章
  * @property-read string|null $show_text_badge 文本徽章内容
  * @property-read string|null $active_path 激活菜单高亮路径
- * @property-read string|null $permission 按钮权限标识
- * @property-read array|null $roles 可访问角色列表
+ * @property-read string|null $permission 权限标识
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -75,8 +74,6 @@ class MenuSaveRequest extends FormRequest
             'show_text_badge' => ['nullable', 'string', 'max:50'],
             'active_path' => ['nullable', 'string', 'max:255'],
             'permission' => ['nullable', 'string', 'max:100'],
-            'roles' => ['nullable', 'array'],
-            'roles.*' => ['string', 'max:50'],
         ];
     }
 }
