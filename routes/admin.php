@@ -30,7 +30,6 @@ Route::apiResource('roles', RoleController::class);
 // 菜单管理
 Route::get('menus/tree', [MenuController::class, 'tree'])->name('menus.tree');
 Route::get('menus/routes', [MenuController::class, 'routes'])->name('menus.routes');
-Route::apiResource('menus', MenuController::class);
 
 // 管理员管理
 Route::get('admins/{id}/roles', [AdminController::class, 'roles'])->name('admins.roles');
@@ -44,5 +43,8 @@ Route::apiResource('settings', SettingController::class);
 
 // 地区管理
 Route::get('areas/tree', [AreaController::class, 'tree'])->name('areas.tree');
-Route::apiResource('areas', AreaController::class);
+Route::post('areas', [AreaController::class, 'store'])->name('areas.store');
+Route::get('areas/{area}', [AreaController::class, 'show'])->name('areas.show');
+Route::put('areas/{area}', [AreaController::class, 'update'])->name('areas.update');
+Route::delete('areas/{area}', [AreaController::class, 'destroy'])->name('areas.destroy');
 

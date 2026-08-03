@@ -11,7 +11,6 @@ use App\Http\Requests\Admin\Area\AreaSaveRequest;
 use App\Http\Resources\Admin\AreaResource;
 use App\Models\System\Area;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
@@ -27,49 +26,18 @@ class AreaController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
-        //$this->middleware('permission:areas.index')->only(['index', 'show', 'tree']);
-        //$this->middleware('permission:areas.create')->only(['store']);
-        //$this->middleware('permission:areas.edit')->only(['update']);
-        //$this->middleware('permission:areas.delete')->only(['destroy']);
-    }
-
-    /**
-     * 地区列表
-     */
-    public function index(Request $request): AnonymousResourceCollection
-    {
-        $query = Area::query();
-
-        if ($name = $request->query('name')) {
-            $query->where('name', 'like', "%{$name}%");
-        }
-
-        if ($this->hasQuery($request, 'parent_id')) {
-            $parentId = $request->query('parent_id');
-            if ($parentId === '0' || $parentId === 'null' || $parentId === '') {
-                $query->whereNull('parent_id');
-            } else {
-                $query->where('parent_id', (int) $parentId);
-            }
-        }
-
-        $items = $query->orderBy('sort')->orderBy('id')->get();
-
-        return AreaResource::collection($items);
+        // $this->middleware('permission:areas.index')->only(['index', 'show', 'tree']);
+        // $this->middleware('permission:areas.create')->only(['store']);
+        // $this->middleware('permission:areas.edit')->only(['update']);
+        // $this->middleware('permission:areas.delete')->only(['destroy']);
     }
 
     /**
      * 获取地区树形结构
      */
-    public function tree(Request $request): AnonymousResourceCollection
+    public function tree(): AnonymousResourceCollection
     {
-        $parentId = null;
-        $raw = $request->query('parent_id');
-        if ($raw !== null && $raw !== '' && $raw !== '0' && $raw !== 'null') {
-            $parentId = (int) $raw;
-        }
-
-        $areas = Area::tree($parentId);
+        $areas = Area::tree();
 
         return AreaResource::collection($areas);
     }
@@ -137,15 +105,5 @@ class AreaController extends Controller
         return $area->children->contains(
             fn (Area $child): bool => $this->isDescendantOrSelf($child, $targetId)
         );
-    }
-
-    /**
-     * 判断请求中是否存在指定查询参数（非空字符串）
-     */
-    protected function hasQuery(Request $request, string $key): bool
-    {
-        $value = $request->query($key);
-
-        return $value !== null && $value !== '';
     }
 }
