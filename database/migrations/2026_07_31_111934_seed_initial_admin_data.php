@@ -174,6 +174,7 @@ return new class extends Migration
                         'type' => MenuType::MENU,
                         'sort' => 1,
                         'keep_alive' => true,
+                        'permission' => 'admins.index',
                         'buttons' => [
                             ['title' => '新增管理员', 'permission' => 'admins.create'],
                             ['title' => '编辑管理员', 'permission' => 'admins.edit'],
@@ -192,6 +193,7 @@ return new class extends Migration
                         'type' => MenuType::MENU,
                         'sort' => 2,
                         'keep_alive' => true,
+                        'permission' => 'roles.index',
                         'buttons' => [
                             ['title' => '新增角色', 'permission' => 'roles.create'],
                             ['title' => '编辑角色', 'permission' => 'roles.edit'],
@@ -209,6 +211,7 @@ return new class extends Migration
                         'type' => MenuType::MENU,
                         'sort' => 3,
                         'keep_alive' => true,
+                        'permission' => 'menus.index',
                         'buttons' => [
                             ['title' => '新增菜单', 'permission' => 'menus.create'],
                             ['title' => '编辑菜单', 'permission' => 'menus.edit'],
@@ -225,6 +228,7 @@ return new class extends Migration
                         'type' => MenuType::MENU,
                         'sort' => 4,
                         'keep_alive' => true,
+                        'permission' => 'settings.index',
                         'buttons' => [
                             ['title' => '新增配置', 'permission' => 'settings.create'],
                             ['title' => '编辑配置', 'permission' => 'settings.edit'],
@@ -241,6 +245,7 @@ return new class extends Migration
                         'type' => MenuType::MENU,
                         'sort' => 5,
                         'keep_alive' => true,
+                        'permission' => 'areas.index',
                         'buttons' => [
                             ['title' => '新增地区', 'permission' => 'areas.create'],
                             ['title' => '编辑地区', 'permission' => 'areas.edit'],
