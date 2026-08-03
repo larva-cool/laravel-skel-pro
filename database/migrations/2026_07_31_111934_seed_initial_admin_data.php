@@ -79,7 +79,7 @@ return new class extends Migration
             $menuKey = $menu['key'] ?? null;
             unset($menu['children'], $menu['buttons'], $menu['key']);
 
-            $menu['parent_id'] = 0;
+            $menu['parent_id'] = null;
 
             $model = AdminMenu::query()->create($menu);
             if ($menuKey !== null) {

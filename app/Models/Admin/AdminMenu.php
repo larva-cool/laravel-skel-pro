@@ -22,7 +22,7 @@ use Spatie\Permission\Models\Permission;
  * 后台菜单模型
  *
  * @property int $id 菜单ID
- * @property int $parent_id 父级菜单ID
+ * @property int|null $parent_id 父级菜单ID，null 表示顶级菜单
  * @property string|null $path 路由路径
  * @property string|null $name 路由名称
  * @property string|null $component 前端组件路径
@@ -284,7 +284,7 @@ class AdminMenu extends Model
         }
 
         // 确定 component：
-        // - 顶级目录（parent_id=0 且有子菜单）→ "/index/index" (Layout)
+        // - 顶级目录（parent_id=null 且有子菜单）→ "/index/index" (Layout)
         // - 顶级但无子菜单的页面 → "/index/index" (前端 RouteTransformer 会自动处理)
         // - 非顶级节点 → 数据库存储的 component 值
         $component = $this->isRoot() ? '/index/index' : $this->component;

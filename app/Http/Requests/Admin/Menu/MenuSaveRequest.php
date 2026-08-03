@@ -14,7 +14,7 @@ use Illuminate\Validation\Rule;
 /**
  * 菜单保存请求（创建/编辑）
  *
- * @property-read int $parent_id 父级菜单ID
+ * @property-read int|null $parent_id 父级菜单ID，null 表示顶级菜单
  * @property-read string|null $path 路由路径
  * @property-read string|null $name 路由名称
  * @property-read string|null $component 前端组件路径
@@ -50,7 +50,7 @@ class MenuSaveRequest extends FormRequest
         $menuId = (int) $this->route('menu');
 
         return [
-            'parent_id' => ['required', 'integer', 'min:0'],
+            'parent_id' => ['nullable', 'integer', 'min:1'],
             'path' => ['nullable', 'string', 'max:255'],
             'name' => [
                 'nullable', 'string', 'max:100',

@@ -34,7 +34,11 @@ class MenuController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $items = AdminMenu::with(['children']);
+        $items = AdminMenu::with(['children'])
+            ->root()
+            ->ordered()
+            ->orderBy('id')
+            ->get();
 
         return MenuResource::collection($items);
     }
@@ -86,8 +90,8 @@ class MenuController extends Controller
     {
         $menu = AdminMenu::findOrFail((int) $id);
 
-        $parentId = (int) $request->validated('parent_id');
-        if ($parentId !== 0 && $this->isDescendantOrSelf($menu, $parentId)) {
+        $parentId = $request->validated('parent_id');
+        if ($parentId !== null && $this->isDescendantOrSelf($menu, (int) $parentId)) {
             abort(422, __('admin.menu_invalid_parent'));
         }
 
