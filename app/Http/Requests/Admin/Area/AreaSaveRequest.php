@@ -7,7 +7,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin\Area;
 
+use App\Models\System\Area;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * 地区保存请求（创建/编辑）

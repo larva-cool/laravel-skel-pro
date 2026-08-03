@@ -110,6 +110,14 @@ class Area extends Model
     }
 
     /**
+     * Get the recursive children relation.
+     */
+    public function childrenRecursive(): HasMany
+    {
+        return $this->children()->with('childrenRecursive');
+    }
+
+    /**
      * 获取子地区ID
      *
      * @return array<int, int>
@@ -156,13 +164,13 @@ class Area extends Model
     }
 
     /**
-     * 获取地区树形结构（按父级加载子地区）。
+     * 获取地区树形结构（递归加载子地区）。
      *
      * @param  int|null  $parentId  父地区ID，null 表示从顶级开始
      */
     public static function tree(?int $parentId = null): Collection
     {
-        $query = static::with('children')
+        $query = static::with('childrenRecursive')
             ->orderBy('sort')
             ->orderBy('id');
 

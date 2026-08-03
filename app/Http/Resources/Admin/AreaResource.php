@@ -38,7 +38,7 @@ class AreaResource extends JsonResource
             'sort' => $this->sort,
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
-            'children' => self::collection($this->whenLoaded('children')),
+            'children' => self::collection($this->whenLoaded('childrenRecursive')),
         ];
     }
 }
