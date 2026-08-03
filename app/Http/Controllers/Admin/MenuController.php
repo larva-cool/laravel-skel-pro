@@ -33,15 +33,11 @@ class MenuController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        // onlyEnabled=true：只返回启用的菜单
-        $menus = AdminMenu::tree(false);
-
-        $routes = $menus
-            ->filter()
+        $menus = AdminMenu::tree()->filter()
             ->values()
             ->all();
 
-        return response()->json($routes);
+        return response()->json($menus);
     }
 
     /**
