@@ -175,11 +175,11 @@ return new class extends Migration
                         'sort' => 1,
                         'keep_alive' => true,
                         'buttons' => [
-                            ['title' => '新增', 'permission' => 'admins.create'],
-                            ['title' => '编辑', 'permission' => 'admins.edit'],
-                            ['title' => '删除', 'permission' => 'admins.delete'],
-                            ['title' => '重置密码', 'permission' => 'admins.edit'],
-                            ['title' => '分配角色', 'permission' => 'admins.edit'],
+                            ['title' => '新增管理员', 'permission' => 'admins.create'],
+                            ['title' => '编辑管理员', 'permission' => 'admins.edit'],
+                            ['title' => '删除管理员', 'permission' => 'admins.delete'],
+                            ['title' => '重置管理员密码', 'permission' => 'admins.edit'],
+                            ['title' => '管理员分配角色', 'permission' => 'admins.edit'],
                         ],
                     ],
                     [
@@ -193,10 +193,10 @@ return new class extends Migration
                         'sort' => 2,
                         'keep_alive' => true,
                         'buttons' => [
-                            ['title' => '新增', 'permission' => 'roles.create'],
-                            ['title' => '编辑', 'permission' => 'roles.edit'],
-                            ['title' => '删除', 'permission' => 'roles.delete'],
-                            ['title' => '分配权限', 'permission' => 'roles.edit'],
+                            ['title' => '新增角色', 'permission' => 'roles.create'],
+                            ['title' => '编辑角色', 'permission' => 'roles.edit'],
+                            ['title' => '删除角色', 'permission' => 'roles.delete'],
+                            ['title' => '分配角色权限', 'permission' => 'roles.edit'],
                         ],
                     ],
                     [
@@ -210,9 +210,9 @@ return new class extends Migration
                         'sort' => 3,
                         'keep_alive' => true,
                         'buttons' => [
-                            ['title' => '新增', 'permission' => 'menus.create'],
-                            ['title' => '编辑', 'permission' => 'menus.edit'],
-                            ['title' => '删除', 'permission' => 'menus.delete'],
+                            ['title' => '新增菜单', 'permission' => 'menus.create'],
+                            ['title' => '编辑菜单', 'permission' => 'menus.edit'],
+                            ['title' => '删除菜单', 'permission' => 'menus.delete'],
                         ],
                     ],
                     [
@@ -226,9 +226,9 @@ return new class extends Migration
                         'sort' => 4,
                         'keep_alive' => true,
                         'buttons' => [
-                            ['title' => '新增', 'permission' => 'settings.create'],
-                            ['title' => '编辑', 'permission' => 'settings.edit'],
-                            ['title' => '删除', 'permission' => 'settings.delete'],
+                            ['title' => '新增配置', 'permission' => 'settings.create'],
+                            ['title' => '编辑配置', 'permission' => 'settings.edit'],
+                            ['title' => '删除配置', 'permission' => 'settings.delete'],
                         ],
                     ],
                     [
@@ -242,9 +242,9 @@ return new class extends Migration
                         'sort' => 5,
                         'keep_alive' => true,
                         'buttons' => [
-                            ['title' => '新增', 'permission' => 'areas.create'],
-                            ['title' => '编辑', 'permission' => 'areas.edit'],
-                            ['title' => '删除', 'permission' => 'areas.delete'],
+                            ['title' => '新增地区', 'permission' => 'areas.create'],
+                            ['title' => '编辑地区', 'permission' => 'areas.edit'],
+                            ['title' => '删除地区', 'permission' => 'areas.delete'],
                         ],
                     ],
                 ],
