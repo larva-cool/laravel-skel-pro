@@ -38,12 +38,12 @@ class SettingSaveRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:100'],
             'key' => [
-                'required', 'string', 'max:100', 'alpha_dash:ascii',
+                'required', 'string', 'max:100', 'regex:/^[a-zA-Z0-9_.-]+$/',
                 Rule::unique('settings', 'key')->ignore($settingId),
             ],
             'value' => ['nullable', 'string'],
             'cast_type' => ['required', 'string', 'in:string,int,bool,float,json'],
-            'input_type' => ['required', 'string', 'in:text,textarea,number,select,switch,radio,checkbox'],
+            'input_type' => ['required', 'string', 'in:string,textarea,int,bool,select,radio,checkbox'],
             'param' => ['nullable', 'string', 'json'],
             'sort' => ['sometimes', 'integer', 'min:0'],
             'remark' => ['nullable', 'string', 'max:255'],
