@@ -7,11 +7,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\Menu\MenuSaveRequest;
 use App\Http\Resources\Admin\MenuResource;
 use App\Models\Admin\AdminMenu;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * 后台菜单管理控制器
@@ -29,13 +29,19 @@ class MenuController extends Controller
     }
 
     /**
-     * 获取菜单树形结构
+     * 菜单列表
      */
-    public function tree(): AnonymousResourceCollection
+    public function index(Request $request): JsonResponse
     {
-        $menus = AdminMenu::tree();
+        // onlyEnabled=true：只返回启用的菜单
+        $menus = AdminMenu::tree(false);
 
-        return MenuResource::collection($menus);
+        $routes = $menus
+            ->filter()
+            ->values()
+            ->all();
+
+        return response()->json($routes);
     }
 
     /**
@@ -59,5 +65,80 @@ class MenuController extends Controller
             ->all();
 
         return response()->json($routes);
+    }
+
+    /**
+     * 创建菜单
+     */
+    public function store(MenuSaveRequest $request): JsonResponse
+    {
+        $menu = AdminMenu::create($request->validated());
+
+        return response()->json(new MenuResource($menu), 201);
+    }
+
+    /**
+     * 获取菜单详情
+     */
+    public function show(string $id): MenuResource
+    {
+        return new MenuResource(AdminMenu::findOrFail((int) $id));
+    }
+
+    /**
+     * 更新菜单
+     */
+    public function update(MenuSaveRequest $request, string $id): MenuResource
+    {
+        $menu = AdminMenu::findOrFail((int) $id);
+
+        $parentId = (int) $request->validated('parent_id');
+        if ($parentId !== 0 && $this->isDescendantOrSelf($menu, $parentId)) {
+            abort(422, __('admin.menu_invalid_parent'));
+        }
+
+        $menu->update($request->validated());
+
+        return new MenuResource($menu);
+    }
+
+    /**
+     * 删除菜单
+     */
+    public function destroy(string $id): JsonResponse
+    {
+        $menu = AdminMenu::findOrFail((int) $id);
+
+        if ($menu->children()->exists()) {
+            abort(400, __('admin.menu_has_children'));
+        }
+
+        $menu->delete();
+
+        return response()->json(status: 204);
+    }
+
+    /**
+     * 判断目标菜单是否为当前菜单的自身或后代
+     */
+    protected function isDescendantOrSelf(AdminMenu $menu, int $targetId): bool
+    {
+        if ($menu->id === $targetId) {
+            return true;
+        }
+
+        return $menu->children->contains(
+            fn (AdminMenu $child): bool => $this->isDescendantOrSelf($child, $targetId)
+        );
+    }
+
+    /**
+     * 判断请求中是否存在指定查询参数（非空字符串）
+     */
+    protected function hasQuery(Request $request, string $key): bool
+    {
+        $value = $request->query($key);
+
+        return $value !== null && $value !== '';
     }
 }
