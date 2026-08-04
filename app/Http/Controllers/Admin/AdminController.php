@@ -13,6 +13,7 @@ use App\Http\Requests\Admin\Admin\AdminCreateRequest;
 use App\Http\Requests\Admin\Admin\AdminProfileRequest;
 use App\Http\Requests\Admin\Admin\AdminUpdateRequest;
 use App\Http\Resources\Admin\AdminResource;
+use App\Http\Resources\Admin\LoginHistoryResource;
 use App\Models\Admin\Admin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -147,6 +148,29 @@ class AdminController extends Controller
         $admin = Admin::findOrFail((int) $id);
 
         return response()->json($admin->getRoleNames());
+    }
+
+    /**
+     * 获取管理员登录历史（分页）
+     */
+    public function loginHistories(Request $request, string $id): AnonymousResourceCollection
+    {
+        $admin = Admin::findOrFail((int) $id);
+        $perPage = per_page($request);
+
+        $query = $admin->loginHistories();
+
+        if ($keyword = $request->query('keyword')) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('ip', 'like', "%{$keyword}%")
+                    ->orWhere('address', 'like', "%{$keyword}%")
+                    ->orWhere('device', 'like', "%{$keyword}%");
+            });
+        }
+
+        $items = $query->orderByDesc('login_at')->paginate($perPage);
+
+        return LoginHistoryResource::collection($items);
     }
 
     /**

@@ -40,6 +40,7 @@ Route::apiResource('menus', MenuController::class);
 Route::get('admins/profile', [AdminController::class, 'profile'])->name('admins.profile');
 Route::put('admins/profile', [AdminController::class, 'updateProfile'])->name('admins.update-profile');
 Route::get('admins/{id}/roles', [AdminController::class, 'roles'])->name('admins.roles');
+Route::get('admins/{id}/login-histories', [AdminController::class, 'loginHistories'])->name('admins.login-histories');
 Route::put('admins/{id}/roles', [AdminController::class, 'assignRoles'])->name('admins.assign-roles');
 Route::put('admins/{id}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admins.toggle-status');
 Route::put('admins/{id}/reset-password', [AdminController::class, 'resetPassword'])->name('admins.reset-password');
