@@ -8,7 +8,11 @@ declare(strict_types=1);
 namespace App\Http\Requests\Admin\Admin;
 
 use App\Enums\AdminStatus;
+use App\Models\Admin\Admin;
 use App\Models\Admin\AdminMenu;
+use App\Rules\NameRule;
+use App\Rules\PhoneRule;
+use App\Rules\UsernameRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -37,10 +41,10 @@ class AdminCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'string', 'min:3', 'max:50', 'unique:admin_users,username'],
+            'username' => ['required', 'string', 'min:3', 'max:50', new UsernameRule, Rule::unique(Admin::class, 'username')],
             'email' => ['nullable', 'email', 'max:100', 'unique:admin_users,email'],
-            'phone' => ['nullable', 'string', 'regex:/^1[2-9]\d{9}$/', 'unique:admin_users,phone'],
-            'name' => ['required', 'string', 'min:2', 'max:50'],
+            'phone' => ['nullable', 'string', new PhoneRule, 'unique:admin_users,phone'],
+            'name' => ['required', 'string', 'min:2', 'max:50', new NameRule],
             'password' => ['required', 'string', Password::defaults()],
             'status' => ['required', 'integer', Rule::enum(AdminStatus::class)],
             'roles' => ['sometimes', 'array'],

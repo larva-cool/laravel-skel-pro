@@ -8,7 +8,10 @@ declare(strict_types=1);
 namespace App\Http\Requests\Admin\Admin;
 
 use App\Enums\AdminStatus;
+use App\Models\Admin\Admin;
 use App\Models\Admin\AdminMenu;
+use App\Rules\NameRule;
+use App\Rules\PhoneRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -40,13 +43,13 @@ class AdminUpdateRequest extends FormRequest
         return [
             'email' => [
                 'nullable', 'email', 'max:100',
-                Rule::unique('admin_users', 'email')->ignore($adminId),
+                Rule::unique(Admin::class, 'email')->ignore($adminId),
             ],
             'phone' => [
-                'nullable', 'string', 'regex:/^1[2-9]\d{9}$/',
-                Rule::unique('admin_users', 'phone')->ignore($adminId),
+                'nullable', 'string', new PhoneRule,
+                Rule::unique(Admin::class, 'phone')->ignore($adminId),
             ],
-            'name' => ['required', 'string', 'min:2', 'max:50'],
+            'name' => ['required', 'string', 'min:2', 'max:50', new NameRule],
             'password' => ['nullable', 'string', Password::defaults()],
             'status' => ['required', 'integer', Rule::enum(AdminStatus::class)],
             'roles' => ['sometimes', 'array'],
