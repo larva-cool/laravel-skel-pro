@@ -7,7 +7,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin\Admin;
 
+use App\Models\Admin\Admin;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * 更新当前管理员资料请求
@@ -36,8 +38,8 @@ class AdminProfileRequest extends FormRequest
 
         return [
             'name' => ['nullable', 'string', 'max:50'],
-            'email' => ['nullable', 'string', 'email', 'max:255', 'unique:admin_users,email,'.$admin->id],
-            'phone' => ['nullable', 'string', 'size:11', 'unique:admin_users,phone,'.$admin->id],
+            'email' => ['nullable', 'string', 'email', 'max:255', Rule::unique(Admin::class, 'email')->ignore($admin->id)],
+            'phone' => ['nullable', 'string', 'size:11', Rule::unique(Admin::class, 'phone')->ignore($admin->id)],
         ];
     }
 }

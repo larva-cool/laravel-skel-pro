@@ -42,8 +42,8 @@ class AdminCreateRequest extends FormRequest
     {
         return [
             'username' => ['required', 'string', 'min:3', 'max:50', new UsernameRule, Rule::unique(Admin::class, 'username')],
-            'email' => ['nullable', 'email', 'max:100', 'unique:admin_users,email'],
-            'phone' => ['nullable', 'string', new PhoneRule, 'unique:admin_users,phone'],
+            'email' => ['nullable', 'email', 'max:100', Rule::unique(Admin::class, 'email')],
+            'phone' => ['nullable', 'string', new PhoneRule, Rule::unique(Admin::class, 'phone')],
             'name' => ['required', 'string', 'min:2', 'max:50', new NameRule],
             'password' => ['required', 'string', Password::defaults()],
             'status' => ['required', 'integer', Rule::enum(AdminStatus::class)],
