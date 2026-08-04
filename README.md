@@ -2,6 +2,8 @@
 
 基于 Laravel 13 的后台管理系统骨架，采用 DDD 架构并遵循 RESTful API 设计规范。
 
+- 前端项目：[laravel-skel-admin](https://github.com/larva-cool/laravel-skel-pro)
+
 ## 技术栈
 
 | 分层 | 技术 | 版本 |
