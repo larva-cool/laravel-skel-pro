@@ -8,6 +8,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\MailCodeController;
 use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PhoneCodeController;
@@ -54,4 +55,8 @@ Route::apiResource('areas', AreaController::class);
 // 手机验证码管理（仅列表、详情，只读）
 Route::get('phone-codes', [PhoneCodeController::class, 'index'])->name('phone-codes.index');
 Route::get('phone-codes/{id}', [PhoneCodeController::class, 'show'])->name('phone-codes.show');
+
+// 邮件验证码管理（仅列表、详情，只读）
+Route::get('mail-codes', [MailCodeController::class, 'index'])->name('mail-codes.index');
+Route::get('mail-codes/{id}', [MailCodeController::class, 'show'])->name('mail-codes.show');
 
