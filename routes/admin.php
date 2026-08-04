@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\PhoneCodeController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\UploaderController;
 use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Support\Facades\Route;
 
@@ -60,4 +61,7 @@ Route::get('phone-codes/{id}', [PhoneCodeController::class, 'show'])->name('phon
 // 邮件验证码管理（仅列表、详情，只读）
 Route::get('mail-codes', [MailCodeController::class, 'index'])->name('mail-codes.index');
 Route::get('mail-codes/{id}', [MailCodeController::class, 'show'])->name('mail-codes.show');
+
+// 上传管理
+Route::post('uploader/token', [UploaderController::class, 'uploadToken'])->name('uploader.token');
 
