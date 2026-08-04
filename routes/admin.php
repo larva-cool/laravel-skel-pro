@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\PhoneCodeController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
 use Illuminate\Contracts\Routing\Registrar;
@@ -49,4 +50,8 @@ Route::apiResource('settings', SettingController::class);
 
 // 地区管理
 Route::apiResource('areas', AreaController::class);
+
+// 手机验证码管理（仅列表、详情，只读）
+Route::get('phone-codes', [PhoneCodeController::class, 'index'])->name('phone-codes.index');
+Route::get('phone-codes/{id}', [PhoneCodeController::class, 'show'])->name('phone-codes.show');
 
