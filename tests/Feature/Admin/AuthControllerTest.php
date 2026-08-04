@@ -9,8 +9,6 @@ namespace Feature\Admin;
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Models\Admin\Admin;
-use Database\Seeders\AdminMenuSeeder;
-use Database\Seeders\AdminSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -29,14 +27,9 @@ class AuthControllerTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * 设置测试环境：运行 seeders 创建管理员和权限
+     * 测试使用的管理员密码（与迁移中初始数据一致）
      */
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->seed([AdminMenuSeeder::class, AdminSeeder::class]);
-    }
+    private string $adminPassword = '12345678';
 
     #[Test]
     #[TestDox('管理员使用正确凭证登录返回 200 和 token')]
@@ -44,7 +37,7 @@ class AuthControllerTest extends TestCase
     {
         $response = $this->postJson('/admin/auth/login', [
             'account' => 'admin',
-            'password' => '123456',
+            'password' => $this->adminPassword,
         ]);
 
         $response->assertOk()
@@ -117,7 +110,7 @@ class AuthControllerTest extends TestCase
     {
         $loginResponse = $this->postJson('/admin/auth/login', [
             'account' => 'admin',
-            'password' => '123456',
+            'password' => $this->adminPassword,
         ]);
 
         $token = $loginResponse->json('access_token');
@@ -134,7 +127,7 @@ class AuthControllerTest extends TestCase
     {
         $loginResponse = $this->postJson('/admin/auth/login', [
             'account' => 'admin',
-            'password' => '123456',
+            'password' => $this->adminPassword,
         ]);
 
         $token = $loginResponse->json('access_token');
@@ -157,13 +150,13 @@ class AuthControllerTest extends TestCase
         Admin::query()->create([
             'username' => 'disabled_user',
             'name' => 'Disabled User',
-            'password' => bcrypt('123456'),
+            'password' => bcrypt($this->adminPassword),
             'status' => 0,
         ]);
 
         $response = $this->postJson('/admin/auth/login', [
             'account' => 'disabled_user',
-            'password' => '123456',
+            'password' => $this->adminPassword,
         ]);
 
         $response->assertUnprocessable()

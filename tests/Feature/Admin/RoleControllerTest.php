@@ -10,8 +10,6 @@ namespace Tests\Feature\Admin;
 use App\Http\Controllers\Admin\RoleController;
 use App\Models\Admin\Admin;
 use App\Models\Admin\AdminMenu;
-use Database\Seeders\AdminMenuSeeder;
-use Database\Seeders\AdminSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -36,7 +34,6 @@ class RoleControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed([AdminMenuSeeder::class, AdminSeeder::class]);
 
         $this->admin = Admin::query()->where('username', 'admin')->first();
     }

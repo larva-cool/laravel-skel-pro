@@ -56,7 +56,7 @@ class AdminTest extends TestCase
     {
         $admin = $this->makeAdmin([
             'username' => 'superadmin',
-            'email' => 'admin@example.com',
+            'email' => 'superadmin@example.com',
             'phone' => '13800138000',
             'name' => '超级管理员',
         ]);
@@ -64,7 +64,7 @@ class AdminTest extends TestCase
         $this->assertInstanceOf(Admin::class, $admin);
         $this->assertDatabaseHas('admin_users', [
             'username' => 'superadmin',
-            'email' => 'admin@example.com',
+            'email' => 'superadmin@example.com',
             'phone' => '13800138000',
             'name' => '超级管理员',
         ]);
