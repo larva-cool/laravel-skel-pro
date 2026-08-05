@@ -8,8 +8,8 @@ declare(strict_types=1);
 namespace App\Models\Admin;
 
 use App\Enums\AdminStatus;
+use App\Models\System\LoginHistory;
 use App\Models\Traits\DateTimeFormatter;
-use App\Models\User\LoginHistory;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;

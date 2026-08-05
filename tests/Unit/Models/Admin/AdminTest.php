@@ -9,7 +9,7 @@ namespace Tests\Unit\Models\Admin;
 
 use App\Models\Admin\Admin;
 use App\Models\Admin\AdminMenu;
-use App\Models\User\LoginHistory;
+use App\Models\System\LoginHistory;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;

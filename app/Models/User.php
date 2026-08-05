@@ -9,16 +9,20 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserStatus;
+use App\Models\System\LoginHistory;
 use App\Models\Traits\DateTimeFormatter;
-use App\Models\User\LoginHistory;
+use App\Models\User\UserExtra;
+use App\Observers\UserObserver;
 use Database\Factories\UserFactory;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -57,6 +61,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read string $status_label 状态文本
  *
  * 关系对象
+ * @property UserExtra $extra 用户扩展信息
  * @property Collection<int,LoginHistory> $loginHistories 登录历史
  *
  * @author Tongle Xu <xutongle@msn.com>
@@ -64,6 +69,7 @@ use Laravel\Sanctum\HasApiTokens;
 #[Table('users')]
 #[Fillable(['username', 'name', 'email', 'phone', 'avatar', 'status', 'available_points', 'available_coins', 'password'])]
 #[Hidden(['password', 'remember_token'])]
+#[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
 {
     use DateTimeFormatter;
@@ -141,6 +147,14 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn () => $this->status?->label() ?? ''
         )->shouldCache();
+    }
+
+    /**
+     * Get the extra relation.
+     */
+    public function extra(): HasOne
+    {
+        return $this->hasOne(UserExtra::class, 'user_id', 'id');
     }
 
     /**
@@ -224,5 +238,38 @@ class User extends Authenticatable
     public function markFrozen(): bool
     {
         return $this->updateQuietly(['status' => UserStatus::STATUS_FROZEN]);
+    }
+
+    /**
+     * 刷新最后活动时间
+     */
+    public function refreshLastActiveAt(): void
+    {
+        if (empty($this->last_active_at) || $this->last_active_at->lt(Carbon::now()->subMinutes(5))) {
+            $this->updateQuietly(['last_active_at' => Carbon::now()]);
+        }
+    }
+
+    /**
+     * 重置用户手机号
+     */
+    public function resetPhone(int|string $phone): bool
+    {
+        $status = $this->forceFill(['phone' => $phone])->saveQuietly();
+        Event::dispatch(new PhoneReset($this));
+
+        return $status;
+    }
+
+    /**
+     * 重置用户邮箱
+     */
+    public function resetEmail(string $email): bool
+    {
+        $status = $this->forceFill(['email' => $email])->saveQuietly();
+        $this->extra->forceFill(['email_verified_at' => $this->freshTimestamp()])->saveQuietly();
+        Event::dispatch(new EmailReset($this));
+
+        return $status;
     }
 }

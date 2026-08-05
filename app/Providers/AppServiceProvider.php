@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Models\Sanctum\PersonalAccessToken;
+use App\Models\System\PersonalAccessToken;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;

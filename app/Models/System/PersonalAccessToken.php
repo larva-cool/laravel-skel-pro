@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace App\Models\Sanctum;
+namespace App\Models\System;
 
 use App\Models\Traits\DateTimeFormatter;
 use Illuminate\Database\Eloquent\Model;

@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace App\Models\User;
+namespace App\Models\System;
 
 use App\Events\User\TodayFirstLogged;
 use Database\Factories\User\LoginHistoryFactory;

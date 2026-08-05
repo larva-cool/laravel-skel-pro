@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Database\Factories\User;
 
+use App\Models\System\LoginHistory;
 use App\Models\User;
-use App\Models\User\LoginHistory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
