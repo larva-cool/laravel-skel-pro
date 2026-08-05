@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Feature;
+namespace Tests\Feature;
 
 use App\Http\Controllers\MainController;
 use PHPUnit\Framework\Attributes\CoversClass;

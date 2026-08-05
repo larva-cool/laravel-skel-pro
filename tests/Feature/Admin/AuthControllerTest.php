@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Feature\Admin;
+namespace Tests\Feature\Admin;
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Models\Admin\Admin;
