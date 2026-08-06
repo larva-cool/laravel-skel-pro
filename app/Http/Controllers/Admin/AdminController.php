@@ -88,17 +88,16 @@ class AdminController extends Controller
     /**
      * 获取管理员详情
      */
-    public function show(string $id): AdminResource
+    public function show(Admin $admin): AdminResource
     {
-        return new AdminResource(Admin::with('roles')->findOrFail((int) $id));
+        return new AdminResource($admin->load('roles'));
     }
 
     /**
      * 更新管理员
      */
-    public function update(AdminUpdateRequest $request, string $id): AdminResource
+    public function update(AdminUpdateRequest $request, Admin $admin): AdminResource
     {
-        $admin = Admin::findOrFail((int) $id);
         $data = $request->validated();
 
         if (empty($data['password'])) {
@@ -122,10 +121,8 @@ class AdminController extends Controller
     /**
      * 删除管理员
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(Admin $admin): JsonResponse
     {
-        $admin = Admin::findOrFail((int) $id);
-
         $currentAdmin = auth('admin')->user();
         if ($currentAdmin && $currentAdmin->id === $admin->id) {
             abort(403, __('admin.admin_cannot_delete_self'));
@@ -143,19 +140,16 @@ class AdminController extends Controller
     /**
      * 获取管理员已分配角色列表
      */
-    public function roles(string $id): JsonResponse
+    public function roles(Admin $admin): JsonResponse
     {
-        $admin = Admin::findOrFail((int) $id);
-
         return response()->json($admin->getRoleNames());
     }
 
     /**
      * 获取管理员登录历史（分页）
      */
-    public function loginHistories(Request $request, string $id): AnonymousResourceCollection
+    public function loginHistories(Request $request, Admin $admin): AnonymousResourceCollection
     {
-        $admin = Admin::findOrFail((int) $id);
         $perPage = per_page($request);
 
         $query = $admin->loginHistories();
@@ -176,10 +170,8 @@ class AdminController extends Controller
     /**
      * 分配管理员角色
      */
-    public function assignRoles(Request $request, string $id): JsonResponse
+    public function assignRoles(Request $request, Admin $admin): JsonResponse
     {
-        $admin = Admin::findOrFail((int) $id);
-
         $data = $request->validate([
             'roles' => ['required', 'array'],
             'roles.*' => ['string', 'max:50', 'exists:roles,name'],
@@ -193,10 +185,8 @@ class AdminController extends Controller
     /**
      * 启用/禁用管理员
      */
-    public function toggleStatus(string $id): AdminResource
+    public function toggleStatus(Admin $admin): AdminResource
     {
-        $admin = Admin::findOrFail((int) $id);
-
         $currentAdmin = auth('admin')->user();
         if ($currentAdmin && $currentAdmin->id === $admin->id) {
             abort(403, __('admin.admin_cannot_disable_self'));
@@ -211,10 +201,8 @@ class AdminController extends Controller
     /**
      * 重置管理员密码
      */
-    public function resetPassword(Request $request, string $id): JsonResponse
+    public function resetPassword(Request $request, Admin $admin): JsonResponse
     {
-        $admin = Admin::findOrFail((int) $id);
-
         $data = $request->validate([
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
@@ -263,15 +251,5 @@ class AdminController extends Controller
         $admin->update($data);
 
         return new AdminResource($admin->fresh()->load('roles'));
-    }
-
-    /**
-     * 判断请求中是否存在指定查询参数（非空字符串）
-     */
-    protected function hasQuery(Request $request, string $key): bool
-    {
-        $value = $request->query($key);
-
-        return $value !== null && $value !== '';
     }
 }

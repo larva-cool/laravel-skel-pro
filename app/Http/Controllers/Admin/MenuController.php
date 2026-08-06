@@ -56,18 +56,16 @@ class MenuController extends Controller
     /**
      * 获取菜单详情
      */
-    public function show(string $id): MenuResource
+    public function show(AdminMenu $menu): MenuResource
     {
-        return new MenuResource(AdminMenu::findOrFail((int) $id));
+        return new MenuResource($menu);
     }
 
     /**
      * 更新菜单
      */
-    public function update(MenuSaveRequest $request, string $id): MenuResource
+    public function update(MenuSaveRequest $request, AdminMenu $menu): MenuResource
     {
-        $menu = AdminMenu::findOrFail((int) $id);
-
         $parentId = $request->validated('parent_id');
         if ($parentId !== null && $this->isDescendantOrSelf($menu, (int) $parentId)) {
             abort(422, __('admin.menu_invalid_parent'));
@@ -81,10 +79,8 @@ class MenuController extends Controller
     /**
      * 删除菜单
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(AdminMenu $menu): JsonResponse
     {
-        $menu = AdminMenu::findOrFail((int) $id);
-
         if ($menu->children()->exists()) {
             abort(400, __('admin.menu_has_children'));
         }
@@ -103,18 +99,17 @@ class MenuController extends Controller
             return true;
         }
 
-        return $menu->children->contains(
-            fn (AdminMenu $child): bool => $this->isDescendantOrSelf($child, $targetId)
-        );
-    }
+        // 预加载所有后代（利用 children 关系定义中的递归 with('children')）
+        if (! $menu->relationLoaded('children')) {
+            $menu->load('children');
+        }
 
-    /**
-     * 判断请求中是否存在指定查询参数（非空字符串）
-     */
-    protected function hasQuery(Request $request, string $key): bool
-    {
-        $value = $request->query($key);
+        foreach ($menu->children as $child) {
+            if ($this->isDescendantOrSelf($child, $targetId)) {
+                return true;
+            }
+        }
 
-        return $value !== null && $value !== '';
+        return false;
     }
 }

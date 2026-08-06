@@ -27,8 +27,8 @@ Route::group(['prefix' => 'auth'], function (Registrar $registrar) {
 
 // 角色管理
 Route::get('roles/permissions', [RoleController::class, 'allPermissions'])->name('roles.permissions');
-Route::get('roles/{id}/permissions', [RoleController::class, 'permissions'])->name('roles.get-permissions');
-Route::put('roles/{id}/permissions', [RoleController::class, 'assignPermissions'])->name('roles.assign-permissions');
+Route::get('roles/{role}/permissions', [RoleController::class, 'permissions'])->name('roles.get-permissions');
+Route::put('roles/{role}/permissions', [RoleController::class, 'assignPermissions'])->name('roles.assign-permissions');
 Route::apiResource('roles', RoleController::class);
 
 // 前端路由配置
@@ -40,11 +40,11 @@ Route::apiResource('menus', MenuController::class);
 // 管理员管理
 Route::get('admins/profile', [AdminController::class, 'profile'])->name('admins.profile');
 Route::put('admins/profile', [AdminController::class, 'updateProfile'])->name('admins.update-profile');
-Route::get('admins/{id}/roles', [AdminController::class, 'roles'])->name('admins.roles');
-Route::get('admins/{id}/login-histories', [AdminController::class, 'loginHistories'])->name('admins.login-histories');
-Route::put('admins/{id}/roles', [AdminController::class, 'assignRoles'])->name('admins.assign-roles');
-Route::put('admins/{id}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admins.toggle-status');
-Route::put('admins/{id}/reset-password', [AdminController::class, 'resetPassword'])->name('admins.reset-password');
+Route::get('admins/{admin}/roles', [AdminController::class, 'roles'])->name('admins.roles');
+Route::get('admins/{admin}/login-histories', [AdminController::class, 'loginHistories'])->name('admins.login-histories');
+Route::put('admins/{admin}/roles', [AdminController::class, 'assignRoles'])->name('admins.assign-roles');
+Route::put('admins/{admin}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admins.toggle-status');
+Route::put('admins/{admin}/reset-password', [AdminController::class, 'resetPassword'])->name('admins.reset-password');
 Route::put('admins/change-password', [AdminController::class, 'changePassword'])->name('admins.change-password');
 Route::apiResource('admins', AdminController::class);
 

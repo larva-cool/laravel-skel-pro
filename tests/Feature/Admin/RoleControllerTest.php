@@ -79,6 +79,7 @@ class RoleControllerTest extends TestCase
     {
         $response = $this->actingAsAdmin()->postJson('/admin/roles', [
             'name' => 'editor',
+            'display_name' => 'Editor Role',
         ]);
 
         $response->assertCreated()
@@ -130,6 +131,7 @@ class RoleControllerTest extends TestCase
 
         $response = $this->actingAsAdmin()->putJson("/admin/roles/{$role->id}", [
             'name' => 'auditor',
+            'display_name' => 'Auditor Role',
         ]);
 
         $response->assertOk()
@@ -149,6 +151,7 @@ class RoleControllerTest extends TestCase
 
         $response = $this->actingAsAdmin()->putJson("/admin/roles/{$role->id}", [
             'name' => 'hacker',
+            'display_name' => 'Hacker Role',
         ]);
 
         $response->assertForbidden();

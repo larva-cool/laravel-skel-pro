@@ -27,7 +27,11 @@ return new class extends Migration
         }
 
         // 1. 创建超级管理员角色
-        $superRole = Role::findOrCreate('super_admin', AdminMenu::GUARD_NAME);
+        $superRole = Role::create([
+            'name' => 'super_admin',
+            'display_name' => '超级管理员',
+            'guard_name' => AdminMenu::GUARD_NAME,
+        ]);
 
         // 2. 创建默认管理员账号
         $admin = Admin::query()->firstOrCreate(

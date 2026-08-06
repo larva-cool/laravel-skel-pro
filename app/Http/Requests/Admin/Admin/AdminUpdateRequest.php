@@ -38,7 +38,7 @@ class AdminUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $adminId = (int) $this->route('id');
+        $adminId = (int) $this->route('admin')?->id ?? (int) $this->route('admin');
 
         return [
             'email' => [

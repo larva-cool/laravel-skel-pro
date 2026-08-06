@@ -10,11 +10,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\Admin\Role\RoleSaveRequest;
 use App\Http\Resources\Admin\RoleResource;
 use App\Models\Admin\AdminMenu;
+use App\Models\System\Permission;
+use App\Models\System\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 /**
  * 后台角色管理控制器
@@ -42,7 +42,8 @@ class RoleController extends Controller
     {
         $perPage = per_page($request);
 
-        $query = Role::where('guard_name', AdminMenu::GUARD_NAME);
+        $query = Role::query()
+            ->where('guard_name', AdminMenu::GUARD_NAME);
 
         if ($name = $request->query('role_name')) {
             $query->where('name', 'like', "%{$name}%");
@@ -60,17 +61,9 @@ class RoleController extends Controller
     {
         $role = Role::create([
             'name' => $request->validated('name'),
+            'display_name' => $request->validated('display_name'),
             'guard_name' => AdminMenu::GUARD_NAME,
         ]);
-
-        $permissions = $request->validated('permissions', []);
-        if ($permissions) {
-            $validPermissionIds = Permission::whereIn('id', $permissions)
-                ->where('guard_name', AdminMenu::GUARD_NAME)
-                ->pluck('id')
-                ->toArray();
-            $role->syncPermissions($validPermissionIds);
-        }
 
         return response()->json(new RoleResource($role), 201);
     }
@@ -78,31 +71,24 @@ class RoleController extends Controller
     /**
      * 获取角色详情
      */
-    public function show(string $id): RoleResource
+    public function show(Role $role): RoleResource
     {
-        return new RoleResource($this->findRole($id));
+        return new RoleResource($role);
     }
 
     /**
      * 更新角色
      */
-    public function update(RoleSaveRequest $request, string $id): RoleResource
+    public function update(RoleSaveRequest $request, Role $role): RoleResource
     {
-        $role = $this->findRole($id);
-
         if ($role->name === 'super_admin') {
             abort(403, __('admin.role_cannot_modify_super'));
         }
 
-        $role->update(['name' => $request->validated('name')]);
-
-        if ($request->has('permissions')) {
-            $validPermissionIds = Permission::whereIn('id', $request->validated('permissions'))
-                ->where('guard_name', AdminMenu::GUARD_NAME)
-                ->pluck('id')
-                ->toArray();
-            $role->syncPermissions($validPermissionIds);
-        }
+        $role->update([
+            'name' => $request->validated('name'),
+            'display_name' => $request->validated('display_name'),
+        ]);
 
         return new RoleResource($role);
     }
@@ -110,10 +96,8 @@ class RoleController extends Controller
     /**
      * 删除角色
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(Role $role): JsonResponse
     {
-        $role = $this->findRole($id);
-
         if ($role->name === 'super_admin') {
             abort(403, __('admin.role_cannot_delete_super'));
         }
@@ -130,20 +114,16 @@ class RoleController extends Controller
     /**
      * 获取角色已分配的权限 ID 列表
      */
-    public function permissions(string $id): JsonResponse
+    public function permissions(Role $role): JsonResponse
     {
-        $role = $this->findRole($id);
-
         return response()->json($role->permissions()->pluck('id'));
     }
 
     /**
      * 分配角色权限
      */
-    public function assignPermissions(Request $request, string $id): JsonResponse
+    public function assignPermissions(Request $request, Role $role): JsonResponse
     {
-        $role = $this->findRole($id);
-
         if ($role->name === 'super_admin') {
             abort(403, __('admin.role_cannot_modify_super'));
         }
@@ -153,10 +133,7 @@ class RoleController extends Controller
             'permissions.*' => ['integer', 'exists:permissions,id'],
         ]);
 
-        $validPermissionIds = Permission::whereIn('id', $data['permissions'])
-            ->where('guard_name', AdminMenu::GUARD_NAME)
-            ->pluck('id')
-            ->toArray();
+        $validPermissionIds = Permission::filterByGuard($data['permissions'], AdminMenu::GUARD_NAME);
 
         $role->syncPermissions($validPermissionIds);
 
@@ -168,18 +145,11 @@ class RoleController extends Controller
      */
     public function allPermissions(): JsonResponse
     {
-        $permissions = Permission::where('guard_name', AdminMenu::GUARD_NAME)
+        $permissions = Permission::query()
+            ->where('guard_name', AdminMenu::GUARD_NAME)
             ->orderBy('id')
             ->get(['id', 'name', 'display_name']);
 
         return response()->json($permissions);
-    }
-
-    /**
-     * 根据 ID 获取角色
-     */
-    private function findRole(string $id): Role
-    {
-        return Role::where('guard_name', AdminMenu::GUARD_NAME)->findOrFail((int) $id);
     }
 }
