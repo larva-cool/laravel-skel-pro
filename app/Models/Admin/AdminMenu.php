@@ -322,7 +322,7 @@ class AdminMenu extends Model
     {
         foreach ($children as $child) {
             // 外链和 iframe 不作为重定向目标
-            if (! empty($child['meta']['link']) || ! empty($child['meta']['isIframe'])) {
+            if (! empty($child['meta']['link']) || ! empty($child['meta']['is_iframe'])) {
                 continue;
             }
             $childPath = $child['path'] ?? '';
@@ -361,6 +361,12 @@ class AdminMenu extends Model
             $this->deletePermission();
 
             return;
+        }
+
+        // 权限标识变更时：清理旧权限（如果存在且未被其他菜单引用）
+        $originalPermission = $this->getOriginal('permission');
+        if (! blank($originalPermission) && $originalPermission !== $this->permission) {
+            $this->deletePermission();
         }
 
         $permission = Permission::findOrCreate($this->permission, self::GUARD_NAME);
