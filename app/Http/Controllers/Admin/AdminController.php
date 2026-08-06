@@ -202,7 +202,7 @@ class AdminController extends Controller
             abort(403, __('admin.admin_cannot_disable_self'));
         }
 
-        $admin->status = $admin->status->isActive() ? AdminStatus::STATUS_DISABLED : AdminStatus::STATUS_ACTIVE;
+        $admin->status = $admin->status->isActive() ? AdminStatus::DISABLED : AdminStatus::ACTIVE;
         $admin->save();
 
         return new AdminResource($admin->fresh()->load('roles'));

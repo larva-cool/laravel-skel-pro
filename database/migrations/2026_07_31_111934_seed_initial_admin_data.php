@@ -37,7 +37,7 @@ return new class extends Migration
                 'email' => 'admin@example.com',
                 'phone' => '13800000000',
                 'password' => Hash::make('12345678'),
-                'status' => AdminStatus::STATUS_ACTIVE,
+                'status' => AdminStatus::ACTIVE,
                 'login_count' => 0,
             ]
         );
