@@ -123,7 +123,7 @@ class AdminMenu extends Model
      */
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(self::class, 'parent_id')->withDefault();
+        return $this->belongsTo(self::class, 'parent_id');
     }
 
     /**
@@ -208,8 +208,7 @@ class AdminMenu extends Model
      * - 通过 Spatie 权限系统过滤菜单可见性（permission 字段）
      * - 顶级目录 component 设为 "/index/index"（对应 Layout 视图）
      * - 二级目录/页面直接返回数据库存储的 component 路径（如 "/system/admin"）
-     * - 按钮类型（type=BUTTON）不返回节点，而是收集到父级 meta.authList
-     * - snake_case 字段转换为前端 meta 所需的 camelCase
+     * - 按钮类型（type=BUTTON）不返回节点，而是收集到父级 meta.auth_list
      *
      * @param  \App\Models\Admin\Admin|null  $admin  当前管理员，用于权限过滤；null 表示不过滤
      * @return array<string, mixed>|null 返回 null 表示该节点被过滤掉

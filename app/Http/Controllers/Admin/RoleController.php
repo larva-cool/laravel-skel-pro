@@ -29,10 +29,10 @@ class RoleController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
-        //$this->middleware('permission:roles.index')->only(['index', 'show']);
-        //$this->middleware('permission:roles.create')->only(['store']);
-        //$this->middleware('permission:roles.edit')->only(['update']);
-        //$this->middleware('permission:roles.delete')->only(['destroy']);
+        // $this->middleware('permission:roles.index')->only(['index', 'show']);
+        // $this->middleware('permission:roles.create')->only(['store']);
+        // $this->middleware('permission:roles.edit')->only(['update']);
+        // $this->middleware('permission:roles.delete')->only(['destroy']);
     }
 
     /**
@@ -65,7 +65,11 @@ class RoleController extends Controller
 
         $permissions = $request->validated('permissions', []);
         if ($permissions) {
-            $role->syncPermissions($permissions);
+            $validPermissionIds = Permission::whereIn('id', $permissions)
+                ->where('guard_name', AdminMenu::GUARD_NAME)
+                ->pluck('id')
+                ->toArray();
+            $role->syncPermissions($validPermissionIds);
         }
 
         return response()->json(new RoleResource($role), 201);
@@ -93,7 +97,11 @@ class RoleController extends Controller
         $role->update(['name' => $request->validated('name')]);
 
         if ($request->has('permissions')) {
-            $role->syncPermissions($request->validated('permissions'));
+            $validPermissionIds = Permission::whereIn('id', $request->validated('permissions'))
+                ->where('guard_name', AdminMenu::GUARD_NAME)
+                ->pluck('id')
+                ->toArray();
+            $role->syncPermissions($validPermissionIds);
         }
 
         return new RoleResource($role);
