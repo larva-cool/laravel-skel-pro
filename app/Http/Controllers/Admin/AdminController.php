@@ -60,6 +60,10 @@ class AdminController extends Controller
             $query->where('status', (int) $request->query('status'));
         }
 
+        if ($role = $request->query('role')) {
+            $query->whereHas('roles', fn ($q) => $q->where('name', $role));
+        }
+
         $items = $query->orderByDesc('id')
             ->paginate($perPage);
 
