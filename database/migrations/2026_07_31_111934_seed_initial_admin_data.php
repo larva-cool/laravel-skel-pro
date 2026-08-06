@@ -9,11 +9,11 @@ use App\Enums\AdminStatus;
 use App\Enums\MenuType;
 use App\Models\Admin\Admin;
 use App\Models\Admin\AdminMenu;
+use App\Models\System\Permission;
+use App\Models\System\Role;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 return new class extends Migration
 {

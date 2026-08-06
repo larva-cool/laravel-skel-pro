@@ -56,11 +56,12 @@ class AdminController extends Controller
                     ->orWhere('phone', 'like', "%{$keyword}%");
             });
         }
-        if ($this->hasQuery($request, 'status')) {
+        if ($request->filled('status')) {
             $query->where('status', (int) $request->query('status'));
         }
 
-        $items = $query->orderByDesc('id')->paginate($perPage);
+        $items = $query->orderByDesc('id')
+            ->paginate($perPage);
 
         return AdminResource::collection($items);
     }

@@ -49,6 +49,10 @@ class RoleController extends Controller
             $query->where('name', 'like', "%{$name}%");
         }
 
+        if ($displayName = $request->query('display_name')) {
+            $query->where('display_name', 'like', "%{$displayName}%");
+        }
+
         $items = $query->orderByDesc('id')->paginate($perPage);
 
         return RoleResource::collection($items);

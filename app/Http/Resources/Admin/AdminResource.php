@@ -38,7 +38,10 @@ class AdminResource extends JsonResource
             'last_login_ip' => $this->last_login_ip,
             'last_login_at' => $this->last_login_at?->toDateTimeString(),
             'last_active_at' => $this->last_active_at?->toDateTimeString(),
-            'roles' => $this->whenLoaded('roles', fn () => $this->getRoleNames()),
+            'roles' => $this->whenLoaded('roles', fn () => $this->roles->map(fn ($role) => [
+                'name' => $role->name,
+                'display_name' => $role->display_name,
+            ])),
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),
         ];

@@ -54,7 +54,6 @@ return new class extends Migration
 
             $table->comment('密码重置表');
         });
-
     }
 
     /**
@@ -62,7 +61,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('user_extras');
+        Schema::dropIfExists('users');
     }
 };
