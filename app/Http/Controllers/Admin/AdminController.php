@@ -64,6 +64,18 @@ class AdminController extends Controller
             $query->whereHas('roles', fn ($q) => $q->where('name', $role));
         }
 
+        if ($lastLoginIp = $request->query('last_login_ip')) {
+            $query->where('last_login_ip', 'like', "%{$lastLoginIp}%");
+        }
+
+        if ($startDate = $request->query('last_login_start')) {
+            $query->whereDate('last_login_at', '>=', $startDate);
+        }
+
+        if ($endDate = $request->query('last_login_end')) {
+            $query->whereDate('last_login_at', '<=', $endDate);
+        }
+
         $items = $query->orderByDesc('id')
             ->paginate($perPage);
 
