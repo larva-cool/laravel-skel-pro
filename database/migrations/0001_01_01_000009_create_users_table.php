@@ -40,20 +40,11 @@ return new class extends Migration
             $table->comment('用户表');
         });
 
-        Schema::create('user_socials', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id')->comment('用户ID');
-            $table->string('provider')->comment('服务渠道');
-            $table->string('openid')->comment('开放平台ID');
-            $table->string('unionid')->nullable()->comment('联合ID');
-            $table->string('access_token')->nullable()->comment('访问令牌');
-            $table->string('refresh_token')->nullable()->comment('刷新令牌');
-            $table->timestamp('expiry_at')->nullable()->comment('过期时间');
-            $table->mediumText('identity_token')->nullable()->comment('身份令牌');
-            $table->timestamps();
+        Schema::create('user_extras', function (Blueprint $table) {
+            $table->unsignedBigInteger('user_id')->primary()->comment('用户ID');
+            $table->unsignedTinyInteger('username_change_count')->default(0)->nullable()->comment('用户名修改次数');
 
-            $table->index(['user_id', 'provider', 'openid']);
-            $table->comment('用户社交账号表');
+            $table->comment('用户扩展信息表');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -73,6 +64,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('user_socials');
     }
 };

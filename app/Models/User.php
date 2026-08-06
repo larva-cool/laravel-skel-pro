@@ -10,6 +10,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserStatus;
 use App\Models\System\LoginHistory;
+use App\Models\System\Social;
 use App\Models\Traits\DateTimeFormatter;
 use App\Models\User\UserExtra;
 use App\Observers\UserObserver;
@@ -63,6 +64,7 @@ use Laravel\Sanctum\HasApiTokens;
  * 关系对象
  * @property UserExtra $extra 用户扩展信息
  * @property Collection<int,LoginHistory> $loginHistories 登录历史
+ * @property Collection<int,Social> $socials 社交账号
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -163,6 +165,14 @@ class User extends Authenticatable
     public function loginHistories(): MorphMany
     {
         return $this->morphMany(LoginHistory::class, 'user')->latest('login_at');
+    }
+
+    /**
+     * Get the social relation.
+     */
+    public function socials(): MorphMany
+    {
+        return $this->morphMany(Social::class, 'user')->latest('updated_at');
     }
 
     /**

@@ -9,6 +9,7 @@ namespace App\Models\Admin;
 
 use App\Enums\AdminStatus;
 use App\Models\System\LoginHistory;
+use App\Models\System\Social;
 use App\Models\Traits\DateTimeFormatter;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -23,6 +24,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -46,6 +48,8 @@ use Spatie\Permission\Traits\HasRoles;
  *
  * 关系对象
  * @property Collection<int,LoginHistory> $loginHistories 登录历史
+ * @property Collection<int,Role> $roles 角色
+ * @property Collection<int,Social> $socials 社交账号
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */
@@ -105,6 +109,14 @@ class Admin extends Authenticatable
     }
 
     /**
+     * Get the social relation.
+     */
+    public function socials(): MorphMany
+    {
+        return $this->morphMany(Social::class, 'user')->latest('updated_at');
+    }
+
+    /**
      * 重置用户密码
      */
     public function resetPassword(string $password): void
@@ -114,8 +126,7 @@ class Admin extends Authenticatable
         $this->saveQuietly();
         Event::dispatch(new PasswordReset($this));
     }
-
-
+    
     /**
      * 通过账号查找管理员
      */
