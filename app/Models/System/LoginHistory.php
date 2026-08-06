@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace App\Models\System;
 
 use App\Events\User\TodayFirstLogged;
-use Database\Factories\User\LoginHistoryFactory;
+use Database\Factories\System\LoginHistoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Table;

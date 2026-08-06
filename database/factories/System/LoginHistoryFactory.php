@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Database\Factories\User;
+namespace Database\Factories\System;
 
 use App\Models\System\LoginHistory;
 use App\Models\User;
