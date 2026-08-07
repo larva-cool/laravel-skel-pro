@@ -34,7 +34,14 @@ class NotificationController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $perPage = \per_page($request);
-        $notifications = $request->user()->notifications()->paginate($perPage);
+
+        $query = $request->user()->notifications();
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->query('type'));
+        }
+
+        $notifications = $query->paginate($perPage);
 
         return NotificationResource::collection($notifications);
     }
@@ -45,7 +52,14 @@ class NotificationController extends Controller
     public function unread(Request $request): AnonymousResourceCollection
     {
         $perPage = \per_page($request);
-        $notifications = $request->user()->unreadNotifications()->paginate($perPage);
+
+        $query = $request->user()->unreadNotifications();
+
+        if ($request->filled('type')) {
+            $query->where('type', $request->query('type'));
+        }
+
+        $notifications = $query->paginate($perPage);
 
         return NotificationResource::collection($notifications);
     }
