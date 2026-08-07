@@ -24,4 +24,5 @@ return [
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
     'blocked' => 'This account has been blocked, please contact customer service',
+    'account_does_not_exist' => 'Account does not exist.',
 ];

@@ -20,4 +20,8 @@ return [
     'logout_success' => 'Logout successful.',
     'blocked' => 'This account has been blocked, please contact customer service',
 
+    'register_disabled' => 'Registration is disabled.',
+    'phone_register_disabled' => 'Phone registration is disabled.',
+    'phone_login_disabled' => 'Phone login is disabled.',
+    'password_login_disabled' => 'Password login is disabled.',
 ];

@@ -20,4 +20,8 @@ return [
     'logout_success' => '退出成功',
     'blocked' => '该账号已被禁用',
 
+    'register_disabled' => '注册功能已关闭',
+    'phone_register_disabled' => '手机注册已关闭',
+    'phone_login_disabled' => '手机登录已关闭',
+    'password_login_disabled' => '密码登录已关闭',
 ];

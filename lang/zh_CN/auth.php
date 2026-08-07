@@ -24,4 +24,5 @@ return [
     'throttle' => '您尝试的登录次数过多，请 :seconds 秒后再试。',
 
     'blocked' => '该账号已被禁止登录，请联系客服',
+    'account_does_not_exist' => '账号不存在',
 ];
