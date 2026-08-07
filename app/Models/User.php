@@ -14,12 +14,14 @@ use App\Models\System\Social;
 use App\Models\Traits\DateTimeFormatter;
 use App\Models\User\UserExtra;
 use App\Observers\UserObserver;
+use App\Policies\UserPolicy;
 use Database\Factories\UserFactory;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -72,6 +74,7 @@ use Laravel\Sanctum\HasApiTokens;
 #[Fillable(['username', 'name', 'email', 'phone', 'avatar', 'status', 'available_points', 'available_coins', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 #[ObservedBy([UserObserver::class])]
+#[UsePolicy(UserPolicy::class)]
 class User extends Authenticatable
 {
     use DateTimeFormatter;

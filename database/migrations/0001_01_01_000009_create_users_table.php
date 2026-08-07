@@ -47,6 +47,17 @@ return new class extends Migration
             $table->comment('用户扩展信息表');
         });
 
+        Schema::create('user_stats', function (Blueprint $table) {
+            $table->id();
+            $table->date('stat_date')->unique()->comment('统计日期');
+            $table->unsignedBigInteger('total_user_count')->default(0)->comment('用户总数');
+            $table->unsignedBigInteger('new_user_count')->default(0)->comment('注册用户数');
+            $table->unsignedBigInteger('active_user_count')->default(0)->comment('活跃用户总数');
+            $table->timestamp('created_at')->nullable()->comment('统计时间');
+
+            $table->comment('用户统计表');
+        });
+
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary()->comment('邮箱');
             $table->string('token')->comment('Token');
@@ -62,6 +73,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('user_stats');
         Schema::dropIfExists('user_extras');
         Schema::dropIfExists('users');
     }

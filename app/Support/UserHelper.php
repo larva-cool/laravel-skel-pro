@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
@@ -7,13 +8,38 @@ declare(strict_types=1);
 namespace App\Support;
 
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Event;
 
 /**
  * 用户助手类
  * 提供用户相关的静态方法，如通过账号查找用户
+ *
+ * @author Tongle Xu <xutongle@msn.com>
  */
 class UserHelper
 {
+    /**
+     * 查找手机用户，如果没有则根据系统规则创建
+     */
+    public static function findOrCreatePhone(int|string $phone): ?User
+    {
+        /** @var User $user */
+        $user = User::withTrashed()->where('phone', $phone)->first();
+        if (! $user) {
+            $user = User::create([
+                'name' => self::generateUsername(mobile_replace($phone)),
+                'phone' => $phone,
+            ]);
+
+            Event::dispatch(new Registered($user));
+        } elseif ($user->trashed()) {
+            return null;
+        }
+
+        return $user;
+    }
+
     /**
      * 通过账号查找用户
      */
@@ -26,5 +52,20 @@ class UserHelper
         } else {
             return User::query()->whereNotNull('username')->where('username', $account)->first();
         }
+    }
+
+    /**
+     * 随机生成一个用户名
+     *
+     * @param  string  $username  用户名
+     */
+    public static function generateUsername(string $username): string
+    {
+        if (User::withTrashed()->where('username', '=', $username)->exists()) {
+            $row = User::withTrashed()->where('username', '=', $username)->count();
+            $username = self::generateUsername($username.++$row);
+        }
+
+        return $username;
     }
 }
