@@ -18,7 +18,7 @@ use Illuminate\Validation\ValidationException;
  * 短信验证码登录
  *
  * @property string $phone 手机号码
- * @property string $device 登录设备
+ * @property string $verify_code 短信验证码
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -30,9 +30,8 @@ class PhoneLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'device' => ['required', 'string'],
             'phone' => ['required', new PhoneRule],
-            'verify_code' => ['required', 'min:4', 'max:6', new SmsCaptchaRule('phone', $this->ip())],
+            'verify_code' => ['required', 'digits_between:4,6', new SmsCaptchaRule('phone', $this->ip())],
         ];
     }
 
@@ -43,7 +42,14 @@ class PhoneLoginRequest extends FormRequest
      */
     public function authenticate(): ?User
     {
-        $user = UserHelper::findOrCreatePhone($this->string('phone')->toString());
+        $phone = $this->string('phone')->toString();
+        $user = User::query()->where('phone', $phone)->first();
+        if (! $user) {
+            if (! settings('user.enable_phone_login_register', true)) {
+                validation_exception('phone', trans('auth.account_does_not_exist'));
+            }
+            $user = UserHelper::findOrCreatePhone($phone);
+        }
         if (! $user) {
             validation_exception('phone', trans('auth.account_does_not_exist'));
         }
