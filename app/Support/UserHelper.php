@@ -45,12 +45,17 @@ class UserHelper
      */
     public static function findForAccount(string $account): ?User
     {
+        $account = trim($account);
+        if ($account === '') {
+            return null;
+        }
+
         if (filter_var($account, FILTER_VALIDATE_EMAIL)) {
-            return User::query()->whereNotNull('email')->where('email', $account)->first();
+            return User::query()->where('email', $account)->first();
         } elseif (preg_match('/^1[2-9]\d{9}$/', $account)) {
-            return User::query()->whereNotNull('phone')->where('phone', $account)->first();
+            return User::query()->where('phone', $account)->first();
         } else {
-            return User::query()->whereNotNull('username')->where('username', $account)->first();
+            return User::query()->where('username', $account)->first();
         }
     }
 
