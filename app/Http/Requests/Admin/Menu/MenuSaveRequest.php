@@ -47,7 +47,8 @@ class MenuSaveRequest extends FormRequest
      */
     public function rules(): array
     {
-        $menuId = (int) $this->route('menu');
+        $menu = $this->route('menu');
+        $menuId = $menu instanceof \App\Models\Admin\AdminMenu ? $menu->id : (int) $menu;
 
         return [
             'parent_id' => ['nullable', 'integer', 'min:1'],
