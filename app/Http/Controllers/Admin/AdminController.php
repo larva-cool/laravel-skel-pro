@@ -179,6 +179,14 @@ class AdminController extends Controller
             });
         }
 
+        if ($startDate = $request->query('login_start')) {
+            $query->whereDate('login_at', '>=', $startDate);
+        }
+
+        if ($endDate = $request->query('login_end')) {
+            $query->whereDate('login_at', '<=', $endDate);
+        }
+
         $items = $query->orderByDesc('login_at')->paginate($perPage);
 
         return LoginHistoryResource::collection($items);
