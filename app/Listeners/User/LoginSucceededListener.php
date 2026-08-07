@@ -1,4 +1,8 @@
 <?php
+/**
+ * This is NOT a freeware, use is subject to license terms.
+ */
+declare(strict_types=1);
 
 namespace App\Listeners\User;
 
@@ -31,6 +35,12 @@ class LoginSucceededListener
             'port' => $event->port,
             'user_agent' => $event->userAgent,
             'login_at' => Carbon::now(),
+        ]);
+
+        // 更新用户登录信息
+        $event->user->increment('login_count', 1, [
+            'last_login_ip' => $event->ip,
+            'last_login_at' => Carbon::now(),
         ]);
     }
 }
