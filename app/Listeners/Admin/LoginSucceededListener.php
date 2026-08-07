@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
@@ -29,18 +30,12 @@ class LoginSucceededListener
      */
     public function handle(LoginSucceeded $event): void
     {
-        // 记录登录历史
+        // 记录登录历史（LoginHistory 模型创建时会自动更新用户登录信息）
         $event->user->loginHistories()->create([
             'ip' => $event->ip,
             'port' => $event->port,
             'user_agent' => $event->userAgent,
             'login_at' => Carbon::now(),
-        ]);
-
-        // 更新用户登录信息
-        $event->user->increment('login_count', 1, [
-            'last_login_ip' => $event->ip,
-            'last_login_at' => Carbon::now(),
         ]);
     }
 }

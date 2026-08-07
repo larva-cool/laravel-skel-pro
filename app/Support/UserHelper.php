@@ -60,15 +60,16 @@ class UserHelper
     }
 
     /**
-     * 随机生成一个用户名
+     * 生成可用的用户名
      *
-     * @param  string  $username  用户名
+     * @param  string  $username  基础用户名
      */
     public static function generateUsername(string $username): string
     {
-        if (User::withTrashed()->where('username', '=', $username)->exists()) {
-            $row = User::withTrashed()->where('username', '=', $username)->count();
-            $username = self::generateUsername($username.++$row);
+        $original = $username;
+        $suffix = 1;
+        while (User::withTrashed()->where('username', $username)->exists()) {
+            $username = $original.$suffix++;
         }
 
         return $username;

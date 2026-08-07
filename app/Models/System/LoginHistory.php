@@ -87,7 +87,13 @@ class LoginHistory extends Model
             //            }
         });
         static::created(function (LoginHistory $model) {
-            if (static::isTodayLogged($model->user_id, $model->user_type)) {// 当天首次登录
+            // 更新用户登录信息
+            $model->user?->increment('login_count', 1, [
+                'last_login_ip' => $model->ip,
+                'last_login_at' => $model->login_at,
+            ]);
+
+            if (! static::isTodayLogged($model->user_id, $model->user_type)) {// 当天首次登录
                 Event::dispatch(new TodayFirstLogged($model));
             }
         });
