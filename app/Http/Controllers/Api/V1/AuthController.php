@@ -39,10 +39,10 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except(['passwordLogin', 'phoneLogin', 'wxLogin', 'appleLogin', 'resetPasswordByPhone']);
+        $this->middleware('auth:sanctum')->except(['passwordLogin', 'phoneLogin']);
         // 登录限速
         $throttle = 'throttle:'.settings('user.login_throttle', '6,1');
-        $this->middleware($throttle)->only(['passwordLogin', 'phoneLogin', 'resetPasswordByPhone']);
+        $this->middleware($throttle)->only(['passwordLogin', 'phoneLogin']);
     }
 
     /**
@@ -58,7 +58,7 @@ class AuthController extends Controller
 
         return response()->json([
             'access_token' => $token->plainTextToken,
-            'expires_in' => (int) $token->accessToken->expires_at?->diffInSeconds(Carbon::now(), true),
+            'expires_in' => (int) $token->accessToken->expires_at?->diffInSeconds(Carbon::now()),
             'user' => new UserInfoResource($user),
         ]);
     }
@@ -76,7 +76,7 @@ class AuthController extends Controller
 
         return response()->json([
             'access_token' => $token->plainTextToken,
-            'expires_in' => (int) $token->accessToken->expires_at?->diffInSeconds(Carbon::now(), true),
+            'expires_in' => (int) $token->accessToken->expires_at?->diffInSeconds(Carbon::now()),
             'user' => new UserInfoResource($user),
         ]);
     }
@@ -94,10 +94,12 @@ class AuthController extends Controller
         $token = $request->user()->createToken($tokenModel->name, $tokenModel->abilities);
         // 一分钟后删除当前这个Token
         DeleteAccessTokenJob::dispatch($tokenModel->token)->delay(now()->addMinutes(1));
-        Event::dispatch(new Login($this->guard, $request->user(), false));
-        Event::dispatch(new LoginSucceeded($request->user(), $request->ip(), $request->server('REMOTE_PORT'), $request->userAgent()));
 
-        return response()->json($token);
+        return response()->json([
+            'access_token' => $token->plainTextToken,
+            'expires_in' => (int) $token->accessToken->expires_at?->diffInSeconds(Carbon::now()),
+            'user' => new UserInfoResource($request->user()),
+        ]);
     }
 
     /**

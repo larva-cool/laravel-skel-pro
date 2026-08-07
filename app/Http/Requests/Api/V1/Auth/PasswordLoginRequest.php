@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1\Auth;
@@ -33,7 +32,7 @@ class PasswordLoginRequest extends FormRequest
         return [
             'device' => ['required', 'string'],
             'account' => ['required', 'string'],
-            'password' => ['required', 'string', 'min:6'],
+            'password' => ['required', 'string', 'min:6', 'max:50'],
         ];
     }
 
