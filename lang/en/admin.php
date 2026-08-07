@@ -47,4 +47,8 @@ return [
     'menu_delete_success' => 'Menu deleted successfully.',
     'menu_has_children' => 'Cannot delete: menu has children.',
     'menu_invalid_parent' => 'Parent menu cannot be itself or its descendants.',
+
+    // Notification management
+    'notification_mark_all_read_success' => 'All marked as read.',
+    'notification_mark_read_success' => 'Marked as read successfully.',
 ];

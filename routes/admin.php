@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\MailCodeController;
 use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PhoneCodeController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
@@ -33,6 +34,13 @@ Route::apiResource('roles', RoleController::class);
 
 // 前端路由配置
 Route::get('routes', [MainController::class, 'routes'])->name('routes');
+
+// 通知管理
+Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::get('notifications/unread', [NotificationController::class, 'unread'])->name('notifications.unread');
+Route::put('notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+Route::put('notifications/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+Route::delete('notifications/clear-read', [NotificationController::class, 'clearRead'])->name('notifications.clear-read');
 
 // 菜单管理
 Route::apiResource('menus', MenuController::class);
