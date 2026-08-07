@@ -18,10 +18,8 @@ enum UserStatus: int implements \JsonSerializable
 {
     use HasLabel;
 
-    // 用户状态
-    case STATUS_NOT_ACTIVE = 0; // 未激活
-    case STATUS_ACTIVE = 1; // 正常
-    case STATUS_FROZEN = 2; // 已冻结
+    case FROZEN = 0; // 已冻结
+    case ACTIVE = 1; // 正常
 
     /**
      * 获取用户状态标签
@@ -29,9 +27,8 @@ enum UserStatus: int implements \JsonSerializable
     public function label(): string
     {
         return match ($this) {
-            self::STATUS_ACTIVE => '正常',
-            self::STATUS_FROZEN => '已冻结',
-            self::STATUS_NOT_ACTIVE => '未激活',
+            self::ACTIVE => '正常',
+            self::FROZEN => '已冻结',
         };
     }
 
@@ -40,7 +37,7 @@ enum UserStatus: int implements \JsonSerializable
      */
     public function isActive(): bool
     {
-        return $this === self::STATUS_ACTIVE;
+        return $this === self::ACTIVE;
     }
 
     /**
@@ -48,6 +45,6 @@ enum UserStatus: int implements \JsonSerializable
      */
     public function isFrozen(): bool
     {
-        return $this === self::STATUS_FROZEN;
+        return $this === self::FROZEN;
     }
 }

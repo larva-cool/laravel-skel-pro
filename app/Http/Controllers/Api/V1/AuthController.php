@@ -30,11 +30,6 @@ use Illuminate\Support\Facades\Event;
 class AuthController extends Controller
 {
     /**
-     * @var string 用户守卫
-     */
-    protected string $guard = 'sanctum';
-
-    /**
      * Constructor.
      */
     public function __construct()
@@ -53,7 +48,7 @@ class AuthController extends Controller
         $this->authorize('passwordLogin', User::class);
         $user = $request->authenticate();
         $token = $user->createToken('user-token', ['user']);
-        Event::dispatch(new Login($this->guard, $user, false));
+        Event::dispatch(new Login('sanctum', $user, false));
         Event::dispatch(new LoginSucceeded($user, $request->ip(), $request->server('REMOTE_PORT'), $request->userAgent()));
 
         return response()->json([
@@ -71,7 +66,7 @@ class AuthController extends Controller
         $this->authorize('phoneLogin', User::class);
         $user = $request->authenticate();
         $token = $user->createToken('user-token', ['user']);
-        Event::dispatch(new Login($this->guard, $user, false));
+        Event::dispatch(new Login('sanctum', $user, false));
         Event::dispatch(new LoginSucceeded($user, $request->ip(), $request->server('REMOTE_PORT'), $request->userAgent()));
 
         return response()->json([

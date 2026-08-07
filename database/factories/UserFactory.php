@@ -38,7 +38,7 @@ class UserFactory extends Factory
             'username' => fake()->unique()->bothify('user_####??'),
             'name' => fake()->name(),
             'avatar' => null,
-            'status' => UserStatus::STATUS_ACTIVE,
+            'status' => UserStatus::ACTIVE,
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
@@ -70,17 +70,7 @@ class UserFactory extends Factory
     public function frozen(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => UserStatus::STATUS_FROZEN,
-        ]);
-    }
-
-    /**
-     * Indicate that the user is not active.
-     */
-    public function notActive(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'status' => UserStatus::STATUS_NOT_ACTIVE,
+            'status' => UserStatus::FROZEN,
         ]);
     }
 }

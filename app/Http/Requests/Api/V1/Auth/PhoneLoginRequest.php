@@ -40,7 +40,7 @@ class PhoneLoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate(): ?User
+    public function authenticate(): User
     {
         $phone = $this->string('phone')->toString();
         $user = User::query()->where('phone', $phone)->first();

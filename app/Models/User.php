@@ -88,7 +88,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $attributes = [
-        'status' => UserStatus::STATUS_ACTIVE,
+        'status' => UserStatus::ACTIVE,
         'available_points' => 0,
         'available_coins' => 0,
         'vip_expires_at' => null,
@@ -242,7 +242,7 @@ class User extends Authenticatable
      */
     public function markActive(): bool
     {
-        return $this->updateQuietly(['status' => UserStatus::STATUS_ACTIVE]);
+        return $this->updateQuietly(['status' => UserStatus::ACTIVE]);
     }
 
     /**
@@ -250,7 +250,7 @@ class User extends Authenticatable
      */
     public function markFrozen(): bool
     {
-        return $this->updateQuietly(['status' => UserStatus::STATUS_FROZEN]);
+        return $this->updateQuietly(['status' => UserStatus::FROZEN]);
     }
 
     /**

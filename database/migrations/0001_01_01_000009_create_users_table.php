@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('phone', 30)->unique()->nullable()->comment('手机号（支持国际格式，如+8613800138000）');
             $table->string('name', 50)->nullable()->comment('昵称');
             $table->string('avatar', 1000)->nullable()->comment('头像');
-            $table->unsignedTinyInteger('status')->default(UserStatus::STATUS_ACTIVE->value)->comment('状态：0、frozen,1、active，2、not_active');
+            $table->unsignedTinyInteger('status')->default(UserStatus::ACTIVE->value)->comment('状态：0、frozen,1、active，2、not_active');
             $table->unsignedInteger('available_points')->nullable()->default(0)->comment('可用积分');
             $table->unsignedInteger('available_coins')->nullable()->default(0)->comment('可用金币');
             $table->string('password')->nullable()->comment('密码');

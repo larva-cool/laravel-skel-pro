@@ -39,7 +39,7 @@ class PasswordLoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate(): ?User
+    public function authenticate(): User
     {
         $account = $this->string('account');
         $user = UserHelper::findForAccount($account->toString());
