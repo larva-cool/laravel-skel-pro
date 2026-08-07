@@ -51,7 +51,6 @@ class UserExtra extends Model
         return [
             'user_id' => 'integer',
             'username_change_count' => 'integer',
-            'email_verified_at' => 'datetime',
         ];
     }
 

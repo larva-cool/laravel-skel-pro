@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Mail;
@@ -33,7 +32,7 @@ class MailVerifyCode extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($verifyCode)
+    public function __construct(string $verifyCode)
     {
         $this->verifyCode = $verifyCode;
     }
