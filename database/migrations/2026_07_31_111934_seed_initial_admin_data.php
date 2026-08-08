@@ -169,6 +169,17 @@ return new class extends Migration
                 'sort' => 90,
                 'children' => [
                     [
+                        'key' => 'system.config',
+                        'path' => 'config',
+                        'name' => 'SystemConfig',
+                        'component' => '/system/config/index',
+                        'title' => '系统设置',
+                        'icon' => 'ri:settings-4-line',
+                        'type' => MenuType::MENU,
+                        'sort' => 8,
+                        'keep_alive' => true,
+                    ],
+                    [
                         'key' => 'system.admin',
                         'path' => 'admin',
                         'name' => 'AdminUser',
@@ -240,7 +251,7 @@ return new class extends Migration
                         'path' => 'setting',
                         'name' => 'Setting',
                         'component' => '/system/setting/index',
-                        'title' => '系统配置',
+                        'title' => '设置项管理',
                         'icon' => 'ri:settings-2-line',
                         'type' => MenuType::MENU,
                         'sort' => 4,

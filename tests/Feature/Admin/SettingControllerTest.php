@@ -293,4 +293,90 @@ class SettingControllerTest extends TestCase
         $this->postJson('/admin/settings', ['name' => 'test', 'key' => 'test.key', 'cast_type' => 'string', 'input_type' => 'string'])
             ->assertUnauthorized();
     }
+
+    #[Test]
+    #[TestDox('获取分组配置返回 200 且包含 groups 和 disks')]
+    public function admin_can_get_setting_groups(): void
+    {
+        $response = $this->actingAsAdmin()->getJson('/admin/settings/groups');
+
+        $response->assertOk()
+            ->assertJsonStructure(['groups', 'disks']);
+
+        $groups = $response->json('groups');
+        $this->assertNotEmpty($groups);
+        // 验证每个分组有 key/title/items 结构
+        $this->assertArrayHasKey('key', $groups[0]);
+        $this->assertArrayHasKey('title', $groups[0]);
+        $this->assertArrayHasKey('items', $groups[0]);
+    }
+
+    #[Test]
+    #[TestDox('批量更新配置成功并刷新缓存')]
+    public function admin_can_batch_update_settings(): void
+    {
+        $response = $this->actingAsAdmin()->putJson('/admin/settings/batch', [
+            'system' => [
+                'title' => '新的网站标题',
+                'keywords' => 'laravel,test',
+            ],
+            'sms_captcha' => [
+                'length' => 8,
+            ],
+            'user' => [
+                'enable_register' => 0,
+            ],
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('message', '设置保存成功');
+
+        // 验证数据已更新
+        $this->assertDatabaseHas('settings', [
+            'key' => 'system.title',
+            'value' => '新的网站标题',
+        ]);
+        $this->assertDatabaseHas('settings', [
+            'key' => 'sms_captcha.length',
+            'value' => '8',
+        ]);
+        $this->assertDatabaseHas('settings', [
+            'key' => 'user.enable_register',
+            'value' => '0',
+        ]);
+
+        // 验证缓存刷新
+        $this->assertEquals('新的网站标题', settings('system.title'));
+        $this->assertEquals(8, settings('sms_captcha.length'));
+        $this->assertFalse(settings('user.enable_register'));
+    }
+
+    #[Test]
+    #[TestDox('批量更新时整型字段传入非数字返回 422')]
+    public function batch_update_validates_int_fields(): void
+    {
+        $response = $this->actingAsAdmin()->putJson('/admin/settings/batch', [
+            'sms_captcha' => [
+                'length' => 'not-a-number',
+            ],
+        ]);
+
+        $response->assertUnprocessable();
+    }
+
+    #[Test]
+    #[TestDox('未登录不能批量更新配置')]
+    public function guest_cannot_batch_update_settings(): void
+    {
+        $this->putJson('/admin/settings/batch', [])
+            ->assertUnauthorized();
+    }
+
+    #[Test]
+    #[TestDox('未登录不能获取分组配置')]
+    public function guest_cannot_get_setting_groups(): void
+    {
+        $this->getJson('/admin/settings/groups')
+            ->assertUnauthorized();
+    }
 }

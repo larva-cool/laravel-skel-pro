@@ -57,6 +57,8 @@ Route::put('admins/change-password', [AdminController::class, 'changePassword'])
 Route::apiResource('admins', AdminController::class);
 
 // 配置管理
+Route::get('settings/groups', [SettingController::class, 'groups'])->name('settings.groups');
+Route::put('settings/batch', [SettingController::class, 'batchUpdate'])->name('settings.batch');
 Route::apiResource('settings', SettingController::class);
 
 // 地区管理

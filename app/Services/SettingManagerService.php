@@ -130,15 +130,26 @@ class SettingManagerService
     }
 
     /**
-     * 获取配置项类型
+     * 获取配置项类型映射
+     *
+     * @return array<string, string>
      */
     public function castTypes(): array
     {
         $castTypes = [];
-        Setting::all()->each(function ($setting) use (&$settings, &$castTypes) {
+        Setting::query()->each(function ($setting) use (&$castTypes) {
             $castTypes[$setting['key']] = $setting['cast_type'];
         });
 
         return $castTypes;
+    }
+
+    /**
+     * 清除缓存并重新加载
+     */
+    public function clearCache(): void
+    {
+        Cache::forget(CacheKey::SETTINGS);
+        $this->settings = new Collection;
     }
 }
