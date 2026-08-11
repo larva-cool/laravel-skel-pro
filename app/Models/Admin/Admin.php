@@ -23,6 +23,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Laravel\Ai\Concerns\HasConversations;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
@@ -60,6 +61,7 @@ class Admin extends Authenticatable
 {
     use DateTimeFormatter;
     use HasApiTokens, HasRoles, Notifiable, SoftDeletes;
+    use HasConversations;
 
     /**
      * The guard name for Spatie Permission.
@@ -126,7 +128,7 @@ class Admin extends Authenticatable
         $this->saveQuietly();
         Event::dispatch(new PasswordReset($this));
     }
-    
+
     /**
      * 通过账号查找管理员
      */

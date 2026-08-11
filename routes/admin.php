@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PhoneCodeController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\UploaderController;
 use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Support\Facades\Route;
@@ -74,4 +75,11 @@ Route::get('mail-codes/{id}', [MailCodeController::class, 'show'])->name('mail-c
 
 // 上传管理
 Route::post('uploader/token', [UploaderController::class, 'uploadToken'])->name('uploader.token');
+
+// AI 聊天
+Route::get('chat/conversations', [ChatController::class, 'conversations'])->name('chat.conversations');
+Route::get('chat/conversations/{conversationId}', [ChatController::class, 'conversation'])->name('chat.conversation');
+Route::post('chat', [ChatController::class, 'chat'])->name('chat.send');
+Route::post('chat/stream', [ChatController::class, 'stream'])->name('chat.stream');
+Route::delete('chat/conversations/{conversationId}', [ChatController::class, 'destroy'])->name('chat.destroy');
 

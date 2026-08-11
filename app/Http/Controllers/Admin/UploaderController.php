@@ -9,6 +9,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\Uploader\UploadTokenRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,6 +20,24 @@ use Illuminate\Support\Facades\Storage;
  */
 class UploaderController extends Controller
 {
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:admin');
+    }
+
+    /**
+     * 通用图片上传
+     *
+     * @return array
+     */
+    public function image(Request $request)
+    {
+        return [];
+    }
+
     /**
      * 读取远程上传 Token
      */
