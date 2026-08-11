@@ -19,8 +19,8 @@ use Stringable;
 /**
  * 前台用户联系方式重置工具（手机号 / 邮箱）。
  *
- * 写操作，默认需要管理员二次确认。为避免触发尚未定义的 PhoneReset/EmailReset 事件，
- * 本工具直接更新字段；邮箱重置时同时标记 user_extras.email_verified_at。
+ * 写操作，默认需要管理员二次确认。通过 User 模型的 resetPhone()/resetEmail()
+ * 完成字段更新，同时派发 PhoneReset / EmailReset 事件。
  */
 class ResetUserContact implements Approvable, Tool
 {
@@ -124,7 +124,7 @@ class ResetUserContact implements Approvable, Tool
             }
 
             $oldValue = $user->phone;
-            $user->forceFill(['phone' => $newValue])->save();
+            $user->resetPhone($newValue);
 
             return "已重置用户 [{$user->id}] {$user->name} 的手机号。\n".
                 '  - 原手机号：'.($oldValue ?: '未绑定')."\n".
@@ -144,10 +144,7 @@ class ResetUserContact implements Approvable, Tool
         }
 
         $oldValue = $user->email;
-        $user->forceFill(['email' => $newValue])->save();
-
-        // 同步标记邮箱验证时间（沿用 User::resetEmail 的行为，避免触发未定义事件）
-        $user->extra?->forceFill(['email_verified_at' => now()])->save();
+        $user->resetEmail($newValue);
 
         return "已重置用户 [{$user->id}] {$user->name} 的邮箱。\n".
             '  - 原邮箱：'.($oldValue ?: '未绑定')."\n".
