@@ -79,7 +79,7 @@ Route::post('uploader/token', [UploaderController::class, 'uploadToken'])->name(
 // AI 聊天
 Route::get('chat/conversations', [ChatController::class, 'conversations'])->name('chat.conversations');
 Route::get('chat/conversations/{conversationId}', [ChatController::class, 'conversation'])->name('chat.conversation');
-Route::post('chat', [ChatController::class, 'chat'])->name('chat.send');
-Route::post('chat/stream', [ChatController::class, 'stream'])->name('chat.stream');
+Route::post('chat', [ChatController::class, 'stream'])->name('chat.send');
+Route::post('chat/approve', [ChatController::class, 'approve'])->name('chat.approve');
 Route::delete('chat/conversations/{conversationId}', [ChatController::class, 'destroy'])->name('chat.destroy');
 

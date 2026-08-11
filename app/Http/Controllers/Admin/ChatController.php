@@ -8,17 +8,20 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Ai\Agents\Assistant;
+use App\Http\Requests\Admin\ChatApprovalRequest;
 use App\Http\Requests\Admin\ChatRequest;
 use App\Models\Admin\Admin;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Laravel\Ai\Approvals\Decision;
+use Laravel\Ai\Approvals\Decisions;
 use Laravel\Ai\Models\Conversation;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * AI 聊天控制器
  *
- * 提供管理员与 AI 助手的对话能力：会话列表、消息历史、发起对话（支持流式 SSE）。
+ * 提供管理员与 AI 助手的对话能力：会话列表、消息历史、SSE 流式对话、工具审批。
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -75,6 +78,9 @@ class ChatController extends Controller
                 'role' => $message->role,
                 'content' => $message->content,
                 'created_at' => $message->created_at?->toDateTimeString(),
+                'tool_calls' => $message->tool_calls,
+                'tool_results' => $message->tool_results,
+                'approval_state' => $message->approval_state,
             ]);
 
         return response()->json([
@@ -87,46 +93,10 @@ class ChatController extends Controller
     }
 
     /**
-     * 发起对话（同步模式，返回完整回复）
-     */
-    public function chat(ChatRequest $request): JsonResponse
-    {
-        /** @var Admin $user */
-        $user = $request->user();
-        $prompt = $request->input('prompt');
-        $conversationId = $request->input('conversation_id');
-
-        $agent = Assistant::make();
-
-        if ($conversationId) {
-            // 校验会话归属
-            $conversation = $user->conversations()->find($conversationId);
-            if (! $conversation) {
-                throw new NotFoundHttpException('会话不存在');
-            }
-            $agent->continue($conversationId, as: $user);
-        } else {
-            $agent->forUser($user);
-        }
-
-        $response = $agent->prompt(
-            prompt: $prompt,
-            model: 'ep-20260809190412-bkx2g',
-            provider: 'volc',
-        );
-
-        return response()->json([
-            'conversation_id' => $response->conversationId ?? $conversationId,
-            'reply' => $response->text,
-            'usage' => [
-                'input_tokens' => $response->usage->inputTokens ?? 0,
-                'output_tokens' => $response->usage->outputTokens ?? 0,
-            ],
-        ]);
-    }
-
-    /**
-     * 发起对话（流式 SSE 模式，适合前端打字机效果）
+     * 发起对话（SSE 流式模式）
+     *
+     * 直接返回 StreamableAgentResponse，由 Laravel AI 包输出 text/event-stream。
+     * 流式过程中可能产生 tool_approval_request 事件，前端应据此展示审批 UI。
      */
     public function stream(ChatRequest $request): mixed
     {
@@ -147,11 +117,39 @@ class ChatController extends Controller
             $agent->forUser($user);
         }
 
-        return $agent->stream(
-            prompt: $prompt,
-            model: 'ep-20260809190412-bkx2g',
-            provider: 'volc',
-        );
+        return $agent->stream(prompt: $prompt);
+    }
+
+    /**
+     * 处理工具审批决策并续跑（SSE 流式）
+     *
+     * 前端在收到 tool_approval_request 事件后，用户做出批准/拒绝选择，
+     * 携带 conversation_id、approval_id 和 approved 调用本接口，
+     * 后端构造 Decisions 续跑暂停的对话，继续以 SSE 输出后续事件。
+     */
+    public function approve(ChatApprovalRequest $request): mixed
+    {
+        /** @var Admin $user */
+        $user = $request->user();
+        $conversationId = $request->input('conversation_id');
+        $approvalId = $request->input('approval_id');
+        $approved = (bool) $request->input('approved');
+        $reason = $request->input('reason');
+
+        $conversation = $user->conversations()->find($conversationId);
+        if (! $conversation) {
+            throw new NotFoundHttpException('会话不存在');
+        }
+
+        $decision = $approved
+            ? Decision::approve()
+            : Decision::reject($reason);
+
+        $agent = Assistant::make()->continue($conversationId, as: $user);
+
+        return $agent->stream(Decisions::from([
+            $approvalId => $decision,
+        ]));
     }
 
     /**
