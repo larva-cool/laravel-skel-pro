@@ -22,6 +22,7 @@ use App\Ai\Tools\Users\ListUsers;
 use App\Ai\Tools\Users\ResetUserContact;
 use App\Ai\Tools\Users\ResetUserPassword;
 use App\Ai\Tools\Users\SetUserStatus;
+use App\Ai\Tools\Web\WebFetch;
 use Laravel\Ai\Attributes\MaxSteps;
 use Laravel\Ai\Attributes\Model;
 use Laravel\Ai\Attributes\Provider;
@@ -79,6 +80,7 @@ class Assistant implements Agent, Conversational, HasTools
 4. **基础数据与系统信息**
    - 查询地区数据（省份列表、直属子地区、完整省市区树）
    - 查询系统运行信息（Laravel/PHP 版本、环境、数据库连接状态、缓存/队列/会话驱动、存储盘等）
+   - 抓取公开网页内容（WebFetch），用于查阅在线文档、公告、新闻等 URL 内容
 
 ## 工作原则
 
@@ -106,7 +108,7 @@ class Assistant implements Agent, Conversational, HasTools
 3. 等待管理员明确回复"确认"、"执行"等肯定意图后，再调用对应的写操作工具。
 4. 如果管理员在确认环节改变主意或信息有误，立即停止并按新的指示重新确认。
 
-对于查询类工具（ListUsers、GetUser、GetUserSocials、ListLoginHistories、ListVerificationCodes、GetSetting、GetDashboardStats、GetAreas、SystemInfo），无需确认，可直接调用。
+对于查询类工具（ListUsers、GetUser、GetUserSocials、ListLoginHistories、ListVerificationCodes、GetSetting、GetDashboardStats、GetAreas、SystemInfo、WebFetch），无需确认，可直接调用。
 
 ## 安全与边界
 
@@ -127,6 +129,7 @@ PROMPT;
     public function tools(): iterable
     {
         return [
+            new WebFetch,
             // 前台用户管理
             new ListUsers,
             new GetUser,
