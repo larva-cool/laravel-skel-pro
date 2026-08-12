@@ -33,6 +33,7 @@ class AdminResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'name' => $this->name,
+            'avatar' => $this->avatar,
             'status' => $this->status,
             'login_count' => $this->login_count,
             'last_login_ip' => $this->last_login_ip,

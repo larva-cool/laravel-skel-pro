@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('email')->unique()->nullable()->comment('邮箱');
             $table->string('phone', 11)->unique()->nullable()->comment('手机号');
             $table->string('name')->nullable()->comment('昵称');
+            $table->string('avatar', 500)->nullable()->comment('头像URL');
             $table->unsignedTinyInteger('status')->default(1)->comment('状态：1、active，0、frozen');
             $table->string('password')->nullable()->comment('密码');
             $table->rememberToken()->comment('记住我token');

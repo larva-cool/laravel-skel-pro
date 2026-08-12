@@ -36,6 +36,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $email 邮件地址
  * @property string|null $phone 手机号
  * @property string $name 昵称
+ * @property string|null $avatar 头像URL
  * @property AdminStatus $status 状态
  * @property string $password 密码哈希
  * @property string $remember_token 记住我 Token
@@ -55,7 +56,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @author Tongle Xu <xutongle@gmail.com>
  */
 #[Table('admin_users')]
-#[Fillable(['username', 'email', 'phone', 'name', 'status', 'password', 'login_count', 'last_login_ip', 'last_login_at', 'last_active_at'])]
+#[Fillable(['username', 'email', 'phone', 'name', 'avatar', 'status', 'password', 'login_count', 'last_login_ip', 'last_login_at', 'last_active_at'])]
 #[Hidden(['password', 'remember_token'])]
 class Admin extends Authenticatable
 {
@@ -90,6 +91,7 @@ class Admin extends Authenticatable
             'email' => 'string',
             'phone' => 'string',
             'name' => 'string',
+            'avatar' => 'string',
             'status' => AdminStatus::class,
             'password' => 'hashed',
             'login_count' => 'integer',
