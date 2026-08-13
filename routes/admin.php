@@ -8,6 +8,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\MailCodeController;
 use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\MenuController;
@@ -15,7 +16,6 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\PhoneCodeController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\UploaderController;
 use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Support\Facades\Route;
@@ -74,6 +74,7 @@ Route::get('mail-codes', [MailCodeController::class, 'index'])->name('mail-codes
 Route::get('mail-codes/{id}', [MailCodeController::class, 'show'])->name('mail-codes.show');
 
 // 上传管理
+Route::post('uploader/image', [UploaderController::class, 'image'])->name('uploader.image');
 Route::post('uploader/token', [UploaderController::class, 'uploadToken'])->name('uploader.token');
 
 // AI 聊天
