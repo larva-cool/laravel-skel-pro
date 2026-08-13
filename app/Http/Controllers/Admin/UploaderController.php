@@ -7,11 +7,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\Uploader\ImageUploadRequest;
 use App\Http\Requests\Admin\Uploader\UploadTokenRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 /**
  * 上传控制器
@@ -31,11 +32,14 @@ class UploaderController extends Controller
     /**
      * 通用图片上传
      *
+     * @param  ImageUploadRequest  $request
      * @return array
+     * @throws ValidationException
      */
-    public function image(Request $request)
+    public function image(ImageUploadRequest $request): array
     {
-        return [];
+        $data = $request->handleUpload();
+        return $data;
     }
 
     /**

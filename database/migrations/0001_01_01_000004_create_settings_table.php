@@ -344,28 +344,6 @@ return new class extends Migration
                 'remark' => '上传文件默认驱动',
             ],
             [
-                'name' => '上传文件名规则',
-                'key' => 'upload.name_rule',
-                'value' => 'datetime',
-                'cast_type' => SettingType::CAST_TYPE_STRING,
-                'input_type' => 'radio',
-                'param' => '[
-    {
-        "value": "unique",
-        "label": "随机命名"
-    },
-    {
-        "value": "datetime",
-        "label": "按时间戳"
-    },
-    {
-        "value": "sequence",
-        "label": "原始顺序"
-    }
-]',
-                'remark' => '上传文件的命名规则。',
-            ],
-            [
                 'name' => '上传允许文件扩展名',
                 'key' => 'upload.allow_extension',
                 'value' => 'jpg,png,gif,jpeg,doc,docx,md,txt,pdf,7z,zip,rar,xls,ppt,pptx,wps,mp3,mp4,gz,tar,bz,psd,csv',
