@@ -74,7 +74,9 @@ Route::get('mail-codes', [MailCodeController::class, 'index'])->name('mail-codes
 Route::get('mail-codes/{id}', [MailCodeController::class, 'show'])->name('mail-codes.show');
 
 // 上传管理
+Route::post('uploader/file', [UploaderController::class, 'file'])->name('uploader.file');
 Route::post('uploader/image', [UploaderController::class, 'image'])->name('uploader.image');
+Route::post('uploader/video', [UploaderController::class, 'video'])->name('uploader.video');
 Route::post('uploader/token', [UploaderController::class, 'uploadToken'])->name('uploader.token');
 
 // AI 聊天

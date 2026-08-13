@@ -7,8 +7,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\Uploader\FileUploadRequest;
 use App\Http\Requests\Admin\Uploader\ImageUploadRequest;
 use App\Http\Requests\Admin\Uploader\UploadTokenRequest;
+use App\Http\Requests\Admin\Uploader\VideoUploadRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -30,16 +32,33 @@ class UploaderController extends Controller
     }
 
     /**
+     * 通用文件上传
+     *
+     * @throws ValidationException
+     */
+    public function file(FileUploadRequest $request): array
+    {
+        return $request->handleUpload();
+    }
+
+    /**
      * 通用图片上传
      *
-     * @param  ImageUploadRequest  $request
-     * @return array
      * @throws ValidationException
      */
     public function image(ImageUploadRequest $request): array
     {
-        $data = $request->handleUpload();
-        return $data;
+        return $request->handleUpload();
+    }
+
+    /**
+     * 通用视频上传
+     *
+     * @throws ValidationException
+     */
+    public function video(VideoUploadRequest $request): array
+    {
+        return $request->handleUpload();
     }
 
     /**
@@ -47,13 +66,15 @@ class UploaderController extends Controller
      */
     public function uploadToken(UploadTokenRequest $request): JsonResponse
     {
-        $path = 'uploads/'.md5(uniqid().microtime()).$request->filename;
-
+        $path = $request->generateFilePath();
         $result = Storage::temporaryUploadUrl($path, Carbon::now()->addMinutes(10));
 
+        $headers = $result['headers'] ?? [];
+        unset($headers['host']);
+
         return response()->json([
-            'url' => $result['url'],
-            'headers' => $result['headers'],
+            'url' => $result['url'] ?? '',
+            'headers' => $headers,
             'path' => $path,
         ]);
     }
