@@ -374,12 +374,28 @@ return new class extends Migration
                 'remark' => '允许上传的文件类型，多个类型用逗号分隔。',
             ],
             [
+                'name' => '上传允许图片扩展名',
+                'key' => 'upload.allow_image_extension',
+                'value' => 'jpg,png,gif,jpeg',
+                'cast_type' => SettingType::CAST_TYPE_STRING,
+                'input_type' => 'textarea',
+                'remark' => '允许上传的图片类型，多个类型用逗号分隔。',
+            ],
+            [
                 'name' => '上传允许视频扩展名',
                 'key' => 'upload.allow_video_extension',
                 'value' => 'mp4,mov,flv,mkv,rm,rmvb,3gp,m4v,mpg,wmv,avi',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'textarea',
                 'remark' => '允许上传的视频类型，多个类型用逗号分隔。',
+            ],
+            [
+                'name' => '自动优化上传的图片',
+                'key' => 'upload.image_optimize',
+                'value' => 1,
+                'cast_type' => SettingType::CAST_TYPE_BOOL,
+                'input_type' => 'bool',
+                'remark' => '自动优化上传的图片。',
             ],
 
         ]);
