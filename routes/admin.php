@@ -49,6 +49,7 @@ Route::apiResource('menus', MenuController::class);
 // 管理员管理
 Route::get('admins/profile', [AdminController::class, 'profile'])->name('admins.profile');
 Route::put('admins/profile', [AdminController::class, 'updateProfile'])->name('admins.update-profile');
+Route::post('admins/avatar', [AdminController::class, 'updateAvatar'])->name('admins.update-avatar');
 Route::get('admins/{admin}/roles', [AdminController::class, 'roles'])->name('admins.roles');
 Route::get('admins/{admin}/login-histories', [AdminController::class, 'loginHistories'])->name('admins.login-histories');
 Route::put('admins/{admin}/roles', [AdminController::class, 'assignRoles'])->name('admins.assign-roles');

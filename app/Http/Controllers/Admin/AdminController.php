@@ -11,6 +11,7 @@ use App\Enums\AdminStatus;
 use App\Http\Requests\Admin\Admin\AdminChangePasswordRequest;
 use App\Http\Requests\Admin\Admin\AdminCreateRequest;
 use App\Http\Requests\Admin\Admin\AdminProfileRequest;
+use App\Http\Requests\Admin\Admin\AdminUpdateAvatarRequest;
 use App\Http\Requests\Admin\Admin\AdminUpdateRequest;
 use App\Http\Resources\Admin\AdminResource;
 use App\Http\Resources\Admin\LoginHistoryResource;
@@ -257,6 +258,21 @@ class AdminController extends Controller
         $admin = $request->user();
 
         return new AdminResource($admin->load('roles'));
+    }
+
+    /**
+     * 修改当前登录管理员头像
+     */
+    public function updateAvatar(AdminUpdateAvatarRequest $request): AdminResource
+    {
+        /** @var \App\Models\Admin\Admin $admin */
+        $admin = $request->user();
+
+        $upload = $request->handleUpload();
+
+        $admin->update(['avatar' => $upload['file_path']]);
+
+        return new AdminResource($admin->fresh()->load('roles'));
     }
 
     /**
