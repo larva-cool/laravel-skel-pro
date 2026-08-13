@@ -87,16 +87,13 @@ class AdminController extends Controller
      */
     public function store(AdminCreateRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $data['password'] = bcrypt($data['password']);
-
-        $roles = $data['roles'] ?? [];
-        unset($data['roles']);
-
-        $admin = Admin::create($data);
-
-        if ($roles) {
-            $admin->syncRoles($roles);
+        $validated = $request->safe()->except(['roles']);
+        // 创建管理员
+        $admin = Admin::create($validated);
+        $data = $request->safe()->only(['roles']);
+        // 检查角色设置
+        if ($data['roles']) {
+            $admin->syncRoles($data['roles']);
         }
 
         return response()->json(new AdminResource($admin->load('roles')), 201);
@@ -115,21 +112,20 @@ class AdminController extends Controller
      */
     public function update(AdminUpdateRequest $request, Admin $admin): AdminResource
     {
-        $data = $request->validated();
+        $validated = $request->safe()->except(['roles', 'password']);
 
-        if (empty($data['password'])) {
-            unset($data['password']);
-        } else {
-            $data['password'] = bcrypt($data['password']);
+        // 更新基本信息
+        $admin->update($validated);
+        $data = $request->safe()->only(['password', 'roles']);
+
+        // 检查是否设置了密码
+        if (! empty($data['password'])) {
+            $admin->resetPassword($data['password']);
         }
 
-        $roles = $data['roles'] ?? null;
-        unset($data['roles']);
-
-        $admin->update($data);
-
-        if ($roles !== null) {
-            $admin->syncRoles($roles);
+        // 检查角色设置
+        if ($data['roles']) {
+            $admin->syncRoles($data['roles']);
         }
 
         return new AdminResource($admin->load('roles'));
@@ -229,7 +225,7 @@ class AdminController extends Controller
     public function resetPassword(Request $request, Admin $admin): JsonResponse
     {
         $data = $request->validate([
-            'password' => ['required', 'string', 'confirmed', Password::defaults()],
+            'password' => ['required', 'string', Password::defaults()],
         ]);
 
         $admin->resetPassword($data['password']);
@@ -274,7 +270,8 @@ class AdminController extends Controller
         $data = $request->validated();
 
         $admin->update($data);
+        $admin->fresh()->load('roles');
 
-        return new AdminResource($admin->fresh()->load('roles'));
+        return new AdminResource($admin);
     }
 }

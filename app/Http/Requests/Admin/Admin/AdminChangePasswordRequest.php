@@ -34,7 +34,7 @@ class AdminChangePasswordRequest extends FormRequest
     {
         return [
             'old_password' => ['required', 'string', 'current_password:admin'],
-            'password' => ['required', 'string', 'confirmed', Password::defaults()],
+            'password' => ['required', 'string', Password::defaults()],
         ];
     }
 }
