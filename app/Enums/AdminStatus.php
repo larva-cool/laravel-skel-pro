@@ -10,7 +10,7 @@ namespace App\Enums;
 use App\Enums\Traits\HasLabel;
 
 /**
- * 用户状态枚举
+ * 管理员状态枚举
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -18,19 +18,17 @@ enum AdminStatus: int implements \JsonSerializable
 {
     use HasLabel;
 
-    // 用户状态
-    case STATUS_DISABLED = 0; // 禁用
-    case STATUS_ACTIVE = 1; // 正常
+    case DISABLED = 0; // 禁用
+    case ACTIVE = 1; // 正常
 
     /**
-     * 获取用户状态标签
+     * 获取状态标签
      */
     public function label(): string
     {
         return match ($this) {
-            self::STATUS_DISABLED => '禁用',
-            self::STATUS_ACTIVE => '正常',
-
+            self::DISABLED => '禁用',
+            self::ACTIVE => '正常',
         };
     }
 
@@ -39,14 +37,14 @@ enum AdminStatus: int implements \JsonSerializable
      */
     public function isActive(): bool
     {
-        return $this === self::STATUS_ACTIVE;
+        return $this === self::ACTIVE;
     }
 
     /**
-     * 是否为已冻结状态
+     * 是否为禁用状态
      */
-    public function isFrozen(): bool
+    public function isDisabled(): bool
     {
-        return $this === self::STATUS_DISABLED;
+        return $this === self::DISABLED;
     }
 }

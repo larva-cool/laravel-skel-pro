@@ -16,7 +16,6 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Validation\ValidationException;
 
 /**
  * 后台认证控制器
@@ -35,24 +34,19 @@ class AuthController extends Controller
 
     /**
      * 获取当前管理员信息
-     *
-     * @param  Request  $request  HTTP 请求
      */
-    public function info(Request $request): JsonResponse
+    public function info(Request $request): AdminInfoResource
     {
         /** @var Admin $admin */
         $admin = $request->user();
 
-        return $this->success(new AdminInfoResource($admin));
+        return new AdminInfoResource($admin);
     }
 
     /**
      * 管理员登录
      *
-     * @param  PasswordLoginRequest  $request  登录请求
-     * @return JsonResponse 返回 token 和用户信息
-     *
-     * @throws ValidationException
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function login(PasswordLoginRequest $request): JsonResponse
     {
@@ -61,21 +55,19 @@ class AuthController extends Controller
         Event::dispatch(new Login(AdminMenu::GUARD_NAME, $admin, false));
         Event::dispatch(new LoginSucceeded($admin, $request->ip(), (string) $request->server('REMOTE_PORT'), $request->userAgent()));
 
-        return $this->success([
-            'token' => $token->plainTextToken,
-            'refresh_token' => $token->plainTextToken,
-        ], __('user.login_success'));
+        return response()->json([
+            'access_token' => $token->plainTextToken,
+            'user' => new AdminInfoResource($admin),
+        ]);
     }
 
     /**
      * 管理员退出登录
-     *
-     * @param  Request  $request  HTTP 请求
      */
     public function logout(Request $request): JsonResponse
     {
         $request->user()?->currentAccessToken()?->delete();
 
-        return $this->success(null, __('user.logout_success'));
+        return response()->json(status: 204);
     }
 }

@@ -8,8 +8,9 @@ declare(strict_types=1);
 namespace App\Models\Admin;
 
 use App\Enums\AdminStatus;
+use App\Models\System\LoginHistory;
+use App\Models\System\Social;
 use App\Models\Traits\DateTimeFormatter;
-use App\Models\User\LoginHistory;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -22,7 +23,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Laravel\Ai\Concerns\HasConversations;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -33,6 +36,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $email 邮件地址
  * @property string|null $phone 手机号
  * @property string $name 昵称
+ * @property string|null $avatar 头像URL
  * @property AdminStatus $status 状态
  * @property string $password 密码哈希
  * @property string $remember_token 记住我 Token
@@ -46,16 +50,19 @@ use Spatie\Permission\Traits\HasRoles;
  *
  * 关系对象
  * @property Collection<int,LoginHistory> $loginHistories 登录历史
+ * @property Collection<int,Role> $roles 角色
+ * @property Collection<int,Social> $socials 社交账号
  *
  * @author Tongle Xu <xutongle@gmail.com>
  */
 #[Table('admin_users')]
-#[Fillable(['username', 'email', 'phone', 'name', 'status', 'password', 'login_count', 'last_login_ip', 'last_login_at', 'last_active_at'])]
+#[Fillable(['username', 'email', 'phone', 'name', 'avatar', 'status', 'password', 'login_count', 'last_login_ip', 'last_login_at', 'last_active_at'])]
 #[Hidden(['password', 'remember_token'])]
 class Admin extends Authenticatable
 {
     use DateTimeFormatter;
     use HasApiTokens, HasRoles, Notifiable, SoftDeletes;
+    use HasConversations;
 
     /**
      * The guard name for Spatie Permission.
@@ -84,6 +91,7 @@ class Admin extends Authenticatable
             'email' => 'string',
             'phone' => 'string',
             'name' => 'string',
+            'avatar' => 'string',
             'status' => AdminStatus::class,
             'password' => 'hashed',
             'login_count' => 'integer',
@@ -105,6 +113,14 @@ class Admin extends Authenticatable
     }
 
     /**
+     * Get the social relation.
+     */
+    public function socials(): MorphMany
+    {
+        return $this->morphMany(Social::class, 'user')->latest('updated_at');
+    }
+
+    /**
      * 重置用户密码
      */
     public function resetPassword(string $password): void
@@ -114,7 +130,6 @@ class Admin extends Authenticatable
         $this->saveQuietly();
         Event::dispatch(new PasswordReset($this));
     }
-
 
     /**
      * 通过账号查找管理员

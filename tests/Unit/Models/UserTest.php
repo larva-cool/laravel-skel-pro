@@ -36,7 +36,7 @@ class UserTest extends TestCase
         $user = User::factory()->create();
 
         $this->assertInstanceOf(User::class, $user);
-        $this->assertSame(UserStatus::STATUS_ACTIVE, $user->status);
+        $this->assertSame(UserStatus::ACTIVE, $user->status);
         $this->assertSame(0, $user->available_points);
         $this->assertSame(0, $user->available_coins);
     }
@@ -50,19 +50,7 @@ class UserTest extends TestCase
     {
         $user = User::factory()->frozen()->create();
 
-        $this->assertSame(UserStatus::STATUS_FROZEN, $user->status);
-    }
-
-    /**
-     * 测试 factory notActive 状态
-     */
-    #[Test]
-    #[TestDox('factory notActive 状态创建未激活用户')]
-    public function factory_not_active_creates_not_active_user(): void
-    {
-        $user = User::factory()->notActive()->create();
-
-        $this->assertSame(UserStatus::STATUS_NOT_ACTIVE, $user->status);
+        $this->assertSame(UserStatus::FROZEN, $user->status);
     }
 
     /**
@@ -313,7 +301,7 @@ class UserTest extends TestCase
         $user = User::factory()->frozen()->create();
 
         $this->assertTrue($user->markActive());
-        $this->assertSame(UserStatus::STATUS_ACTIVE, $user->fresh()->status);
+        $this->assertSame(UserStatus::ACTIVE, $user->fresh()->status);
     }
 
     /**
@@ -326,7 +314,7 @@ class UserTest extends TestCase
         $user = User::factory()->create();
 
         $this->assertTrue($user->markFrozen());
-        $this->assertSame(UserStatus::STATUS_FROZEN, $user->fresh()->status);
+        $this->assertSame(UserStatus::FROZEN, $user->fresh()->status);
     }
 
     /**

@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models\User;
 
+use App\Models\System\LoginHistory;
 use App\Models\User;
-use App\Models\User\LoginHistory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\CoversClass;

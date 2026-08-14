@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Http\Requests\Api\V1\Auth;
@@ -19,7 +18,6 @@ use Illuminate\Validation\ValidationException;
  *
  * @property string $account 账户
  * @property string $password 密码
- * @property string $device 登录设备
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -31,9 +29,8 @@ class PasswordLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'device' => ['required', 'string'],
             'account' => ['required', 'string'],
-            'password' => ['required', 'string', 'min:6'],
+            'password' => ['required', 'string', 'min:6', 'max:50'],
         ];
     }
 
@@ -42,7 +39,7 @@ class PasswordLoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate(): ?User
+    public function authenticate(): User
     {
         $account = $this->string('account');
         $user = UserHelper::findForAccount($account->toString());

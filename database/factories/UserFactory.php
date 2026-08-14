@@ -35,15 +35,33 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'username' => fake()->userName(),
+            'username' => fake()->unique()->bothify('user_####??'),
             'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->numerify('+8613#########'),
             'avatar' => null,
-            'status' => UserStatus::STATUS_ACTIVE,
+            'status' => UserStatus::ACTIVE,
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /**
+     * Indicate that the model's email address should be unverified.
+     */
+    public function email(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'email' => fake()->unique()->safeEmail(),
+        ]);
+    }
+
+    /**
+     * Indicate that the model's phone number should be unverified.
+     */
+    public function phone(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'phone' => fake()->numerify('13#########'),
+        ]);
     }
 
     /**
@@ -52,17 +70,7 @@ class UserFactory extends Factory
     public function frozen(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => UserStatus::STATUS_FROZEN,
-        ]);
-    }
-
-    /**
-     * Indicate that the user is not active.
-     */
-    public function notActive(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'status' => UserStatus::STATUS_NOT_ACTIVE,
+            'status' => UserStatus::FROZEN,
         ]);
     }
 }

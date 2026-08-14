@@ -9,7 +9,7 @@ namespace Tests\Unit\Models\Admin;
 
 use App\Models\Admin\Admin;
 use App\Models\Admin\AdminMenu;
-use App\Models\User\LoginHistory;
+use App\Models\System\LoginHistory;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -56,7 +56,7 @@ class AdminTest extends TestCase
     {
         $admin = $this->makeAdmin([
             'username' => 'superadmin',
-            'email' => 'admin@example.com',
+            'email' => 'superadmin@example.com',
             'phone' => '13800138000',
             'name' => '超级管理员',
         ]);
@@ -64,7 +64,7 @@ class AdminTest extends TestCase
         $this->assertInstanceOf(Admin::class, $admin);
         $this->assertDatabaseHas('admin_users', [
             'username' => 'superadmin',
-            'email' => 'admin@example.com',
+            'email' => 'superadmin@example.com',
             'phone' => '13800138000',
             'name' => '超级管理员',
         ]);

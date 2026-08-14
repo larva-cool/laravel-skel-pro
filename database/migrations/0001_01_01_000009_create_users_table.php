@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('phone', 30)->unique()->nullable()->comment('手机号（支持国际格式，如+8613800138000）');
             $table->string('name', 50)->nullable()->comment('昵称');
             $table->string('avatar', 1000)->nullable()->comment('头像');
-            $table->unsignedTinyInteger('status')->default(UserStatus::STATUS_ACTIVE->value)->comment('状态：0、frozen,1、active，2、not_active');
+            $table->unsignedTinyInteger('status')->default(UserStatus::ACTIVE->value)->comment('状态：0、frozen,1、active，2、not_active');
             $table->unsignedInteger('available_points')->nullable()->default(0)->comment('可用积分');
             $table->unsignedInteger('available_coins')->nullable()->default(0)->comment('可用金币');
             $table->string('password')->nullable()->comment('密码');
@@ -40,20 +40,22 @@ return new class extends Migration
             $table->comment('用户表');
         });
 
-        Schema::create('user_socials', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id')->comment('用户ID');
-            $table->string('provider')->comment('服务渠道');
-            $table->string('openid')->comment('开放平台ID');
-            $table->string('unionid')->nullable()->comment('联合ID');
-            $table->string('access_token')->nullable()->comment('访问令牌');
-            $table->string('refresh_token')->nullable()->comment('刷新令牌');
-            $table->timestamp('expiry_at')->nullable()->comment('过期时间');
-            $table->mediumText('identity_token')->nullable()->comment('身份令牌');
-            $table->timestamps();
+        Schema::create('user_extras', function (Blueprint $table) {
+            $table->unsignedBigInteger('user_id')->primary()->comment('用户ID');
+            $table->unsignedTinyInteger('username_change_count')->default(0)->nullable()->comment('用户名修改次数');
 
-            $table->index(['user_id', 'provider', 'openid']);
-            $table->comment('用户社交账号表');
+            $table->comment('用户扩展信息表');
+        });
+
+        Schema::create('user_stats', function (Blueprint $table) {
+            $table->id();
+            $table->date('stat_date')->unique()->comment('统计日期');
+            $table->unsignedBigInteger('total_user_count')->default(0)->comment('用户总数');
+            $table->unsignedBigInteger('new_user_count')->default(0)->comment('注册用户数');
+            $table->unsignedBigInteger('active_user_count')->default(0)->comment('活跃用户总数');
+            $table->timestamp('created_at')->nullable()->comment('统计时间');
+
+            $table->comment('用户统计表');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -63,7 +65,6 @@ return new class extends Migration
 
             $table->comment('密码重置表');
         });
-
     }
 
     /**
@@ -71,8 +72,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('user_socials');
+        Schema::dropIfExists('user_stats');
+        Schema::dropIfExists('user_extras');
+        Schema::dropIfExists('users');
     }
 };

@@ -10,8 +10,6 @@ namespace Tests\Feature\Admin;
 use App\Http\Controllers\Admin\RoleController;
 use App\Models\Admin\Admin;
 use App\Models\Admin\AdminMenu;
-use Database\Seeders\AdminMenuSeeder;
-use Database\Seeders\AdminSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -33,28 +31,19 @@ class RoleControllerTest extends TestCase
 
     private Admin $admin;
 
-    private string $token;
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed([AdminMenuSeeder::class, AdminSeeder::class]);
 
-        // 登录获取 token
-        $loginResponse = $this->postJson('/admin/auth/login', [
-            'account' => 'admin',
-            'password' => '123456',
-        ]);
-        $this->token = $loginResponse->json('data.token');
         $this->admin = Admin::query()->where('username', 'admin')->first();
     }
 
-    protected function authHeaders(): array
+    /**
+     * 以管理员身份发起请求（actingAs 模拟认证）
+     */
+    protected function actingAsAdmin(): self
     {
-        return [
-            'Authorization' => 'Bearer '.$this->token,
-            'Accept' => 'application/json',
-        ];
+        return $this->actingAs($this->admin, 'admin');
     }
 
     #[Test]
@@ -69,37 +58,32 @@ class RoleControllerTest extends TestCase
     #[TestDox('获取角色列表返回 200 与分页数据')]
     public function admin_can_list_roles(): void
     {
-        $response = $this->getJson('/admin/roles', $this->authHeaders());
+        $response = $this->actingAsAdmin()->getJson('/admin/roles');
         $response->assertOk()
-            ->assertJsonStructure([
-                'code',
-                'data' => ['records', 'current', 'size', 'total'],
-            ])
-            ->assertJsonPath('data.total', 1);
+            ->assertJsonStructure(['data', 'links', 'meta'])
+            ->assertJsonPath('meta.total', 1);
     }
 
     #[Test]
     #[TestDox('按角色名称搜索角色')]
     public function admin_can_search_roles_by_name(): void
     {
-        $response = $this->getJson('/admin/roles?role_name=super', $this->authHeaders());
+        $response = $this->actingAsAdmin()->getJson('/admin/roles?role_name=super');
         $response->assertOk()
-            ->assertJsonPath('data.records.0.role_name', 'super_admin');
+            ->assertJsonPath('data.0.name', 'super_admin');
     }
 
     #[Test]
-    #[TestDox('创建角色成功')]
+    #[TestDox('创建角色返回 201')]
     public function admin_can_create_role(): void
     {
-        $response = $this->postJson('/admin/roles', [
+        $response = $this->actingAsAdmin()->postJson('/admin/roles', [
             'name' => 'editor',
-        ], $this->authHeaders());
+            'display_name' => 'Editor Role',
+        ]);
 
-        $response->assertOk()
-            ->assertJson([
-                'code' => 200,
-            ])
-            ->assertJsonPath('data.role_name', 'editor');
+        $response->assertCreated()
+            ->assertJsonPath('name', 'editor');
 
         $this->assertDatabaseHas('roles', [
             'name' => 'editor',
@@ -108,22 +92,22 @@ class RoleControllerTest extends TestCase
     }
 
     #[Test]
-    #[TestDox('创建角色时名称必填')]
+    #[TestDox('创建角色时名称必填返回 422')]
     public function create_role_requires_name(): void
     {
-        $response = $this->postJson('/admin/roles', [], $this->authHeaders());
+        $response = $this->actingAsAdmin()->postJson('/admin/roles', []);
         $response->assertUnprocessable();
     }
 
     #[Test]
-    #[TestDox('创建角色时名称不能重复')]
+    #[TestDox('创建角色时名称不能重复返回 422')]
     public function create_role_name_must_be_unique(): void
     {
         Role::create(['name' => 'editor', 'guard_name' => AdminMenu::GUARD_NAME]);
 
-        $response = $this->postJson('/admin/roles', [
+        $response = $this->actingAsAdmin()->postJson('/admin/roles', [
             'name' => 'editor',
-        ], $this->authHeaders());
+        ]);
         $response->assertUnprocessable();
     }
 
@@ -133,10 +117,10 @@ class RoleControllerTest extends TestCase
     {
         $role = Role::where('name', 'super_admin')->where('guard_name', AdminMenu::GUARD_NAME)->first();
 
-        $response = $this->getJson("/admin/roles/{$role->id}", $this->authHeaders());
+        $response = $this->actingAsAdmin()->getJson("/admin/roles/{$role->id}");
         $response->assertOk()
-            ->assertJsonPath('data.role_id', $role->id)
-            ->assertJsonPath('data.role_name', 'super_admin');
+            ->assertJsonPath('id', $role->id)
+            ->assertJsonPath('name', 'super_admin');
     }
 
     #[Test]
@@ -145,12 +129,13 @@ class RoleControllerTest extends TestCase
     {
         $role = Role::create(['name' => 'viewer', 'guard_name' => AdminMenu::GUARD_NAME]);
 
-        $response = $this->putJson("/admin/roles/{$role->id}", [
+        $response = $this->actingAsAdmin()->putJson("/admin/roles/{$role->id}", [
             'name' => 'auditor',
-        ], $this->authHeaders());
+            'display_name' => 'Auditor Role',
+        ]);
 
         $response->assertOk()
-            ->assertJsonPath('data.role_name', 'auditor');
+            ->assertJsonPath('name', 'auditor');
 
         $this->assertDatabaseHas('roles', [
             'id' => $role->id,
@@ -159,54 +144,52 @@ class RoleControllerTest extends TestCase
     }
 
     #[Test]
-    #[TestDox('超级管理员角色不可修改名称')]
+    #[TestDox('超级管理员角色不可修改返回 403')]
     public function super_admin_role_cannot_be_modified(): void
     {
         $role = Role::where('name', 'super_admin')->first();
 
-        $response = $this->putJson("/admin/roles/{$role->id}", [
+        $response = $this->actingAsAdmin()->putJson("/admin/roles/{$role->id}", [
             'name' => 'hacker',
-        ], $this->authHeaders());
+            'display_name' => 'Hacker Role',
+        ]);
 
-        $response->assertOk()
-            ->assertJsonPath('code', 403);
+        $response->assertForbidden();
     }
 
     #[Test]
-    #[TestDox('删除角色成功')]
+    #[TestDox('删除角色返回 204')]
     public function admin_can_delete_role(): void
     {
         $role = Role::create(['name' => 'temp', 'guard_name' => AdminMenu::GUARD_NAME]);
 
-        $response = $this->deleteJson("/admin/roles/{$role->id}", [], $this->authHeaders());
-        $response->assertOk();
+        $response = $this->actingAsAdmin()->deleteJson("/admin/roles/{$role->id}");
+        $response->assertNoContent();
 
         $this->assertDatabaseMissing('roles', ['id' => $role->id]);
     }
 
     #[Test]
-    #[TestDox('超级管理员角色不可删除')]
+    #[TestDox('超级管理员角色不可删除返回 403')]
     public function super_admin_role_cannot_be_deleted(): void
     {
         $role = Role::where('name', 'super_admin')->first();
 
-        $response = $this->deleteJson("/admin/roles/{$role->id}", [], $this->authHeaders());
-        $response->assertOk()
-            ->assertJsonPath('code', 403);
+        $response = $this->actingAsAdmin()->deleteJson("/admin/roles/{$role->id}");
+        $response->assertForbidden();
 
         $this->assertDatabaseHas('roles', ['id' => $role->id]);
     }
 
     #[Test]
-    #[TestDox('被使用的角色不可删除')]
+    #[TestDox('被使用的角色不可删除返回 400')]
     public function role_in_use_cannot_be_deleted(): void
     {
         $role = Role::create(['name' => 'ops', 'guard_name' => AdminMenu::GUARD_NAME]);
         $this->admin->assignRole($role);
 
-        $response = $this->deleteJson("/admin/roles/{$role->id}", [], $this->authHeaders());
-        $response->assertOk()
-            ->assertJsonPath('code', 400);
+        $response = $this->actingAsAdmin()->deleteJson("/admin/roles/{$role->id}");
+        $response->assertBadRequest();
     }
 
     #[Test]
@@ -215,8 +198,8 @@ class RoleControllerTest extends TestCase
     {
         $role = Role::where('name', 'super_admin')->first();
 
-        $response = $this->getJson("/admin/roles/{$role->id}/permissions", $this->authHeaders());
-        $response->assertOk()->assertJson(['code' => 200]);
+        $response = $this->actingAsAdmin()->getJson("/admin/roles/{$role->id}/permissions");
+        $response->assertOk();
     }
 
     #[Test]
@@ -225,15 +208,14 @@ class RoleControllerTest extends TestCase
     {
         $role = Role::create(['name' => 'manager', 'guard_name' => AdminMenu::GUARD_NAME]);
 
-        // 找两个权限
         $permIds = Permission::where('guard_name', AdminMenu::GUARD_NAME)
             ->limit(2)
             ->pluck('id')
             ->toArray();
 
-        $response = $this->putJson("/admin/roles/{$role->id}/permissions", [
+        $response = $this->actingAsAdmin()->putJson("/admin/roles/{$role->id}/permissions", [
             'permissions' => $permIds,
-        ], $this->authHeaders());
+        ]);
 
         $response->assertOk();
         $this->assertCount(count($permIds), $role->fresh()->permissions);
@@ -243,8 +225,7 @@ class RoleControllerTest extends TestCase
     #[TestDox('获取所有权限列表')]
     public function can_list_all_permissions(): void
     {
-        $response = $this->getJson('/admin/roles/permissions', $this->authHeaders());
-        $response->assertOk()
-            ->assertJson(['code' => 200]);
+        $response = $this->actingAsAdmin()->getJson('/admin/roles/permissions');
+        $response->assertOk();
     }
 }

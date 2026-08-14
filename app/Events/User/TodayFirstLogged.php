@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace App\Events\User;
 
-use App\Models\User\LoginHistory;
+use App\Models\System\LoginHistory;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

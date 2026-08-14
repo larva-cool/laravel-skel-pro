@@ -10,6 +10,7 @@ namespace App\Http\Requests\Admin\Role;
 use App\Models\Admin\AdminMenu;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Permission;
 
 /**
  * 角色保存请求（创建/编辑）
@@ -26,15 +27,16 @@ class RoleSaveRequest extends FormRequest
      */
     public function rules(): array
     {
-        $roleId = (int) $this->route('id');
+        $roleId = (int) $this->route('role')?->id ?? (int) $this->route('role');
 
         return [
             'name' => [
                 'required', 'string', 'min:2', 'max:50',
                 Rule::unique('roles', 'name')->ignore($roleId)->where('guard_name', AdminMenu::GUARD_NAME),
             ],
+            'display_name' => ['required', 'string', 'min:2', 'max:50'],
             'permissions' => ['sometimes', 'array'],
-            'permissions.*' => ['integer', 'exists:permissions,id'],
+            'permissions.*' => ['integer', Rule::exists(Permission::class, 'id')],
         ];
     }
 }

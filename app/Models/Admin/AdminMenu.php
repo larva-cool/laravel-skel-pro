@@ -22,7 +22,7 @@ use Spatie\Permission\Models\Permission;
  * 后台菜单模型
  *
  * @property int $id 菜单ID
- * @property int $parent_id 父级菜单ID
+ * @property int|null $parent_id 父级菜单ID，null 表示顶级菜单
  * @property string|null $path 路由路径
  * @property string|null $name 路由名称
  * @property string|null $component 前端组件路径
@@ -42,8 +42,7 @@ use Spatie\Permission\Models\Permission;
  * @property bool $show_badge 是否显示红点徽章
  * @property string|null $show_text_badge 文本徽章内容
  * @property string|null $active_path 激活菜单高亮路径
- * @property string|null $permission 按钮权限标识
- * @property array|null $roles 可访问角色列表
+ * @property string|null $permission 权限标识
  * @property Carbon $created_at 创建时间
  * @property Carbon $updated_at 更新时间
  * @property Carbon|null $deleted_at 删除时间
@@ -58,7 +57,7 @@ use Spatie\Permission\Models\Permission;
     'title', 'icon', 'link', 'type', 'sort',
     'is_enable', 'is_hide', 'is_hide_tab', 'is_iframe',
     'keep_alive', 'is_full_page', 'fixed_tab', 'show_badge',
-    'show_text_badge', 'active_path', 'permission', 'roles',
+    'show_text_badge', 'active_path', 'permission',
 ])]
 class AdminMenu extends Model
 {
@@ -95,7 +94,6 @@ class AdminMenu extends Model
             'show_text_badge' => 'string',
             'active_path' => 'string',
             'permission' => 'string',
-            'roles' => 'json',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
             'deleted_at' => 'datetime',
@@ -109,12 +107,12 @@ class AdminMenu extends Model
     {
         parent::booted();
 
-        // 保存菜单时，按钮类型自动同步到 permissions 表
+        // 保存菜单时，同步到 permissions 表
         static::saved(function (self $menu): void {
             $menu->syncPermission();
         });
 
-        // 删除菜单时，按钮类型同步删除对应 permission
+        // 删除菜单时，同步删除对应 permission
         static::deleted(function (self $menu): void {
             $menu->deletePermission();
         });
@@ -125,7 +123,7 @@ class AdminMenu extends Model
      */
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(self::class, 'parent_id')->withDefault();
+        return $this->belongsTo(self::class, 'parent_id');
     }
 
     /**
@@ -151,7 +149,7 @@ class AdminMenu extends Model
      */
     public function scopeOrdered(Builder $query): Builder
     {
-        return $query->orderBy('parent_id')->orderBy('sort');
+        return $query->orderBy('sort');
     }
 
     /**
@@ -159,7 +157,7 @@ class AdminMenu extends Model
      */
     public function scopeRoot(Builder $query): Builder
     {
-        return $query->where('parent_id', 0);
+        return $query->whereNull('parent_id');
     }
 
     /**
@@ -167,7 +165,7 @@ class AdminMenu extends Model
      */
     public function isRoot(): bool
     {
-        return $this->parent_id === 0;
+        return $this->parent_id === null;
     }
 
     /**
@@ -205,58 +203,176 @@ class AdminMenu extends Model
     /**
      * 转换为前端路由配置格式（AppRouteRecord）
      *
-     * @return array<string, mixed>
+     * 递归处理子菜单，自动：
+     * - 过滤禁用菜单（is_enable=false）
+     * - 通过 Spatie 权限系统过滤菜单可见性（permission 字段）
+     * - 顶级目录 component 设为 "/index/index"（对应 Layout 视图）
+     * - 二级目录/页面直接返回数据库存储的 component 路径（如 "/system/admin"）
+     * - 按钮类型（type=BUTTON）不返回节点，而是收集到父级 meta.auth_list
+     *
+     * @param  \App\Models\Admin\Admin|null  $admin  当前管理员，用于权限过滤；null 表示不过滤
+     * @return array<string, mixed>|null 返回 null 表示该节点被过滤掉
      */
-    public function toRouteRecord(): array
+    public function toRouteRecord(?Admin $admin = null): ?array
     {
-        $record = [
-            'path' => $this->path,
-            'name' => $this->name,
-            'component' => $this->component,
-            'redirect' => $this->redirect,
-            'meta' => array_filter([
-                'title' => $this->title,
-                'icon' => $this->icon,
-                'link' => $this->link,
-                'isHide' => $this->is_hide ?: null,
-                'isHideTab' => $this->is_hide_tab ?: null,
-                'isIframe' => $this->is_iframe ?: null,
-                'keepAlive' => $this->keep_alive ?: null,
-                'isFullPage' => $this->is_full_page ?: null,
-                'fixedTab' => $this->fixed_tab ?: null,
-                'showBadge' => $this->show_badge ?: null,
-                'showTextBadge' => $this->show_text_badge,
-                'activePath' => $this->active_path,
-                'roles' => $this->roles,
-                'authMark' => $this->isButton() ? $this->permission : null,
-                'isAuthButton' => $this->isButton() ?: null,
-            ], fn ($value): bool => ! is_null($value)),
-        ];
-
-        if ($this->children->isNotEmpty()) {
-            $record['children'] = $this->children
-                ->map(fn (self $child): array => $child->toRouteRecord())
-                ->values()
-                ->all();
+        // 过滤禁用菜单
+        if (! $this->is_enable) {
+            return null;
         }
 
-        // 过滤 null 值字段
-        return array_filter($record, fn ($value): bool => ! is_null($value));
+        // 权限过滤：如果菜单配置了 permission 且当前管理员不具备该权限，排除该节点
+        if ($admin !== null && ! blank($this->permission) && ! $admin->can($this->permission)) {
+            return null;
+        }
+
+        // 按钮类型：返回特殊标记，由父级收集到 auth_list
+        if ($this->isButton()) {
+            return [
+                '__button' => true,
+                'title' => $this->title,
+                'auth_mark' => $this->permission,
+            ];
+        }
+
+        // 处理子菜单
+        /** @var array<int, array<string, mixed>> $childRecords */
+        $childRecords = [];
+        /** @var array<int, array{title: string, auth_mark: string}> $authList */
+        $authList = [];
+
+        if ($this->children->isNotEmpty()) {
+            foreach ($this->children as $child) {
+                $result = $child->toRouteRecord($admin);
+                if ($result === null) {
+                    continue;
+                }
+                // 按钮节点收集到 auth_list
+                if (! empty($result['__button'])) {
+                    if (! empty($result['auth_mark'])) {
+                        $authList[] = [
+                            'title' => $result['title'],
+                            'auth_mark' => $result['auth_mark'],
+                        ];
+                    }
+
+                    continue;
+                }
+                $childRecords[] = $result;
+            }
+        }
+
+        // 构建 meta
+        $meta = array_filter([
+            'title' => $this->title,
+            'icon' => $this->icon,
+            'link' => $this->link,
+            'is_hide' => $this->is_hide ?: null,
+            'is_hide_tab' => $this->is_hide_tab ?: null,
+            'is_iframe' => $this->is_iframe ?: null,
+            'keep_alive' => $this->keep_alive ?: null,
+            'is_full_page' => $this->is_full_page ?: null,
+            'fixed_tab' => $this->fixed_tab ?: null,
+            'show_badge' => $this->show_badge ?: null,
+            'show_text_badge' => $this->show_text_badge,
+            'active_path' => $this->active_path,
+        ], fn ($value): bool => $value !== null);
+
+        // 按钮权限附加到 meta
+        if (! empty($authList)) {
+            $meta['auth_list'] = $authList;
+        }
+
+        // 确定 component：
+        // - 顶级目录（parent_id=null 且有子菜单）→ "/index/index" (Layout)
+        // - 顶级但无子菜单的页面 → "/index/index" (前端 RouteTransformer 会自动处理)
+        // - 非顶级节点 → 数据库存储的 component 值
+        $component = $this->isRoot() ? '/index/index' : $this->component;
+
+        $record = [
+            'id' => $this->id,
+            'path' => $this->path,
+            'name' => $this->name,
+            'component' => $component,
+            'redirect' => $this->redirect,
+            'meta' => $meta,
+        ];
+
+        // 重定向推导：目录且无显式 redirect 时，取第一个可导航子节点的全路径
+        if (empty($record['redirect']) && ! empty($childRecords)) {
+            $record['redirect'] = $this->resolveRedirect($this->path, $childRecords);
+        }
+
+        if (! empty($childRecords)) {
+            $record['children'] = $childRecords;
+        } elseif (! $this->isDirectory() && empty($this->component) && $this->type !== MenuType::LINK && ! $this->is_iframe) {
+            // 非目录、无子节点、无 component、非外链、非 iframe → 空节点，过滤掉
+            return null;
+        }
+
+        return array_filter($record, fn ($value): bool => $value !== null && $value !== '');
     }
 
     /**
-     * 将按钮菜单同步到 permissions 表
+     * 从子节点中推导默认重定向路径
+     *
+     * @param  array<int, array<string, mixed>>  $children
+     */
+    private function resolveRedirect(string $parentPath, array $children): ?string
+    {
+        foreach ($children as $child) {
+            // 外链和 iframe 不作为重定向目标
+            if (! empty($child['meta']['link']) || ! empty($child['meta']['is_iframe'])) {
+                continue;
+            }
+            $childPath = $child['path'] ?? '';
+            if ($childPath === '') {
+                continue;
+            }
+            // 子路径以 / 开头为绝对路径，否则拼接父路径
+            $fullPath = str_starts_with($childPath, '/')
+                ? $childPath
+                : rtrim($parentPath, '/').'/'.ltrim($childPath, '/');
+
+            // 如果子节点还有子节点，继续深入
+            if (! empty($child['children'])) {
+                $deep = $this->resolveRedirect($fullPath, $child['children']);
+                if ($deep !== null) {
+                    return $deep;
+                }
+            }
+
+            return $fullPath;
+        }
+
+        return null;
+    }
+
+    /**
+     * 将菜单同步到 permissions 表
+     *
+     * 任何配置了 permission 标识的菜单都会同步到 Spatie permissions 表，
+     * 以便通过角色-权限关联统一控制菜单可见性。
      */
     protected function syncPermission(): void
     {
-        // 非按钮类型或权限标识为空：删除历史 permission（如果存在）
-        if (! $this->isButton() || blank($this->permission)) {
+        // 权限标识为空：删除历史 permission（如果存在）
+        if (blank($this->permission)) {
             $this->deletePermission();
 
             return;
         }
 
-        Permission::findOrCreate($this->permission, self::GUARD_NAME);
+        // 权限标识变更时：清理旧权限（如果存在且未被其他菜单引用）
+        $originalPermission = $this->getOriginal('permission');
+        if (! blank($originalPermission) && $originalPermission !== $this->permission) {
+            $this->deletePermission();
+        }
+
+        $permission = Permission::findOrCreate($this->permission, self::GUARD_NAME);
+
+        if ($permission->display_name !== $this->title) {
+            $permission->update(['display_name' => $this->title]);
+        }
     }
 
     /**
@@ -273,7 +389,6 @@ class AdminMenu extends Model
         // 其他菜单仍在使用该权限标识时不删除
         $stillUsed = static::query()
             ->where('id', '!=', $this->id)
-            ->where('type', MenuType::BUTTON->value)
             ->where('permission', $oldPermission)
             ->exists();
 

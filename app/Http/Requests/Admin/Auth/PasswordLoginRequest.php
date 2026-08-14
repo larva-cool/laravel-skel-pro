@@ -45,12 +45,11 @@ class PasswordLoginRequest extends FormRequest
         if (! $admin || ! Hash::check($this->string('password')->toString(), $admin->password)) {
             validation_exception('password', trans('auth.failed'));
         }
-        if ($admin->status->isFrozen()) {// 禁止掉的用户不允许登录
+        if ($admin->status->isDisabled()) { // 禁止掉的用户不允许登录
             $admin->tokens()->delete();
-            validation_exception('account', trans('user.blocked'));
+            validation_exception('account', trans('admin.blocked'));
         }
 
         return $admin;
     }
 }
-

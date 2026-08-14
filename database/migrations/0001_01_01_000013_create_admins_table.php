@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('email')->unique()->nullable()->comment('邮箱');
             $table->string('phone', 11)->unique()->nullable()->comment('手机号');
             $table->string('name')->nullable()->comment('昵称');
+            $table->string('avatar', 500)->nullable()->comment('头像URL');
             $table->unsignedTinyInteger('status')->default(1)->comment('状态：1、active，0、frozen');
             $table->string('password')->nullable()->comment('密码');
             $table->rememberToken()->comment('记住我token');
@@ -36,7 +37,7 @@ return new class extends Migration
         });
         Schema::create('admin_menus', function (Blueprint $table) {
             $table->id()->comment('菜单ID');
-            $table->unsignedBigInteger('parent_id')->default(0)->index()->comment('父级菜单ID，0 表示顶级菜单');
+            $table->unsignedBigInteger('parent_id')->nullable()->index()->comment('父级菜单ID，null 表示顶级菜单');
             $table->string('path', 255)->nullable()->comment('路由路径');
             $table->string('name', 100)->nullable()->comment('路由名称（唯一标识）');
             $table->string('component', 255)->nullable()->comment('前端组件路径');
@@ -56,8 +57,7 @@ return new class extends Migration
             $table->boolean('show_badge')->default(false)->comment('是否显示红点徽章');
             $table->string('show_text_badge', 50)->nullable()->comment('文本徽章内容');
             $table->string('active_path', 255)->nullable()->comment('激活菜单高亮路径');
-            $table->string('permission', 100)->nullable()->comment('按钮权限标识（authMark）');
-            $table->json('roles')->nullable()->comment('可访问角色列表（前端权限模式）');
+            $table->string('permission', 100)->nullable()->comment('权限标识（authMark）');
             $table->timestamps();
             $table->softDeletes()->comment('删除时间');
 

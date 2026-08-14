@@ -13,7 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * 角色资源
  *
- * @mixin \Spatie\Permission\Models\Role
+ * @mixin \App\Models\System\Role
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -25,12 +25,13 @@ class RoleResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'role_id' => $this->id,
-            'role_name' => $this->name,
-            'role_code' => $this->name,
-            'description' => '',
-            'enabled' => true,
-            'create_time' => optional($this->created_at)?->toDateTimeString(),
+            'id' => $this->id,
+            'name' => $this->name,
+            'guard_name' => $this->guard_name,
+            'display_name' => $this->display_name,
+            'permissions_count' => $this->whenCounted('permissions'),
+            'created_at' => $this->created_at?->toDateTimeString(),
+            'updated_at' => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

@@ -11,7 +11,9 @@ use App\Enums\CacheKey;
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -21,7 +23,7 @@ use Illuminate\Support\Facades\Cache;
  * 地区表
  *
  * @property int $id ID
- * @property int $parent_id 父地区
+ * @property int|null $parent_id 父地区ID，null 表示顶级
  * @property string $name 名称
  * @property int|null $city_code 区号
  * @property float|null $lat 纬度
@@ -41,6 +43,8 @@ use Illuminate\Support\Facades\Cache;
 #[Fillable(['parent_id', 'name', 'area_code', 'lat', 'lng', 'city_code', 'sort'])]
 class Area extends Model
 {
+    use HasFactory;
+
     /**
      * The model's attributes.
      *
@@ -79,7 +83,12 @@ class Area extends Model
     {
         parent::booted();
         $clearCache = function (Area $model) {
-            Cache::forget(CacheKey::key(CacheKey::AREA_TREE, $model->parent_id));
+            Cache::forget(CacheKey::key(CacheKey::AREA_TREE, $model->parent_id ?? 'root'));
+            // 同时清除变更前父级缓存
+            $originalParentId = $model->getOriginal('parent_id');
+            if ($originalParentId !== $model->parent_id) {
+                Cache::forget(CacheKey::key(CacheKey::AREA_TREE, $originalParentId ?? 'root'));
+            }
         };
 
         static::saved($clearCache);
@@ -105,7 +114,17 @@ class Area extends Model
     }
 
     /**
+     * Get the recursive children relation.
+     */
+    public function childrenRecursive(): HasMany
+    {
+        return $this->children()->with('childrenRecursive');
+    }
+
+    /**
      * 获取子地区ID
+     *
+     * @return array<int, int>
      */
     public function getChildrenIds(): array
     {
@@ -116,11 +135,55 @@ class Area extends Model
 
     /**
      * 获取逗号分隔的子ID
+     *
+     * @param  int|null  $parentId  父地区ID，null 表示顶级
      */
-    public static function getChildIds(int|string $id): string
+    public static function getChildIds(?int $parentId = null): string
     {
-        return static::query()->where('parent_id', $id)
+        if ($parentId === null) {
+            return static::query()->whereNull('parent_id')
+                ->pluck('id')
+                ->implode(',');
+        }
+
+        return static::query()->where('parent_id', $parentId)
             ->pluck('id')
             ->implode(',');
+    }
+
+    /**
+     * 限定顶级地区。
+     */
+    public function scopeRoot(Builder $query): Builder
+    {
+        return $query->whereNull('parent_id');
+    }
+
+    /**
+     * 判断是否为顶级地区。
+     */
+    public function isRoot(): bool
+    {
+        return $this->parent_id === null;
+    }
+
+    /**
+     * 获取地区树形结构（递归加载子地区）。
+     *
+     * @param  int|null  $parentId  父地区ID，null 表示从顶级开始
+     */
+    public static function tree(?int $parentId = null): Collection
+    {
+        $query = static::with('childrenRecursive')
+            ->orderBy('sort')
+            ->orderBy('id');
+
+        if ($parentId === null) {
+            $query->whereNull('parent_id');
+        } else {
+            $query->where('parent_id', $parentId);
+        }
+
+        return $query->get();
     }
 }

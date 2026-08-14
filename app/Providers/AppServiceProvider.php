@@ -7,9 +7,12 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Models\Sanctum\PersonalAccessToken;
+use App\Models\System\PersonalAccessToken;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
 
@@ -44,6 +47,11 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale('zh');
         Model::shouldBeStrict(! $this->app->isProduction());
         Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
+        JsonResource::withoutWrapping();
 
+        // 定义 API 速率限制器
+        RateLimiter::for('api', function (object $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }

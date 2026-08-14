@@ -40,7 +40,7 @@ class AdminInfoResource extends JsonResource
             'user_id' => $admin->id,
             'user_name' => $admin->username,
             'email' => $admin->email ?? '',
-            'avatar' => '', // 管理员暂无头像功能
+            'avatar' => $admin->avatar ?? '', // 管理员头像
             'roles' => $roles,
             'buttons' => $allPermissions,
         ];
