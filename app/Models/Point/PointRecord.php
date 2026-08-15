@@ -30,7 +30,7 @@ use Illuminate\Support\Carbon;
  * @author Tongle Xu <xutongle@msn.com>
  */
 #[Table('point_records')]
-#[Fillable(['user_id', 'coins', 'description', 'type', 'source_id', 'source_type'])]
+#[Fillable(['user_id', 'points', 'description', 'expired_at', 'updated_at'])]
 #[Hidden(['user_id'])]
 class PointRecord extends Model
 {
