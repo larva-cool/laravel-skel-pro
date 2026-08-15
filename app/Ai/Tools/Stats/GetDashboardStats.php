@@ -33,7 +33,7 @@ class GetDashboardStats implements Tool
      */
     public function description(): Stringable|string
     {
-        return '获取后台数据概览，包括前台用户总数/今日新增/活跃数、管理员总数、近期登录记录、短信/邮件验证码发送量等关键指标。当管理员询问平台运行状况、用户规模、数据统计等概览问题时使用。只读操作。';
+        return '获取后台数据概览，包括前台用户总数/今日新增/活跃数、积分与金币存量及每日增减、管理员总数、近期登录记录、短信/邮件验证码发送量等关键指标。当管理员询问平台运行状况、用户规模、数据统计等概览问题时使用。只读操作。';
     }
 
     /**
@@ -101,12 +101,18 @@ class GetDashboardStats implements Tool
         $trend = UserStat::query()
             ->where('stat_date', '>=', $since->toDateString())
             ->orderBy('stat_date')
-            ->get(['stat_date', 'total_user_count', 'new_user_count', 'active_user_count'])
+            ->get()
             ->map(fn (UserStat $stat) => [
                 'date' => $stat->stat_date?->toDateString(),
                 'total' => $stat->total_user_count,
                 'new' => $stat->new_user_count,
                 'active' => $stat->active_user_count,
+                'point_total' => $stat->total_point_count,
+                'point_incr' => $stat->incr_point_count,
+                'point_decr' => $stat->decr_point_count,
+                'coin_total' => $stat->total_coin_count,
+                'coin_incr' => $stat->incr_coin_count,
+                'coin_decr' => $stat->decr_coin_count,
             ])->all();
 
         return [
@@ -117,6 +123,8 @@ class GetDashboardStats implements Tool
             'new_in_range' => $newInRange,
             'today_new' => $todayNew,
             'today_active' => $todayActive,
+            'total_points' => (int) User::query()->sum('available_points'),
+            'total_coins' => (int) User::query()->sum('available_coins'),
             'daily_trend' => $trend,
         ];
     }

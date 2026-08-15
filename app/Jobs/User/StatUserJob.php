@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
@@ -6,8 +7,8 @@ declare(strict_types=1);
 
 namespace App\Jobs\User;
 
-use App\Models\User;
 use App\Models\User\UserStat;
+use App\Services\UserStatsService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Carbon;
@@ -39,22 +40,12 @@ class StatUserJob implements ShouldQueue
      */
     public function handle(): void
     {
-        if (! UserStat::query()->where('stat_date', $this->statDate)->exists()) {
-            $totalCount = User::query()->count();
-            $registerCount = User::query()
-                ->where('created_at', '>=', $this->statDate.' 00:00:01')
-                ->where('created_at', '<=', $this->statDate.' 23:59:59')
-                ->count('id');
-            $activeUserCount = User::query()
-                ->where('last_active_at', '>=', $this->statDate.' 00:00:01')
-                ->where('last_active_at', '<=', $this->statDate.' 23:59:59')
-                ->count();
-            UserStat::create([
-                'stat_date' => $this->statDate,
-                'total_user_count' => $totalCount,
-                'new_user_count' => $registerCount,
-                'active_user_count' => $activeUserCount,
-            ]);
+        if (UserStat::query()->where('stat_date', $this->statDate)->exists()) {
+            return;
         }
+
+        $stats = app(UserStatsService::class)->calculate(Carbon::parse($this->statDate));
+
+        UserStat::create($stats);
     }
 }

@@ -93,7 +93,7 @@ class AdminController extends Controller
         $admin = Admin::create($validated);
         $data = $request->safe()->only(['roles']);
         // 检查角色设置
-        if ($data['roles']) {
+        if (! empty($data['roles'])) {
             $admin->syncRoles($data['roles']);
         }
 
@@ -125,7 +125,7 @@ class AdminController extends Controller
         }
 
         // 检查角色设置
-        if ($data['roles']) {
+        if (! empty($data['roles'])) {
             $admin->syncRoles($data['roles']);
         }
 
@@ -226,7 +226,7 @@ class AdminController extends Controller
     public function resetPassword(Request $request, Admin $admin): JsonResponse
     {
         $data = $request->validate([
-            'password' => ['required', 'string', Password::defaults()],
+            'password' => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
 
         $admin->resetPassword($data['password']);

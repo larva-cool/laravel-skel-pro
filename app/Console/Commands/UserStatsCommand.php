@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Models\User\UserStat;
 use App\Services\UserStatsService;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -16,15 +17,24 @@ use Illuminate\Support\Carbon;
 /**
  * 用户统计命令
  *
- * 统计指定日期（默认昨天）的用户总数、新增数、活跃数并写入 user_stats 表。
- * 支持通过 --start/--end 选项批量补录历史日期。
+ * 统计指定日期（默认昨天）的用户总数、新增数、活跃数，以及积分、金币的存量与增减，
+ * 并写入 user_stats 表。支持通过 --start/--end 选项批量补录历史日期。
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
 #[Signature('stats:user {date? : 统计日期，格式 YYYY-MM-DD，默认昨天} {--start= : 批量补录起始日期 YYYY-MM-DD} {--end= : 批量补录结束日期 YYYY-MM-DD，默认今天}')]
-#[Description('统计用户数据（总数、新增、活跃）并写入 user_stats 表')]
+#[Description('统计用户数据（总数、新增、活跃、积分、金币）并写入 user_stats 表')]
 class UserStatsCommand extends Command
 {
+    /**
+     * 输出表格的表头。
+     *
+     * @var array<int, string>
+     */
+    protected const TABLE_HEADERS = [
+        '日期', '用户总数', '新增用户', '活跃用户', '积分存量', '积分增/减', '金币存量', '金币增/减',
+    ];
+
     /**
      * Execute the console command.
      */
@@ -49,15 +59,7 @@ class UserStatsCommand extends Command
         $stat = $service->record($date);
 
         $this->info('统计完成：');
-        $this->table(
-            ['日期', '用户总数', '新增用户', '活跃用户'],
-            [[
-                $stat->stat_date?->toDateString(),
-                $stat->total_user_count,
-                $stat->new_user_count,
-                $stat->active_user_count,
-            ]]
-        );
+        $this->table(self::TABLE_HEADERS, [$this->toRow($stat)]);
 
         return self::SUCCESS;
     }
@@ -85,16 +87,30 @@ class UserStatsCommand extends Command
 
         $records = $service->backfill($startDate, $endDate);
 
-        $rows = array_map(fn ($stat) => [
+        $rows = array_map(fn ($stat) => $this->toRow($stat), $records);
+
+        $this->table(self::TABLE_HEADERS, $rows);
+        $this->info('补录完成，共写入 '.count($records).' 条记录。');
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * 将统计记录转换为表格行。
+     *
+     * @return array<int, mixed>
+     */
+    protected function toRow(UserStat $stat): array
+    {
+        return [
             $stat->stat_date?->toDateString(),
             $stat->total_user_count,
             $stat->new_user_count,
             $stat->active_user_count,
-        ], $records);
-
-        $this->table(['日期', '用户总数', '新增用户', '活跃用户'], $rows);
-        $this->info('补录完成，共写入 '.count($records).' 条记录。');
-
-        return self::SUCCESS;
+            $stat->total_point_count,
+            '+'.$stat->incr_point_count.' / -'.$stat->decr_point_count,
+            $stat->total_coin_count,
+            '+'.$stat->incr_coin_count.' / -'.$stat->decr_coin_count,
+        ];
     }
 }

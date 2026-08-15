@@ -7,7 +7,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Jobs;
 
+use App\Enums\CoinType;
+use App\Enums\PointType;
 use App\Jobs\User\StatUserJob;
+use App\Models\Coin\CoinTrade;
+use App\Models\Point\PointTrade;
 use App\Models\User;
 use App\Models\User\UserStat;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -60,7 +64,7 @@ class StatUserJobTest extends TestCase
     public function handle_creates_stat_record(): void
     {
         $date = '2025-01-10';
-        User::factory()->count(5)->create();
+        User::factory()->count(5)->create(['created_at' => '2025-01-09 12:00:00']);
 
         $job = new StatUserJob($date);
         $job->handle();
@@ -114,7 +118,7 @@ class StatUserJobTest extends TestCase
             'active_user_count' => 50,
         ]);
 
-        User::factory()->count(5)->create();
+        User::factory()->count(5)->create(['created_at' => '2025-01-09 12:00:00']);
 
         $job = new StatUserJob($date);
         $job->handle();
@@ -124,6 +128,84 @@ class StatUserJobTest extends TestCase
             'stat_date' => $date,
             'total_user_count' => 100, // 未被覆盖
         ]);
+    }
+
+    #[Test]
+    #[TestDox('handle 统计积分存量与当日增减')]
+    public function handle_counts_point_stats(): void
+    {
+        $date = '2025-01-10';
+        $user = User::factory()->create(['created_at' => '2025-01-09 12:00:00']);
+
+        // 历史积分（计入存量，不计入当日增减）
+        $this->createPointTrade($user, 50, '历史发放', PointType::TYPE_SIGN_IN, '2025-01-09 10:00:00');
+        // 当日发放
+        $this->createPointTrade($user, 100, '当日发放', PointType::TYPE_SIGN_IN, '2025-01-10 10:00:00');
+        // 当日消耗
+        $this->createPointTrade($user, -30, '当日消耗', PointType::TYPE_ADMIN_DEDUCT, '2025-01-10 15:00:00');
+
+        $job = new StatUserJob($date);
+        $job->handle();
+
+        $stat = UserStat::query()->where('stat_date', $date)->first();
+        $this->assertSame(120, $stat->total_point_count);
+        $this->assertSame(100, $stat->incr_point_count);
+        $this->assertSame(30, $stat->decr_point_count);
+    }
+
+    #[Test]
+    #[TestDox('handle 统计金币存量与当日增减')]
+    public function handle_counts_coin_stats(): void
+    {
+        $date = '2025-01-10';
+        $user = User::factory()->create(['created_at' => '2025-01-09 12:00:00']);
+
+        $this->createCoinTrade($user, 200, '当日充值', CoinType::TYPE_ADMIN_RECHARGE, '2025-01-10 10:00:00');
+        $this->createCoinTrade($user, -80, '当日消费', CoinType::TYPE_TRANS, '2025-01-10 16:00:00');
+        // 次日交易不应计入
+        $this->createCoinTrade($user, 500, '次日充值', CoinType::TYPE_ADMIN_RECHARGE, '2025-01-11 09:00:00');
+
+        $job = new StatUserJob($date);
+        $job->handle();
+
+        $stat = UserStat::query()->where('stat_date', $date)->first();
+        $this->assertSame(120, $stat->total_coin_count);
+        $this->assertSame(200, $stat->incr_coin_count);
+        $this->assertSame(80, $stat->decr_coin_count);
+    }
+
+    /**
+     * 创建指定时间的积分流水。
+     */
+    protected function createPointTrade(User $user, int $points, string $description, PointType $type, string $createdAt): void
+    {
+        $trade = PointTrade::create([
+            'user_id' => $user->id,
+            'points' => $points,
+            'description' => $description,
+            'type' => $type,
+            'source_type' => User::class,
+            'source_id' => $user->id,
+        ]);
+
+        PointTrade::query()->whereKey($trade->id)->update(['created_at' => $createdAt]);
+    }
+
+    /**
+     * 创建指定时间的金币流水。
+     */
+    protected function createCoinTrade(User $user, int $coins, string $description, CoinType $type, string $createdAt): void
+    {
+        $trade = CoinTrade::create([
+            'user_id' => $user->id,
+            'coins' => $coins,
+            'description' => $description,
+            'type' => $type,
+            'source_type' => User::class,
+            'source_id' => $user->id,
+        ]);
+
+        CoinTrade::query()->whereKey($trade->id)->update(['created_at' => $createdAt]);
     }
 
     #[Test]

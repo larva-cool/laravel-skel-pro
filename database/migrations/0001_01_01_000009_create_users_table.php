@@ -67,6 +67,12 @@ return new class extends Migration
             $table->unsignedBigInteger('total_user_count')->default(0)->comment('用户总数');
             $table->unsignedBigInteger('new_user_count')->default(0)->comment('注册用户数');
             $table->unsignedBigInteger('active_user_count')->default(0)->comment('活跃用户总数');
+            $table->unsignedBigInteger('total_point_count')->default(0)->comment('累计可用积分总量');
+            $table->unsignedBigInteger('incr_point_count')->default(0)->comment('当日发放积分总量');
+            $table->unsignedBigInteger('decr_point_count')->default(0)->comment('当日消耗积分总量');
+            $table->unsignedBigInteger('total_coin_count')->default(0)->comment('累计可用金币总量');
+            $table->unsignedBigInteger('incr_coin_count')->default(0)->comment('当日发放金币总量');
+            $table->unsignedBigInteger('decr_coin_count')->default(0)->comment('当日消耗金币总量');
             $table->timestamp('created_at')->nullable()->comment('统计时间');
 
             $table->comment('用户统计表');

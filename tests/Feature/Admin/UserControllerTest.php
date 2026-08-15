@@ -7,9 +7,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
 
+use App\Enums\CoinType;
+use App\Enums\PointType;
 use App\Http\Controllers\Admin\UserController;
 use App\Models\Admin\Admin;
 use App\Models\User;
+use App\Support\CoinHelper;
+use App\Support\PointHelper;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -155,7 +159,8 @@ class UserControllerTest extends TestCase
     #[TestDox('调整用户积分')]
     public function admin_can_adjust_user_points(): void
     {
-        $user = User::factory()->create(['available_points' => 100]);
+        $user = User::factory()->create();
+        PointHelper::incr($user->id, 100, $user, PointType::TYPE_ADMIN_RECHARGE, '初始化');
 
         $response = $this->actingAsAdmin()->putJson("/admin/users/{$user->id}/adjust-balance", [
             'type' => 'points',
@@ -167,18 +172,67 @@ class UserControllerTest extends TestCase
     }
 
     #[Test]
-    #[TestDox('调整用户金币（扣减不低于0）')]
-    public function admin_can_adjust_user_coins_not_below_zero(): void
+    #[TestDox('调整用户积分（扣减）')]
+    public function admin_can_deduct_user_points(): void
     {
-        $user = User::factory()->create(['available_coins' => 10]);
+        $user = User::factory()->create();
+        PointHelper::incr($user->id, 100, $user, PointType::TYPE_ADMIN_RECHARGE, '初始化');
+
+        $response = $this->actingAsAdmin()->putJson("/admin/users/{$user->id}/adjust-balance", [
+            'type' => 'points',
+            'amount' => -30,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('available_points', 70);
+    }
+
+    #[Test]
+    #[TestDox('调整用户积分（积分不足返回422）')]
+    public function admin_cannot_deduct_points_beyond_balance(): void
+    {
+        $user = User::factory()->create();
+        PointHelper::incr($user->id, 10, $user, PointType::TYPE_ADMIN_RECHARGE, '初始化');
+
+        $response = $this->actingAsAdmin()->putJson("/admin/users/{$user->id}/adjust-balance", [
+            'type' => 'points',
+            'amount' => -50,
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertSame(10, $user->fresh()->available_points);
+    }
+
+    #[Test]
+    #[TestDox('调整用户金币')]
+    public function admin_can_adjust_user_coins(): void
+    {
+        $user = User::factory()->create();
+        CoinHelper::incr($user, 100, $user, CoinType::TYPE_ADMIN_RECHARGE, '初始化');
+
+        $response = $this->actingAsAdmin()->putJson("/admin/users/{$user->id}/adjust-balance", [
+            'type' => 'coins',
+            'amount' => -40,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('available_coins', 60);
+    }
+
+    #[Test]
+    #[TestDox('调整用户金币（金币不足返回422）')]
+    public function admin_cannot_deduct_coins_beyond_balance(): void
+    {
+        $user = User::factory()->create();
+        CoinHelper::incr($user, 10, $user, CoinType::TYPE_ADMIN_RECHARGE, '初始化');
 
         $response = $this->actingAsAdmin()->putJson("/admin/users/{$user->id}/adjust-balance", [
             'type' => 'coins',
             'amount' => -50,
         ]);
 
-        $response->assertOk()
-            ->assertJsonPath('available_coins', 0);
+        $response->assertStatus(422);
+        $this->assertSame(10, $user->fresh()->available_coins);
     }
 
     #[Test]

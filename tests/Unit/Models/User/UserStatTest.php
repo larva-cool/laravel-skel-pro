@@ -54,6 +54,42 @@ class UserStatTest extends TestCase
     }
 
     #[Test]
+    #[TestDox('fillable 允许批量赋值积分与金币统计字段')]
+    public function fillable_allows_point_and_coin_fields(): void
+    {
+        $stat = UserStat::create([
+            'stat_date' => '2025-01-01',
+            'total_point_count' => 1000,
+            'incr_point_count' => 200,
+            'decr_point_count' => 50,
+            'total_coin_count' => 3000,
+            'incr_coin_count' => 400,
+            'decr_coin_count' => 100,
+        ]);
+
+        $this->assertSame(1000, $stat->total_point_count);
+        $this->assertSame(200, $stat->incr_point_count);
+        $this->assertSame(50, $stat->decr_point_count);
+        $this->assertSame(3000, $stat->total_coin_count);
+        $this->assertSame(400, $stat->incr_coin_count);
+        $this->assertSame(100, $stat->decr_coin_count);
+    }
+
+    #[Test]
+    #[TestDox('积分与金币统计字段默认为 0')]
+    public function point_and_coin_fields_default_to_zero(): void
+    {
+        $stat = UserStat::create(['stat_date' => '2025-01-01']);
+
+        $this->assertSame(0, $stat->total_point_count);
+        $this->assertSame(0, $stat->incr_point_count);
+        $this->assertSame(0, $stat->decr_point_count);
+        $this->assertSame(0, $stat->total_coin_count);
+        $this->assertSame(0, $stat->incr_coin_count);
+        $this->assertSame(0, $stat->decr_coin_count);
+    }
+
+    #[Test]
     #[TestDox('stat_date 正确 cast 为 date')]
     public function stat_date_is_cast_to_date(): void
     {
