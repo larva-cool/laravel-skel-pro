@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Events\User;
@@ -28,22 +27,16 @@ class LoginSucceeded implements ShouldBroadcast
 
     /**
      * The authenticated user.
-     *
-     * @var Authenticatable
      */
     public Authenticatable $user;
 
     /**
      * The user ip.
-     *
-     * @var string
      */
     public string $ip;
 
     /**
      * The user ip port.
-     *
-     * @var string
      */
     public string $port;
 
@@ -54,11 +47,6 @@ class LoginSucceeded implements ShouldBroadcast
 
     /**
      * Create a new event instance.
-     *
-     * @param  Authenticatable  $user
-     * @param  string  $ip
-     * @param  string  $port
-     * @param  string  $userAgent
      */
     public function __construct(Authenticatable $user, string $ip, string $port, string $userAgent)
     {

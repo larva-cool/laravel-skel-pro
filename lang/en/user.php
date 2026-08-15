@@ -15,7 +15,7 @@ return [
     | Messages related to users / administrators.
     |
     */
-    
+
     'login_success' => 'Login successful.',
     'logout_success' => 'Logout successful.',
     'blocked' => 'This account has been blocked, please contact customer service',
