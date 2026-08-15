@@ -157,6 +157,41 @@ return new class extends Migration
                 ],
             ],
 
+            // ========== 用户管理 ==========
+            [
+                'key' => 'user',
+                'path' => '/user',
+                'name' => 'User',
+                'component' => '/index/index',
+                'title' => '用户管理',
+                'icon' => 'ri:user-line',
+                'type' => MenuType::DIRECTORY,
+                'sort' => 2,
+                'children' => [
+                    [
+                        'key' => 'user.list',
+                        'path' => 'list',
+                        'name' => 'UserList',
+                        'component' => '/user/list/index',
+                        'title' => '用户列表',
+                        'icon' => 'ri:user-search-line',
+                        'type' => MenuType::MENU,
+                        'sort' => 1,
+                        'keep_alive' => true,
+                        'permission' => 'users.index',
+                        'buttons' => [
+                            ['title' => '编辑用户', 'permission' => 'users.edit'],
+                            ['title' => '删除用户', 'permission' => 'users.delete'],
+                            ['title' => '冻结/启用用户', 'permission' => 'users.edit'],
+                            ['title' => '重置用户密码', 'permission' => 'users.edit'],
+                            ['title' => '重置联系方式', 'permission' => 'users.edit'],
+                            ['title' => '调整余额', 'permission' => 'users.edit'],
+                            ['title' => '延长VIP', 'permission' => 'users.edit'],
+                        ],
+                    ],
+                ],
+            ],
+
             // ========== 系统管理 ==========
             [
                 'key' => 'system',
@@ -304,6 +339,17 @@ return new class extends Migration
                         'keep_alive' => true,
                         'permission' => 'mail-codes.index',
                     ],
+                    [
+                        'key' => 'system.notification',
+                        'path' => 'notification',
+                        'name' => 'Notification',
+                        'component' => '/system/notification/index',
+                        'title' => '通知管理',
+                        'icon' => 'ri:notification-3-line',
+                        'type' => MenuType::MENU,
+                        'sort' => 8,
+                        'keep_alive' => true,
+                    ],
                 ],
             ],
 
@@ -331,6 +377,31 @@ return new class extends Migration
                         'buttons' => [
                             ['title' => '下线', 'permission' => 'online-user.kick'],
                         ],
+                    ],
+                ],
+            ],
+
+            // ========== AI 助手 ==========
+            [
+                'key' => 'ai',
+                'path' => '/ai',
+                'name' => 'AI',
+                'component' => '/index/index',
+                'title' => 'AI 助手',
+                'icon' => 'ri:robot-line',
+                'type' => MenuType::DIRECTORY,
+                'sort' => 96,
+                'children' => [
+                    [
+                        'key' => 'ai.chat',
+                        'path' => 'chat',
+                        'name' => 'AIChat',
+                        'component' => '/ai/chat/index',
+                        'title' => 'AI 聊天',
+                        'icon' => 'ri:chat-3-line',
+                        'type' => MenuType::MENU,
+                        'sort' => 1,
+                        'keep_alive' => false,
                     ],
                 ],
             ],
