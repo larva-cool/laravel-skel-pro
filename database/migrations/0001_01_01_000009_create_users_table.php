@@ -41,8 +41,15 @@ return new class extends Migration
         });
 
         Schema::create('user_profiles', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->unsignedBigInteger('user_id')->primary()->comment('用户ID');
+            $table->unsignedTinyInteger('gender')->default(0)->comment('性别：0、保密,1、男，2、女');
+            $table->date('birthday')->nullable()->comment('生日');
+            $table->unsignedInteger('province_id')->nullable()->comment('省ID');
+            $table->unsignedInteger('city_id')->nullable()->comment('市ID');
+            $table->unsignedInteger('district_id')->nullable()->comment('区ID');
+            $table->string('website', 255)->nullable()->comment('个人网站');
+            $table->text('intro')->nullable()->comment('个人介绍');
+            $table->text('bio')->nullable()->comment('个性签名');
 
             $table->comment('用户个人资料表');
         });

@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Observers;
@@ -18,6 +17,7 @@ class UserObserver
     public function created(User $user): void
     {
         $user->extra()->create();
+        $user->profile()->create();
     }
 
     /**
@@ -49,7 +49,7 @@ class UserObserver
      */
     public function forceDeleted(User $user): void
     {
-        //
         $user->extra->delete();
+        $user->profile->delete();
     }
 }
