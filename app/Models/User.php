@@ -11,6 +11,8 @@ namespace App\Models;
 use App\Enums\UserStatus;
 use App\Events\User\EmailReset;
 use App\Events\User\PhoneReset;
+use App\Models\Coin\CoinTrade;
+use App\Models\Point\PointTrade;
 use App\Models\System\LoginHistory;
 use App\Models\System\Social;
 use App\Models\Traits\DateTimeFormatter;
@@ -28,6 +30,7 @@ use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -68,6 +71,8 @@ use Laravel\Sanctum\HasApiTokens;
  *
  * 关系对象
  * @property UserExtra $extra 用户扩展信息
+ * @property Collection<int,PointTrade> $points 积分交易明细
+ * @property Collection<int,CoinTrade> $coins 金币交易明细
  * @property Collection<int,LoginHistory> $loginHistories 登录历史
  * @property Collection<int,Social> $socials 社交账号
  *
@@ -171,6 +176,22 @@ class User extends Authenticatable
     public function extra(): HasOne
     {
         return $this->hasOne(UserExtra::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get the point trades relation.
+     */
+    public function points(): HasMany
+    {
+        return $this->hasMany(PointTrade::class)->latest('id');
+    }
+
+    /**
+     * Get the coin trades relation.
+     */
+    public function coins(): HasMany
+    {
+        return $this->hasMany(CoinTrade::class)->latest('id');
     }
 
     /**
