@@ -9,6 +9,7 @@ namespace App\Models\Point;
 
 use App\Models\Model;
 use App\Models\Traits\HasUser;
+use App\Support\PointHelper;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -61,7 +62,8 @@ class PointRecord extends Model
     protected static function booted(): void
     {
         static::deleted(function (PointRecord $model) {
-            // TODO 删除过期后更新可用积分
+            // 删除过期后更新可用积分
+            PointHelper::updatePointTotal($model->user_id);
         });
     }
 
