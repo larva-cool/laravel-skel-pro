@@ -61,6 +61,9 @@ Route::apiResource('admins', AdminController::class);
 
 // 用户管理
 Route::get('users/{user}/login-histories', [UserController::class, 'loginHistories'])->name('users.login-histories');
+Route::get('users/{user}/socials', [UserController::class, 'socials'])->name('users.socials');
+Route::get('users/{user}/point-trades', [UserController::class, 'pointTrades'])->name('users.point-trades');
+Route::get('users/{user}/coin-trades', [UserController::class, 'coinTrades'])->name('users.coin-trades');
 Route::put('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
 Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
 Route::put('users/{user}/reset-contact', [UserController::class, 'resetContact'])->name('users.reset-contact');

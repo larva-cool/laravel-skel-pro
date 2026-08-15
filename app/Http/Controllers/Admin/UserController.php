@@ -16,7 +16,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\UserAdjustBalanceRequest;
 use App\Http\Requests\Admin\User\UserExtendVipRequest;
 use App\Http\Requests\Admin\User\UserUpdateRequest;
+use App\Http\Resources\Admin\CoinTradeResource;
 use App\Http\Resources\Admin\LoginHistoryResource;
+use App\Http\Resources\Admin\PointTradeResource;
+use App\Http\Resources\Admin\SocialResource;
 use App\Http\Resources\Admin\UserDetailResource;
 use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
@@ -252,5 +255,77 @@ class UserController extends Controller
         $items = $query->orderByDesc('login_at')->paginate($perPage);
 
         return LoginHistoryResource::collection($items);
+    }
+
+    /**
+     * 获取用户社交账号（分页）
+     */
+    public function socials(Request $request, User $user): AnonymousResourceCollection
+    {
+        $perPage = per_page($request);
+
+        $query = $user->socials();
+
+        if ($provider = $request->query('provider')) {
+            $query->where('provider', $provider);
+        }
+
+        return SocialResource::collection($query->paginate($perPage));
+    }
+
+    /**
+     * 获取用户积分流水（分页）
+     */
+    public function pointTrades(Request $request, User $user): AnonymousResourceCollection
+    {
+        $perPage = per_page($request);
+
+        $query = $user->points();
+
+        if ($type = $request->query('type')) {
+            $query->where('type', $type);
+        }
+
+        if ($keyword = $request->query('keyword')) {
+            $query->where('description', 'like', "%{$keyword}%");
+        }
+
+        if ($startDate = $request->query('start_date')) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+
+        if ($endDate = $request->query('end_date')) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        return PointTradeResource::collection($query->paginate($perPage));
+    }
+
+    /**
+     * 获取用户金币流水（分页）
+     */
+    public function coinTrades(Request $request, User $user): AnonymousResourceCollection
+    {
+        $perPage = per_page($request);
+
+        $query = $user->coins();
+
+        if ($type = $request->query('type')) {
+            $query->where('type', $type);
+        }
+
+        if ($keyword = $request->query('keyword')) {
+            $query->where('description', 'like', "%{$keyword}%");
+        }
+
+        if ($startDate = $request->query('start_date')) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+
+        if ($endDate = $request->query('end_date')) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        return CoinTradeResource::collection($query->paginate($perPage));
     }
 }
