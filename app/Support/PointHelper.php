@@ -12,6 +12,7 @@ use App\Exceptions\InsufficientPointsException;
 use App\Models\Point\PointRecord;
 use App\Models\Point\PointTrade;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -21,29 +22,49 @@ use Illuminate\Support\Carbon;
  * 该类封装了积分的增加、减少、过期处理以及积分总额更新等核心功能，
  * 遵循先过期先使用的原则处理积分消耗，并提供异常处理机制。
  *
+ * 所有写操作均在数据库事务中执行，并对参与计算的积分记录加行锁，
+ * 以避免并发场景下的超扣与积分总额漂移。
+ *
  * @author Tongle Xu <xutongle@msn.com>
  */
 class PointHelper
 {
+    /**
+     * 遍历积分记录时每批读取的条数
+     */
+    protected const CHUNK_SIZE = 100;
+
+    /**
+     * 空过期时间的排序哨兵值（视为永不过期，排在最后消耗）
+     */
+    protected const NEVER_EXPIRE_AT = '9999-12-31 23:59:59';
+
     /**
      * 增加用户积分
      *
      * 创建积分交易记录并更新用户积分总额
      *
      * @param  int|string  $userId  用户ID
-     * @param  int  $points  增加的积分数量
+     * @param  int  $points  增加的积分数量，必须为正数
      * @param  Model  $source  积分来源模型
      * @param  PointType  $type  交易类型，使用本类的TYPE_*常量
      * @param  string  $desc  交易描述
      * @return PointTrade 创建的积分交易记录模型实例
+     *
+     * @throws \InvalidArgumentException 当积分数量非正数时抛出
      */
     public static function incr(int|string $userId, int $points, Model $source, PointType $type, string $desc = ''): PointTrade
     {
+        if ($points <= 0) {
+            throw new \InvalidArgumentException('积分数量必须为正数');
+        }
+
         // 计算积分过期时间（默认365天后）
         $expireTime = Carbon::now()->addDays((int) settings('user.point_expiration', 365));
 
-        // 创建积分交易记录
-        return self::createTradeLog($userId, $points, $source->getKey(), $source->getMorphClass(), $type, $desc, $expireTime);
+        return self::connection()->transaction(
+            fn () => self::createTradeLog($userId, $points, $source->getKey(), $source->getMorphClass(), $type, $desc, $expireTime)
+        );
     }
 
     /**
@@ -52,74 +73,86 @@ class PointHelper
      * 根据先过期先使用的原则消耗用户积分，积分不足时抛出异常
      *
      * @param  int|string  $userId  用户ID
-     * @param  int  $point  要减少的积分数量
+     * @param  int  $point  要减少的积分数量，必须为正数
      * @param  Model  $source  积分消耗来源模型
      * @param  PointType  $type  交易类型，使用本类的TYPE_*常量
      * @param  string  $desc  交易描述
      * @return bool 操作是否成功
      *
+     * @throws \InvalidArgumentException 当积分数量非正数时抛出
      * @throws InsufficientPointsException 当积分不足时抛出
      */
     public static function decr(int|string $userId, int $point, Model $source, PointType $type, string $desc): bool
     {
-        $sumPoint = 0;            // 累计可用积分
-        $targetRecord = null;     // 目标积分记录
-        $recordIds = [];          // 要删除的积分记录ID数组
-        $foundEnough = false;     // 是否找到足够的积分标志
+        if ($point <= 0) {
+            throw new \InvalidArgumentException('积分数量必须为正数');
+        }
 
-        // 使用chunkById高效查询并处理积分记录（避免大量数据时的内存问题）
-        PointRecord::query()
-            ->where('user_id', $userId)
-            ->where('expired_at', '>', Carbon::now()) // 只查询未过期的积分
-            ->orderBy('expired_at', 'ASC')            // 按过期时间升序（先过期先使用）
-            ->orderBy('id', 'ASC')                    // 按ID升序（相同过期时间时按创建顺序）
-            ->chunkById(10, function ($pointRecords) use (&$sumPoint, $point, &$recordIds, &$targetRecord, &$foundEnough) {
-                if ($foundEnough) {
-                    return; // 已找到足够积分，提前退出
+        return self::connection()->transaction(function () use ($userId, $point, $source, $type, $desc): bool {
+            $sumPoint = 0;            // 已锁定的可用积分累计值
+            $consumedIds = [];        // 被完整或部分消耗的积分记录ID
+            $targetRecord = null;     // 满足扣减所需的最后一条积分记录
+            $cursorExpiredAt = null;  // 键集游标：上一批最后一条记录的过期时间
+            $cursorId = null;         // 键集游标：上一批最后一条记录的ID
+
+            // 按「过期时间 + ID」键集分页遍历，游标与排序键一致，避免重复累加或漏读
+            while ($targetRecord === null) {
+                $records = self::availableRecords($userId)
+                    ->when($cursorId !== null, fn (Builder $query) => $query->whereRaw(
+                        '('.self::expireOrderExpression().' > ? or ('.self::expireOrderExpression().' = ? and id > ?))',
+                        [$cursorExpiredAt, $cursorExpiredAt, $cursorId]
+                    ))
+                    ->orderByRaw(self::expireOrderExpression().' asc')
+                    ->orderBy('id')
+                    ->limit(self::CHUNK_SIZE)
+                    ->lockForUpdate()
+                    ->get();
+
+                if ($records->isEmpty()) {
+                    break;
                 }
 
-                /** @var PointRecord $pointRecord */
-                foreach ($pointRecords as $pointRecord) {
-                    $sumPoint += $pointRecord->points;
-                    $recordIds[] = $pointRecord->id;
+                /** @var PointRecord $record */
+                foreach ($records as $record) {
+                    $sumPoint += $record->points;
+                    $consumedIds[] = $record->id;
 
                     if ($sumPoint >= $point) {
-                        $targetRecord = $pointRecord;
-                        $foundEnough = true;
+                        $targetRecord = $record;
                         break;
                     }
                 }
-            });
 
-        // 检查积分是否足够
-        if (! $targetRecord || $sumPoint < $point) {
-            throw new InsufficientPointsException(__('user.insufficient_points', ['points' => $sumPoint]));
-        } elseif ($sumPoint == $point) {
-            // 积分刚好足够，添加最后一条记录ID
-            $recordIds[] = $targetRecord->id;
-        } else {
-            // 积分有剩余，需要拆分最后一条记录
-            $leftPoint = $sumPoint - $point;
-            $usePoint = $targetRecord->points - $leftPoint;
+                /** @var PointRecord $lastRecord */
+                $lastRecord = $records->last();
+                $cursorExpiredAt = $lastRecord->expired_at?->toDateTimeString() ?? self::NEVER_EXPIRE_AT;
+                $cursorId = $lastRecord->id;
 
-            // 创建新的积分记录存储剩余积分
-            $newPointRecord = $targetRecord->replicate()->fill([
-                'points' => $leftPoint,
-                'updated_at' => Carbon::now(),
-            ]);
-            $newPointRecord->save();
+                if ($records->count() < self::CHUNK_SIZE) {
+                    break;
+                }
+            }
 
-            // 更新最后一条记录的积分值
-            PointRecord::query()->where('id', $targetRecord->id)->update(['points' => $usePoint]);
-        }
+            if ($targetRecord === null) {
+                throw new InsufficientPointsException(__('user.insufficient_points', ['points' => $sumPoint]));
+            }
 
-        // 删除已使用的积分记录
-        PointRecord::query()->whereIn('id', $recordIds)->delete();
+            // 最后一条记录有剩余积分，拆分出一条新记录承载剩余部分
+            if ($sumPoint > $point) {
+                $targetRecord->replicate()->fill([
+                    'points' => $sumPoint - $point,
+                    'updated_at' => Carbon::now(),
+                ])->save();
+            }
 
-        // 创建积分交易记录（负值表示减少）
-        self::createTradeLog($userId, -$point, $source->getKey(), $source->getMorphClass(), $type, $desc);
+            // 删除已消耗的积分记录
+            PointRecord::query()->whereIn('id', $consumedIds)->delete();
 
-        return true;
+            // 创建积分交易记录（负值表示减少）
+            self::createTradeLog($userId, -$point, $source->getKey(), $source->getMorphClass(), $type, $desc);
+
+            return true;
+        });
     }
 
     /**
@@ -131,26 +164,27 @@ class PointHelper
      */
     public static function handlingExpired(int|string $userId): void
     {
-        // 查询所有已过期的积分记录
-        $expiredRecords = PointRecord::query()
-            ->where('user_id', $userId)
-            ->where('expired_at', '<', Carbon::now()) // 只查询已过期的积分
-            ->get();
+        self::connection()->transaction(function () use ($userId): void {
+            // 查询所有已过期的积分记录（空过期时间视为永不过期）
+            $expiredRecords = PointRecord::query()
+                ->where('user_id', $userId)
+                ->whereNotNull('expired_at')
+                ->where('expired_at', '<=', Carbon::now())
+                ->lockForUpdate()
+                ->get();
 
-        if ($expiredRecords->isEmpty()) {
-            return; // 没有过期积分需要处理
-        }
-        // 计算过期积分总数
-        $totalExpiredPoints = $expiredRecords->sum('points');
+            if ($expiredRecords->isEmpty()) {
+                return;
+            }
 
-        // 创建积分交易记录（负值表示减少）
-        self::createTradeLog($userId, -$totalExpiredPoints, 0, PointRecord::class, PointType::TYPE_RECOVERY, '过期回收');
+            $totalExpiredPoints = (int) $expiredRecords->sum('points');
 
-        // 删除已过期的积分记录
-        PointRecord::query()
-            ->where('user_id', $userId)
-            ->where('expired_at', '<', Carbon::now())
-            ->delete();
+            // 删除已过期的积分记录（按已锁定的ID删除，避免与查询条件产生时间漂移）
+            PointRecord::query()->whereIn('id', $expiredRecords->modelKeys())->delete();
+
+            // 创建积分交易记录（负值表示减少）
+            self::createTradeLog($userId, -$totalExpiredPoints, 0, PointRecord::class, PointType::TYPE_RECOVERY, '过期回收');
+        });
     }
 
     /**
@@ -163,13 +197,45 @@ class PointHelper
     public static function updatePointTotal(int|string $userId): void
     {
         // 计算用户当前可用积分总额（未过期的积分）
-        $pointTotal = PointRecord::query()
-            ->where('user_id', $userId)
-            ->where('expired_at', '>', Carbon::now())
-            ->sum('points');
+        $pointTotal = (int) self::availableRecords($userId)->sum('points');
 
-        // 更新用户表中的可用积分字段
-        User::query()->where('id', $userId)->update(['available_points' => $pointTotal]);
+        // 更新用户表中的可用积分字段（该字段为无符号整型，需兜底为非负值）
+        User::query()->where('id', $userId)->update(['available_points' => max(0, $pointTotal)]);
+    }
+
+    /**
+     * 获取用户可用积分记录查询构造器
+     *
+     * 可用积分为未过期的积分，空过期时间视为永不过期。
+     *
+     * @param  int|string  $userId  用户ID
+     */
+    protected static function availableRecords(int|string $userId): Builder
+    {
+        return PointRecord::query()
+            ->where('user_id', $userId)
+            ->where(fn (Builder $query) => $query
+                ->whereNull('expired_at')
+                ->orWhere('expired_at', '>', Carbon::now())
+            );
+    }
+
+    /**
+     * 过期时间排序表达式
+     *
+     * 将空过期时间替换为哨兵值，使其排在最后消耗，同时保证键集分页游标可比较。
+     */
+    protected static function expireOrderExpression(): string
+    {
+        return "coalesce(expired_at, '".self::NEVER_EXPIRE_AT."')";
+    }
+
+    /**
+     * 获取积分相关表所在的数据库连接
+     */
+    protected static function connection(): \Illuminate\Database\ConnectionInterface
+    {
+        return PointRecord::query()->getConnection();
     }
 
     /**

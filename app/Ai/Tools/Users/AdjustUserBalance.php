@@ -7,7 +7,13 @@ declare(strict_types=1);
 
 namespace App\Ai\Tools\Users;
 
+use App\Enums\CoinType;
+use App\Enums\PointType;
+use App\Exceptions\InsufficientCoinsException;
+use App\Exceptions\InsufficientPointsException;
 use App\Models\User;
+use App\Support\CoinHelper;
+use App\Support\PointHelper;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Ai\Approvals\Approval;
 use Laravel\Ai\Concerns\InteractsWithApprovals;
@@ -98,19 +104,34 @@ class AdjustUserBalance implements Approvable, Tool
             return '未找到目标用户，操作已取消。';
         }
 
-        $field = $request->string('currency')->toString() === 'coins'
-            ? 'available_coins'
-            : 'available_points';
-        $amount = $request->integer('amount');
+        $isCoins = $request->string('currency')->toString() === 'coins';
         $isAdd = $request->string('operation')->toString() === 'add';
+        $amount = $request->integer('amount');
+        $reason = $request->string('reason')->toString();
+        $desc = $reason !== '' ? $reason : ($isAdd ? '后台充值' : '后台扣减');
 
-        $before = (int) $user->{$field};
-        $after = $isAdd ? $before + $amount : max(0, $before - $amount);
-
-        $user->forceFill([$field => $after])->save();
-
-        $currencyName = $field === 'available_coins' ? '金币' : '积分';
+        $currencyName = $isCoins ? '金币' : '积分';
         $operationName = $isAdd ? '增加' : '扣减';
+        $field = $isCoins ? 'available_coins' : 'available_points';
+        $before = (int) $user->{$field};
+
+        try {
+            if ($isCoins) {
+                $type = $isAdd ? CoinType::TYPE_ADMIN_RECHARGE : CoinType::TYPE_ADMIN_DEDUCT;
+                $isAdd
+                    ? CoinHelper::incr($user->id, $amount, $user, $type, $desc)
+                    : CoinHelper::decr($user->id, $amount, $user, $type, $desc);
+            } else {
+                $type = $isAdd ? PointType::TYPE_ADMIN_RECHARGE : PointType::TYPE_ADMIN_DEDUCT;
+                $isAdd
+                    ? PointHelper::incr($user->id, $amount, $user, $type, $desc)
+                    : PointHelper::decr($user->id, $amount, $user, $type, $desc);
+            }
+        } catch (InsufficientCoinsException|InsufficientPointsException $e) {
+            return "操作已取消：{$e->getMessage()}";
+        }
+
+        $after = (int) $user->fresh()->{$field};
 
         return "已为用户 [{$user->id}] {$user->name} {$operationName} {$amount} {$currencyName}。变动前：{$before}，变动后：{$after}。";
     }
