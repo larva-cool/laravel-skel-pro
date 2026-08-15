@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Services;
@@ -132,7 +131,7 @@ class MailCaptchaService
         $verifyCode = MailCode::query()->where('email', $this->email)->where('state', 0)->orderBy('send_at',
             'desc')->value('code');
         if ($verifyCode === null || $regenerate) {
-            $verifyCode = Str::password($this->length,false,true,false);
+            $verifyCode = Str::password($this->length, false, true, false);
         }
 
         return $verifyCode;

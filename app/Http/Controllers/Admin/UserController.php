@@ -7,7 +7,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\CoinType;
+use App\Enums\PointType;
 use App\Enums\UserStatus;
+use App\Exceptions\InsufficientCoinsException;
+use App\Exceptions\InsufficientPointsException;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\UserAdjustBalanceRequest;
 use App\Http\Requests\Admin\User\UserExtendVipRequest;
 use App\Http\Requests\Admin\User\UserUpdateRequest;
@@ -15,6 +20,8 @@ use App\Http\Resources\Admin\LoginHistoryResource;
 use App\Http\Resources\Admin\UserDetailResource;
 use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
+use App\Support\CoinHelper;
+use App\Support\PointHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -176,12 +183,32 @@ class UserController extends Controller
     public function adjustBalance(UserAdjustBalanceRequest $request, User $user): UserResource
     {
         $data = $request->validated();
-        $field = $data['type'] === 'points' ? 'available_points' : 'available_coins';
         $amount = (int) $data['amount'];
+        $desc = $data['description'] ?? ($amount > 0 ? '后台充值' : '后台扣减');
 
-        $newValue = max(0, $user->{$field} + $amount);
-        $user->{$field} = $newValue;
-        $user->save();
+        if ($data['type'] === 'points') {
+            $type = $amount > 0 ? PointType::TYPE_ADMIN_RECHARGE : PointType::TYPE_ADMIN_DEDUCT;
+            if ($amount > 0) {
+                PointHelper::incr($user->id, $amount, $user, $type, $desc);
+            } else {
+                try {
+                    PointHelper::decr($user->id, abs($amount), $user, $type, $desc);
+                } catch (InsufficientPointsException $e) {
+                    abort(422, $e->getMessage());
+                }
+            }
+        } else {
+            $type = $amount > 0 ? CoinType::TYPE_ADMIN_RECHARGE : CoinType::TYPE_ADMIN_DEDUCT;
+            if ($amount > 0) {
+                CoinHelper::incr($user, $amount, $user, $type, $desc);
+            } else {
+                try {
+                    CoinHelper::decr($user, abs($amount), $user, $type, $desc);
+                } catch (InsufficientCoinsException $e) {
+                    abort(422, $e->getMessage());
+                }
+            }
+        }
 
         return new UserResource($user->fresh());
     }

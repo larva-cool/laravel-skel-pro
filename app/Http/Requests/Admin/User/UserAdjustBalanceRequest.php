@@ -14,7 +14,7 @@ use Illuminate\Foundation\Http\FormRequest;
  *
  * @property-read string $type 调整类型：points/coins
  * @property-read int $amount 调整金额（正数增加，负数减少）
- * @property-read string|null $remark 备注
+ * @property-read string|null $description 备注
  *
  * @author Tongle Xu <xutongle@msn.com>
  */
@@ -38,7 +38,7 @@ class UserAdjustBalanceRequest extends FormRequest
         return [
             'type' => ['required', 'string', 'in:points,coins'],
             'amount' => ['required', 'integer', 'not_in:0'],
-            'remark' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
