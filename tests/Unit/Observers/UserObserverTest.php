@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Observers;
 
+use App\Enums\SocialProvider;
+use App\Models\System\LoginHistory;
+use App\Models\System\Social;
 use App\Models\User;
 use App\Models\User\UserExtra;
 use App\Models\User\UserProfile;
@@ -65,19 +68,41 @@ class UserObserverTest extends TestCase
     }
 
     #[Test]
-    #[TestDox('forceDeleted 删除 UserExtra 和 UserProfile 记录')]
-    public function force_deleted_deletes_user_extra_and_profile(): void
+    #[TestDox('forceDeleted 删除 UserExtra、UserProfile、登录历史和社交账号记录')]
+    public function force_deleted_deletes_user_extra_profile_login_histories_and_socials(): void
     {
         $user = User::factory()->create();
         $extra = $user->extra;
         $profile = $user->profile;
 
+        // 创建一些登录历史记录
+        LoginHistory::factory()->count(3)->create([
+            'user_id' => $user->id,
+            'user_type' => get_class($user),
+        ]);
+
+        // 创建一些社交账号记录
+        Social::create([
+            'user_id' => $user->id,
+            'user_type' => get_class($user),
+            'provider' => SocialProvider::WECHAT_MP,
+            'openid' => 'openid123',
+            'unionid' => 'unionid123',
+            'access_token' => 'token123',
+            'refresh_token' => 'refresh123',
+            'expiry_at' => now()->addDays(30),
+        ]);
+
         $this->assertNotNull($extra);
         $this->assertNotNull($profile);
+        $this->assertDatabaseHas('login_histories', ['user_id' => $user->id]);
+        $this->assertDatabaseHas('socials', ['user_id' => $user->id]);
 
         $this->observer->forceDeleted($user);
 
         $this->assertDatabaseMissing('user_extras', ['user_id' => $user->id]);
         $this->assertDatabaseMissing('user_profiles', ['user_id' => $user->id]);
+        $this->assertDatabaseMissing('login_histories', ['user_id' => $user->id]);
+        $this->assertDatabaseMissing('socials', ['user_id' => $user->id]);
     }
 }

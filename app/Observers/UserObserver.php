@@ -51,5 +51,7 @@ class UserObserver
     {
         $user->extra->delete();
         $user->profile->delete();
+        $user->loginHistories()->delete();
+        $user->socials()->delete();
     }
 }
