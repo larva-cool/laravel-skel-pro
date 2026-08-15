@@ -11,12 +11,14 @@ use App\Enums\UserStatus;
 use App\Models\User;
 use App\Rules\NameRule;
 use App\Rules\PhoneRule;
+use App\Rules\UsernameRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
  * 用户更新请求
  *
+ * @property-read string|null $username 用户名
  * @property-read string|null $email 邮箱
  * @property-read string|null $phone 手机号
  * @property-read string|null $name 昵称
@@ -44,6 +46,10 @@ class UserUpdateRequest extends FormRequest
         $userId = (int) $this->route('user')?->id ?? (int) $this->route('user');
 
         return [
+            'username' => [
+                'nullable', 'string', 'min:3', 'max:50', new UsernameRule,
+                Rule::unique(User::class, 'username')->ignore($userId),
+            ],
             'email' => [
                 'nullable', 'email', 'max:100',
                 Rule::unique(User::class, 'email')->ignore($userId),
