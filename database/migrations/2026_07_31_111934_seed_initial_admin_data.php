@@ -211,7 +211,7 @@ return new class extends Migration
                         'title' => '系统设置',
                         'icon' => 'ri:settings-4-line',
                         'type' => MenuType::MENU,
-                        'sort' => 8,
+                        'sort' => 0,
                         'keep_alive' => true,
                     ],
                     [
