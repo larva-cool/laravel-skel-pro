@@ -93,7 +93,7 @@ class PointHelper
 
         // 检查积分是否足够
         if (! $targetRecord || $sumPoint < $point) {
-            throw new InsufficientPointsException('积分不足，当前可用积分: '.$sumPoint);
+            throw new InsufficientPointsException(__('user.insufficient_points', ['points' => $sumPoint]));
         } elseif ($sumPoint == $point) {
             // 积分刚好足够，添加最后一条记录ID
             $recordIds[] = $targetRecord->id;

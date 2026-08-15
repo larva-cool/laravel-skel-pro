@@ -24,4 +24,7 @@ return [
     'phone_register_disabled' => 'Phone registration is disabled.',
     'phone_login_disabled' => 'Phone login is disabled.',
     'password_login_disabled' => 'Password login is disabled.',
+
+    'insufficient_points' => 'Insufficient points, currently available: :points',
+    'insufficient_coins' => 'Insufficient coins, currently available: :coins',
 ];

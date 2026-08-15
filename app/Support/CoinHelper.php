@@ -35,14 +35,17 @@ class CoinHelper
      */
     public static function incr(int|string|User $user, int $coins, Model $source, CoinType $type, string $desc = ''): CoinTrade
     {
-        if ($user instanceof User) {
-            $user = $user->id;
-        }
         if ($coins <= 0) {
             throw new \InvalidArgumentException('金币数量必须为正数');
         }
 
-        return self::createTrade($user, $coins, $source->getKey(), $source->getMorphClass(), $type, $desc);
+        $trade = self::createTrade(self::resolveUserId($user), $coins, $source->getKey(), $source->getMorphClass(), $type, $desc);
+
+        if ($user instanceof User) {
+            $user->refresh();
+        }
+
+        return $trade;
     }
 
     /**
@@ -59,23 +62,34 @@ class CoinHelper
      */
     public static function decr(int|string|User $user, int $coins, Model $source, CoinType $type, string $desc): bool
     {
-        if ($user instanceof User) {
-            $user = $user->id;
-        }
         if ($coins <= 0) {
             throw new \InvalidArgumentException('金币数量必须为正数');
         }
 
+        $userId = self::resolveUserId($user);
+
         // 检查金币是否足够
-        $currentCoins = self::getCurrentCoins($user);
+        $currentCoins = self::getCurrentCoins($userId);
         if ($currentCoins < $coins) {
-            throw new InsufficientCoinsException(__('user.insufficient_coins'));
+            throw new InsufficientCoinsException(__('user.insufficient_coins', ['coins' => $currentCoins]));
         }
 
         // 创建金币交易记录
-        self::createTrade($user, -$coins, $source->getKey(), $source->getMorphClass(), $type, $desc);
+        self::createTrade($userId, -$coins, $source->getKey(), $source->getMorphClass(), $type, $desc);
+
+        if ($user instanceof User) {
+            $user->refresh();
+        }
 
         return true;
+    }
+
+    /**
+     * 解析用户ID
+     */
+    protected static function resolveUserId(int|string|User $user): int
+    {
+        return (int) ($user instanceof User ? $user->id : $user);
     }
 
     /**
@@ -123,19 +137,19 @@ class CoinHelper
         $conn = CoinTrade::query()->getConnection();
         $conn->beginTransaction();
         try {
-            $user = User::find($userId);
-            if (! $user) {
+            if (! User::query()->whereKey($userId)->exists()) {
                 throw new \InvalidArgumentException('用户不存在');
             }
 
             // 检查金币是否足够
-            if ($coins < 0 && $user->available_coins + $coins < 0) {
-                throw new InsufficientCoinsException(__('user.insufficient_coins'));
+            $currentCoins = self::getCurrentCoins($userId);
+            if ($coins < 0 && $currentCoins + $coins < 0) {
+                throw new InsufficientCoinsException(__('user.insufficient_coins', ['coins' => $currentCoins]));
             }
 
             /** @var CoinTrade $trade */
             $trade = CoinTrade::create([
-                'user_id' => (int) $user->id,
+                'user_id' => (int) $userId,
                 'coins' => $coins,
                 'source_id' => $sourceId,
                 'source_type' => $sourceType,
@@ -143,8 +157,8 @@ class CoinHelper
                 'description' => $desc,
             ]);
 
-            // 更新用户当前金币数量
-            $user->updateQuietly(['available_coins' => $user->available_coins + $trade->coins]);
+            // 按流水重新汇总并更新用户可用金币总额
+            self::updateCoinTotal($userId);
 
             $conn->commit();
 

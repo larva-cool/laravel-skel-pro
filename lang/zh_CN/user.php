@@ -24,4 +24,7 @@ return [
     'phone_register_disabled' => '手机注册已关闭',
     'phone_login_disabled' => '手机登录已关闭',
     'password_login_disabled' => '密码登录已关闭',
+
+    'insufficient_points' => '积分不足，当前可用积分：:points',
+    'insufficient_coins' => '金币不足，当前可用金币：:coins',
 ];
