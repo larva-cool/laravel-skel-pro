@@ -3,7 +3,6 @@
 /**
  * This is NOT a freeware, use is subject to license terms.
  */
-
 declare(strict_types=1);
 
 namespace App\Models\Coin;
@@ -58,12 +57,31 @@ class CoinTrade extends Model
             'created_at' => 'datetime',
         ];
     }
-    
+
     /**
      * Get the source entity that the Transaction belongs to.
      */
     public function source(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    /**
+     * 获取用户当前金币数
+     */
+    public static function getCurrentCoins(int $userId): int
+    {
+        return (int) self::where('user_id', $userId)->sum('coins');
+    }
+
+    /**
+     * 修复用户金币余额
+     */
+    public static function fixCurrentCoins(int $userId): bool
+    {
+        $sumCoins = self::getCurrentCoins($userId);
+        $updated = \App\Models\User::where('id', $userId)->update(['available_coins' => max(0, $sumCoins)]);
+
+        return (bool) $updated;
     }
 }
