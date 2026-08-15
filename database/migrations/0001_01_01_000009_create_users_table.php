@@ -40,6 +40,13 @@ return new class extends Migration
             $table->comment('用户表');
         });
 
+        Schema::create('user_profiles', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+
+            $table->comment('用户个人资料表');
+        });
+
         Schema::create('user_extras', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id')->primary()->comment('用户ID');
             $table->unsignedTinyInteger('username_change_count')->default(0)->nullable()->comment('用户名修改次数');
@@ -75,6 +82,7 @@ return new class extends Migration
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('user_stats');
         Schema::dropIfExists('user_extras');
+        Schema::dropIfExists('user_profiles');
         Schema::dropIfExists('users');
     }
 };

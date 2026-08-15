@@ -15,6 +15,7 @@ use App\Models\System\LoginHistory;
 use App\Models\System\Social;
 use App\Models\Traits\DateTimeFormatter;
 use App\Models\User\UserExtra;
+use App\Models\User\UserProfile;
 use App\Observers\UserObserver;
 use App\Policies\UserPolicy;
 use Database\Factories\UserFactory;
@@ -154,6 +155,14 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn () => $this->status?->label() ?? ''
         )->shouldCache();
+    }
+
+    /**
+     * Get the profile relation.
+     */
+    public function profile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class, 'user_id', 'id');
     }
 
     /**
