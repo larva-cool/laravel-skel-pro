@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\PhoneCodeController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UploaderController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,15 @@ Route::put('admins/{admin}/toggle-status', [AdminController::class, 'toggleStatu
 Route::put('admins/{admin}/reset-password', [AdminController::class, 'resetPassword'])->name('admins.reset-password');
 Route::put('admins/change-password', [AdminController::class, 'changePassword'])->name('admins.change-password');
 Route::apiResource('admins', AdminController::class);
+
+// 用户管理
+Route::get('users/{user}/login-histories', [UserController::class, 'loginHistories'])->name('users.login-histories');
+Route::put('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+Route::put('users/{user}/reset-contact', [UserController::class, 'resetContact'])->name('users.reset-contact');
+Route::put('users/{user}/adjust-balance', [UserController::class, 'adjustBalance'])->name('users.adjust-balance');
+Route::put('users/{user}/extend-vip', [UserController::class, 'extendVip'])->name('users.extend-vip');
+Route::apiResource('users', UserController::class)->except(['store']);
 
 // 配置管理
 Route::get('settings/groups', [SettingController::class, 'groups'])->name('settings.groups');
