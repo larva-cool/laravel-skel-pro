@@ -109,6 +109,7 @@ class PermissionMiddlewareTest extends TestCase
             \App\Http\Controllers\Admin\AreaController::class,
             \App\Http\Controllers\Admin\PhoneCodeController::class,
             \App\Http\Controllers\Admin\MailCodeController::class,
+            \App\Http\Controllers\Admin\MonitorController::class,
         ];
 
         foreach ($controllers as $controller) {
@@ -152,6 +153,8 @@ class PermissionMiddlewareTest extends TestCase
             '短信验证码列表' => ['getJson', '/admin/phone-codes', 'phone-codes.index'],
             '邮件验证码列表' => ['getJson', '/admin/mail-codes', 'mail-codes.index'],
             '全部权限列表' => ['getJson', '/admin/roles/permissions', 'roles.index'],
+            '服务器监控' => ['getJson', '/admin/monitor/servers', 'pulse.index'],
+            '缓存监控' => ['getJson', '/admin/monitor/cache', 'pulse.index'],
         ];
     }
 

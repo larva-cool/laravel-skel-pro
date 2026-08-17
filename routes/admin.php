@@ -91,6 +91,19 @@ Route::get('attachments', [\App\Http\Controllers\Admin\AttachmentController::cla
 Route::get('attachments/{id}', [\App\Http\Controllers\Admin\AttachmentController::class, 'show'])->name('attachments.show');
 Route::delete('attachments/{id}', [\App\Http\Controllers\Admin\AttachmentController::class, 'destroy'])->name('attachments.destroy');
 
+// 性能监控（Laravel Pulse 数据）
+Route::group(['prefix' => 'monitor'], function (Registrar $registrar) {
+    $registrar->get('servers', [\App\Http\Controllers\Admin\MonitorController::class, 'servers'])->name('monitor.servers');
+    $registrar->get('queues', [\App\Http\Controllers\Admin\MonitorController::class, 'queues'])->name('monitor.queues');
+    $registrar->get('cache', [\App\Http\Controllers\Admin\MonitorController::class, 'cache'])->name('monitor.cache');
+    $registrar->get('exceptions', [\App\Http\Controllers\Admin\MonitorController::class, 'exceptions'])->name('monitor.exceptions');
+    $registrar->get('slow-queries', [\App\Http\Controllers\Admin\MonitorController::class, 'slowQueries'])->name('monitor.slow-queries');
+    $registrar->get('slow-requests', [\App\Http\Controllers\Admin\MonitorController::class, 'slowRequests'])->name('monitor.slow-requests');
+    $registrar->get('slow-jobs', [\App\Http\Controllers\Admin\MonitorController::class, 'slowJobs'])->name('monitor.slow-jobs');
+    $registrar->get('slow-outgoing-requests', [\App\Http\Controllers\Admin\MonitorController::class, 'slowOutgoingRequests'])->name('monitor.slow-outgoing-requests');
+    $registrar->get('usage', [\App\Http\Controllers\Admin\MonitorController::class, 'usage'])->name('monitor.usage');
+});
+
 // AI 聊天
 Route::get('chat/conversations', [\App\Http\Controllers\Admin\ChatController::class, 'conversations'])->name('chat.conversations');
 Route::get('chat/conversations/{conversationId}', [\App\Http\Controllers\Admin\ChatController::class, 'conversation'])->name('chat.conversation');
