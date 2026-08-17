@@ -58,4 +58,16 @@ return [
 
     // System settings
     'setting_save_success' => 'Settings saved successfully.',
+
+    // Attachment management
+    'attachment_delete_success' => 'Attachment deleted successfully.',
+    'attachment_batch_delete_success' => 'Attachments deleted successfully.',
+    'attachment_rename_success' => 'Attachment renamed successfully.',
+    'attachment_move_success' => 'Attachment moved successfully.',
+    'attachment_move_failed' => 'Failed to move the attachment.',
+    'attachment_register_success' => 'Attachment registered successfully.',
+    'attachment_file_missing' => 'The physical file does not exist.',
+    'attachment_target_exists' => 'A file already exists at the target path.',
+    'attachment_invalid_target_path' => 'The target path is invalid.',
+    'attachment_temporary_url_unsupported' => 'The current storage driver does not support temporary URLs.',
 ];

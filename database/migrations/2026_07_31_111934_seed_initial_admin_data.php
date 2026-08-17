@@ -354,6 +354,23 @@ return new class extends Migration
                         'sort' => 8,
                         'keep_alive' => true,
                     ],
+                    [
+                        'key' => 'system.attachment',
+                        'path' => 'attachment',
+                        'name' => 'Attachment',
+                        'component' => '/system/attachment/index',
+                        'title' => '附件管理',
+                        'icon' => 'ri:folder-image-line',
+                        'type' => MenuType::MENU,
+                        'sort' => 9,
+                        'keep_alive' => true,
+                        'permission' => 'attachments.index',
+                        'buttons' => [
+                            ['title' => '登记附件', 'permission' => 'attachments.create'],
+                            ['title' => '编辑附件', 'permission' => 'attachments.edit'],
+                            ['title' => '删除附件', 'permission' => 'attachments.delete'],
+                        ],
+                    ],
                 ],
             ],
 

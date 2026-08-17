@@ -100,6 +100,19 @@ Laravel Skel Pro 是一个基于 Laravel 13.x 的企业级 API 模板项目，�
 | 邮件验证码记录 | 查看邮件验证码发送记录 |
 | 上传服务 | 文件上传Token生成 |
 
+#### 3.3.3 附件管理（上传文件管理器）
+| 功能 | 说明 |
+|------|------|
+| 附件列表 | 分页查询，支持类型/磁盘/上传者/关键词/时间范围筛选 |
+| 附件详情 | 查看单个附件的完整元数据 |
+| 附件删除 | 单个删除、批量删除，同步删除 Storage 物理文件 |
+| 附件预览 | 图片/视频返回可访问 URL（公有盘直链，私有盘临时签名 URL） |
+| 附件下载 | 服务端流式下载，保留原始文件名 |
+| 临时 URL | 为私有磁盘生成有时效的签名访问地址 |
+| 附件重命名 | 修改显示名称，不改动物理路径 |
+| 附件移动 | 在同一磁盘内移动物理路径（Storage 层 move） |
+| 直传登记 | 客户端直传云存储后回调登记元数据 |
+
 ### 3.4 核心服务
 
 #### 3.4.1 验证码服务
@@ -366,6 +379,25 @@ laravel-skel-pro/
 | created_at | TIMESTAMP | 创建时间 |
 | updated_at | TIMESTAMP | 更新时间 |
 
+#### 5.1.10 附件表 (attachments)
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| id | BIGINT | 主键 |
+| uploader_type | VARCHAR | 上传者类型（App\\Models\\User/App\\Models\\Admin\\Admin） |
+| uploader_id | BIGINT | 上传者ID |
+| disk | VARCHAR | 存储磁盘（local/public/s3等） |
+| path | VARCHAR | 物理存储路径 |
+| name | VARCHAR | 显示名称 |
+| original_name | VARCHAR | 原始文件名 |
+| extension | VARCHAR | 文件扩展名 |
+| mime_type | VARCHAR | MIME类型 |
+| type | VARCHAR | 附件类型（image/video/audio/document/other） |
+| size | BIGINT | 文件大小（字节） |
+| hash | VARCHAR | 文件哈希（用于去重校验） |
+| created_at | TIMESTAMP | 创建时间 |
+| updated_at | TIMESTAMP | 更新时间 |
+| deleted_at | TIMESTAMP | 删除时间（软删除） |
+
 ## 6. API 接口说明
 
 ### 6.1 统一响应格式
@@ -480,15 +512,177 @@ laravel-skel-pro/
 |------|------|------|------|
 | POST | /admin/uploader/token | 获取上传Token | 是 |
 
-## 7. 非功能性需求
+#### 6.3.10 附件管理（/admin/attachments）
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | /admin/attachments | 获取附件列表（分页+筛选） | attachments.index |
+| GET | /admin/attachments/{id} | 获取附件详情 | attachments.index |
+| DELETE | /admin/attachments/{id} | 删除单个附件 | attachments.delete |
+| DELETE | /admin/attachments | 批量删除附件（ids 数组） | attachments.delete |
+| GET | /admin/attachments/{id}/download | 流式下载附件 | attachments.index |
+| GET | /admin/attachments/{id}/temporary-url | 获取临时签名访问地址 | attachments.index |
+| PUT | /admin/attachments/{id}/rename | 重命名附件显示名 | attachments.edit |
+| PUT | /admin/attachments/{id}/move | 移动附件物理路径 | attachments.edit |
+| POST | /admin/attachments/register | 直传完成后登记元数据 | attachments.create |
 
-### 7.1 性能要求
+##### 列表请求参数
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| per_page | int | 否 | 每页条数，1-100，默认15 |
+| type | string | 否 | 附件类型（image/video/audio/document/other） |
+| disk | string | 否 | 存储磁盘名 |
+| keyword | string | 否 | 按显示名/原始文件名模糊匹配 |
+| extension | string | 否 | 按扩展名精确匹配 |
+| uploader_id | int | 否 | 上传者ID |
+| start_date | date | 否 | 创建时间起始 |
+| end_date | date | 否 | 创建时间截止 |
+
+##### 附件资源字段（AttachmentResource）
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | int | 附件ID |
+| name | string | 显示名称 |
+| original_name | string | 原始文件名 |
+| disk | string | 存储磁盘 |
+| path | string | 存储路径 |
+| url | string\|null | 可访问 URL（公有盘直链，私有盘为 null） |
+| type | object | 附件类型（value + label） |
+| extension | string | 扩展名 |
+| mime_type | string | MIME 类型 |
+| size | int | 字节数 |
+| size_text | string | 人类可读大小 |
+| exists | bool | 物理文件是否存在（仅详情接口返回） |
+| uploader | object\|null | 上传者摘要（id + name） |
+| created_at | string | 创建时间 |
+
+## 7. 附件管理技术方案
+
+### 7.1 设计原则
+- **元数据入库、字节流交给 Storage**：`attachments` 表只保存 `disk + path` 等元数据，所有物理读写通过 `Storage::disk($disk)` 完成，不出现任何 `storage_path()` 硬编码，保证 local/public/s3 三种驱动行为一致。
+- **复用现有上传链路**：不改动 [UploaderController](file:///Users/xutongle/Skel/laravel-skel-pro/app/Http/Controllers/Admin/UploaderController.php) 的对外契约，在 [UploadRequest](file:///Users/xutongle/Skel/laravel-skel-pro/app/Http/Requests/Admin/Uploader/UploadRequest.php) 落盘成功后追加台账写入，上传返回体在原字段基础上增加 `id`。
+- **分层职责清晰**：Controller 只做 HTTP 编排，物理文件操作与台账一致性收敛到 `AttachmentService`。
+- **失败可回滚**：删除、移动等涉及"数据库 + 物理文件"两段操作的动作，以数据库事务包裹，物理操作失败即回滚台账。
+
+### 7.2 代码结构
+
+```
+app/
+├── Enums/
+│   └── AttachmentType.php              # 附件类型枚举（image/video/audio/document/other）
+├── Models/
+│   └── System/
+│       └── Attachment.php              # 附件模型（软删除 + morphTo uploader）
+├── Services/
+│   └── AttachmentService.php           # 台账 + Storage 的一致性编排
+├── Http/
+│   ├── Controllers/Admin/
+│   │   └── AttachmentController.php    # 后台附件管理控制器
+│   ├── Requests/Admin/Attachment/
+│   │   ├── AttachmentIndexRequest.php  # 列表筛选参数校验
+│   │   ├── AttachmentRenameRequest.php # 重命名校验
+│   │   ├── AttachmentMoveRequest.php   # 移动路径校验
+│   │   ├── AttachmentDestroyRequest.php# 批量删除 ids 校验
+│   │   └── AttachmentRegisterRequest.php # 直传登记校验
+│   └── Resources/Admin/
+│       └── AttachmentResource.php      # 附件资源
+database/
+├── migrations/
+│   └── xxxx_create_attachments_table.php
+└── factories/System/
+    └── AttachmentFactory.php
+tests/Feature/Admin/
+└── AttachmentControllerTest.php
+```
+
+### 7.3 数据表设计要点
+- 主键从 `10000000` 起（与 `mail_codes` 等表保持一致风格），带表注释与字段注释。
+- 索引：`(uploader_type, uploader_id)` 复合索引、`type` 索引、`hash` 索引、`(disk, path)` 唯一索引（防止同一物理文件重复登记）。
+- 使用软删除 `deleted_at`：接口默认执行"硬删除物理文件 + 软删除台账"，保留审计线索。
+- `size` 使用 `unsignedBigInteger`，`hash` 使用 `char(32)`（md5）并允许为空（直传场景可能拿不到内容哈希）。
+
+### 7.4 AttachmentService 关键方法
+
+| 方法 | 职责 | Storage 调用 |
+|------|------|-------------|
+| `record(array $meta): Attachment` | 上传成功后写台账 | 无 |
+| `url(Attachment $a): ?string` | 公有盘返回直链 | `Storage::disk()->url()` |
+| `temporaryUrl(Attachment $a, int $minutes): string` | 私有盘签名地址；本地盘回退直链 | `Storage::disk()->temporaryUrl()` |
+| `download(Attachment $a): StreamedResponse` | 流式下载，保留原始名 | `Storage::disk()->download()` |
+| `move(Attachment $a, string $newPath): Attachment` | 同盘移动，事务内先改库再移文件 | `Storage::disk()->move()` |
+| `delete(Attachment $a): bool` | 删物理文件后软删台账 | `Storage::disk()->delete()` |
+| `deleteMany(array $ids): int` | 按磁盘分组批量删除 | `Storage::disk()->delete(array)` |
+| `exists(Attachment $a): bool` | 校验物理文件是否仍存在 | `Storage::disk()->exists()` |
+
+要点说明：
+- `temporaryUrl()` 需捕获驱动不支持的异常（local 驱动在未启用 `serve` 时不支持），降级为 `url()` 或 422 提示。
+- `move()` 只允许同磁盘内移动，目标路径必须落在 `uploads/` 前缀下，且先做 `exists()` 冲突检查，避免覆盖既有文件。
+- `deleteMany()` 按 `disk` 分组后一次性传数组给 `Storage::disk()->delete()`，减少远端请求次数。
+- 物理文件已丢失（`exists() === false`）时删除仍视为成功，只清理台账，避免脏数据无法删除。
+
+### 7.5 上传链路改造
+在 [UploadRequest::handleUpload()](file:///Users/xutongle/Skel/laravel-skel-pro/app/Http/Requests/Admin/Uploader/UploadRequest.php#L56-L70) 落盘成功后调用 `AttachmentService::record()`，`uploader` 取 `$this->user()`（morphTo 兼容 Admin 与 User 两种守卫）。返回结构在原有字段上追加 `id`，前端可凭 `id` 直接进入附件管理器操作，旧调用方不受影响。
+
+直传场景（`uploader/token`）由于文件不经过服务端，改为前端上传成功后调用 `POST /admin/attachments/register` 补登记，服务端用 `Storage::disk()->exists()` 与 `size()` 校验真实存在后再入库，防止伪造记录。
+
+### 7.6 权限与菜单
+- 新增权限：`attachments.index`、`attachments.create`、`attachments.edit`、`attachments.delete`，在控制器构造器中以 `permission:` 中间件绑定，与 [AreaController](file:///Users/xutongle/Skel/laravel-skel-pro/app/Http/Controllers/Admin/AreaController.php#L26-L33) 保持同一模式。
+- 新增菜单：`system.attachment`，挂在"系统管理"目录下，含"删除附件""重命名附件"按钮权限。
+- 通过新建迁移追加权限与菜单，不修改已执行过的历史迁移。
+
+### 7.7 配置项
+沿用现有 `upload.*` 配置（`upload.storage`、`upload.allow_extension` 等），新增两项：
+
+| 配置键 | 默认值 | 说明 |
+|--------|--------|------|
+| upload.temporary_url_minutes | 10 | 临时签名 URL 有效期（分钟） |
+| upload.prune_orphan_days | 0 | 孤儿附件自动清理天数，0 表示不清理 |
+
+### 7.8 提示文案
+后台提示统一走语言包 `lang/{zh_CN,en}/admin.php`，新增键：
+
+| Key | 中文 |
+|-----|------|
+| attachment_delete_success | 附件删除成功 |
+| attachment_batch_delete_success | 批量删除成功 |
+| attachment_rename_success | 附件重命名成功 |
+| attachment_move_success | 附件移动成功 |
+| attachment_register_success | 附件登记成功 |
+| attachment_file_missing | 物理文件不存在 |
+| attachment_target_exists | 目标路径已存在同名文件 |
+| attachment_invalid_target_path | 目标路径不合法 |
+| attachment_temporary_url_unsupported | 当前存储驱动不支持临时访问地址 |
+
+### 7.9 测试计划
+`tests/Feature/Admin/AttachmentControllerTest.php` 使用 `RefreshDatabase` + `Storage::fake()`，PHPUnit 12 属性语法（`#[Test]`、`#[CoversClass]`、`#[TestDox]`），覆盖：
+
+- 列表：分页、按 type/disk/keyword/extension/时间范围筛选、未认证 401、无权限 403
+- 详情：正常返回、`exists` 字段准确、不存在返回 404
+- 删除：物理文件被删除且台账软删除；物理文件缺失时仍删除成功；批量删除返回删除条数
+- 下载：响应头 `Content-Disposition` 含原始文件名
+- 临时 URL：s3 fake 返回签名地址；不支持的驱动返回 422
+- 重命名：仅显示名变更，`path` 不变
+- 移动：物理文件在新路径存在、旧路径不存在；目标已存在返回 422；跨磁盘返回 422
+- 直传登记：物理文件不存在时拒绝入库
+
+### 7.10 实施步骤
+1. 新建 `AttachmentType` 枚举（实现 `HasLabel`）
+2. 新建 `attachments` 表迁移 + `Attachment` 模型 + `AttachmentFactory`
+3. 实现 `AttachmentService`
+4. 新建 FormRequest 与 `AttachmentResource`
+5. 实现 `AttachmentController` 并在 [routes/admin.php](file:///Users/xutongle/Skel/laravel-skel-pro/routes/admin.php) 注册路由
+6. 改造 `UploadRequest` 写入台账，新增 `register` 接口
+7. 追加权限、菜单、配置项、语言包迁移与文案
+8. 编写并运行功能测试，执行 `vendor/bin/pint --dirty --format agent`
+
+## 8. 非功能性需求
+
+### 8.1 性能要求
 - API 响应时间：< 200ms（95% 请求）
 - 支持并发用户数：1000+
 - 数据库查询优化：避免 N+1 查询
 - 缓存策略：热点数据使用 Redis 缓存
 
-### 7.2 安全要求
+### 8.2 安全要求
 - 密码使用 Bcrypt 加密（rounds = 12）
 - API 接口使用 Sanctum Token 认证
 - 敏感接口使用权限验证
@@ -497,58 +691,58 @@ laravel-skel-pro/
 - CSRF 防护：Web 接口启用
 - 请求频率限制：防止恶意请求
 
-### 7.3 可扩展性
+### 8.3 可扩展性
 - 模块化设计：功能独立封装
 - 微服务友好：易于拆分
 - 支持水平扩展：无状态设计
 - 队列系统：异步任务处理
 
-### 7.4 可维护性
+### 8.4 可维护性
 - 代码规范：遵循 PSR-12 标准
 - 注释完整：关键逻辑添加注释
 - 文档齐全：API 文档完整
 - 测试覆盖：单元测试 + 功能测试
 
-### 7.5 可靠性
+### 8.5 可靠性
 - 错误处理：统一的异常处理机制
 - 日志记录：完整的日志记录
 - 数据备份：支持数据库备份
 - 故障恢复：快速恢复机制
 
-## 8. 开发流程
+## 9. 开发流程
 
-### 8.1 环境要求
+### 9.1 环境要求
 - PHP >= 8.3
 - MySQL 8.0+ / PostgreSQL / SQLite
 - Redis 6.0+
 - Node.js >= 20.0（前端开发）
 - Composer 2.x
 
-### 8.2 快速开始
+### 9.2 快速开始
 
-#### 8.2.1 安装依赖
+#### 9.2.1 安装依赖
 ```bash
 composer install
 ```
 
-#### 8.2.2 环境配置
+#### 9.2.2 环境配置
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-#### 8.2.3 数据库迁移
+#### 9.2.3 数据库迁移
 ```bash
 php artisan migrate
 php artisan storage:link
 ```
 
-#### 8.2.4 快速安装（推荐）
+#### 9.2.4 快速安装（推荐）
 ```bash
 composer run setup
 ```
 
-### 8.3 开发命令
+### 9.3 开发命令
 
 | 命令 | 说明 |
 |------|------|
@@ -560,18 +754,18 @@ composer run setup
 | php artisan horizon | 启动队列服务 |
 | php artisan pail | 查看实时日志 |
 
-### 8.4 代码规范
+### 9.4 代码规范
 - 遵循 PSR-12 编码标准
 - 使用 PHP 8 构造器属性提升
 - 所有方法添加类型声明
 - 使用 PHPUnit 12 新属性语法
 - 修改 PHP 文件后运行 `vendor/bin/pint` 格式化
 
-## 9. 部署方案
+## 10. 部署方案
 
-### 9.1 生产环境配置
+### 10.1 生产环境配置
 
-#### 9.1.1 环境变量配置
+#### 10.1.1 环境变量配置
 ```bash
 APP_ENV=production
 APP_DEBUG=false
@@ -593,7 +787,7 @@ BROADCAST_CONNECTION=reverb
 FILESYSTEM_DISK=s3
 ```
 
-#### 9.1.2 优化配置
+#### 10.1.2 优化配置
 ```bash
 php artisan config:cache
 php artisan route:cache
@@ -602,18 +796,18 @@ php artisan event:cache
 php artisan storage:link
 ```
 
-### 9.2 部署方式
+### 10.2 部署方式
 
-#### 9.2.1 使用 Laravel Cloud（推荐）
+#### 10.2.1 使用 Laravel Cloud（推荐）
 Laravel Cloud 是官方提供的部署平台，提供自动化部署和托管服务。
 
-#### 9.2.2 使用 Octane + Swoole/RoadRunner
+#### 10.2.2 使用 Octane + Swoole/RoadRunner
 使用 Laravel Octane 提供高性能服务。
 
-#### 9.2.3 传统 FPM 部署
+#### 10.2.3 传统 FPM 部署
 使用 Nginx + PHP-FPM 的传统部署方式。
 
-### 9.3 服务配置
+### 10.3 服务配置
 
 | 服务 | 说明 | 建议配置 |
 |------|------|----------|
@@ -622,15 +816,15 @@ Laravel Cloud 是官方提供的部署平台，提供自动化部署和托管服
 | Pulse | 性能监控 | 访问控制保护 |
 | Telescope | 调试工具 | 生产环境禁用 |
 
-### 9.4 备份策略
+### 10.4 备份策略
 - 数据库每日备份
 - 重要配置备份
 - 上传文件备份
 - 备份保留30天
 
-## 10. 监控与维护
+## 11. 监控与维护
 
-### 10.1 监控工具
+### 11.1 监控工具
 | 工具 | 用途 | 访问路径 |
 |------|------|----------|
 | Laravel Pulse | 应用性能监控 | /pulse |
@@ -638,45 +832,45 @@ Laravel Cloud 是官方提供的部署平台，提供自动化部署和托管服
 | Laravel Telescope | 调试辅助 | /telescope |
 | Laravel Pail | 实时日志 | 命令行 |
 
-### 10.2 日常维护
+### 11.2 日常维护
 - 定期清理过期验证码
 - 清理旧日志文件
 - 数据库优化
 - 依赖安全更新检查
 
-## 11. 未来规划
+## 12. 未来规划
 
-### 11.1 短期规划（1-3个月）
+### 12.1 短期规划（1-3个月）
 - [ ] 完善单元测试覆盖
 - [ ] 添加更多开箱即用的功能
 - [ ] 完善文档和示例
 - [ ] 性能优化和基准测试
 
-### 11.2 中期规划（3-6个月）
+### 12.2 中期规划（3-6个月）
 - [ ] 添加更多认证方式（OAuth、Socialite）
 - [ ] 完善多语言支持
 - [ ] 添加 GraphQL 支持
 - [ ] 集成审计日志功能
 
-### 11.3 长期规划（6-12个月）
+### 12.3 长期规划（6-12个月）
 - [ ] 微服务架构支持
 - [ ] 多云部署支持
 - [ ] 更多开箱即用的业务模块
 - [ ] 可视化代码生成工具
 
-## 12. 附录
+## 13. 附录
 
-### 12.1 相关文档
+### 13.1 相关文档
 - Laravel 官方文档：https://laravel.com/docs
 - Laravel Skel Pro README.md
 - API 文档：docs/admin-api-response.md
 
-### 12.2 联系方式
+### 13.2 联系方式
 - 项目地址：https://github.com/larva-cool/laravel-skel-pro
 - 作者：Tongle Xu <xutongle@msn.com>
 
 ---
 
-**文档版本**：v1.0  
-**最后更新**：2026-08-04  
+**文档版本**：v1.1  
+**最后更新**：2026-08-17  
 **维护人员**：Tongle Xu

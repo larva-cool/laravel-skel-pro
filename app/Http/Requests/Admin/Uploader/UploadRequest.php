@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin\Uploader;
 
+use App\Models\System\Attachment;
+use App\Services\AttachmentService;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
@@ -66,7 +68,25 @@ abstract class UploadRequest extends FormRequest
             ]);
         }
 
-        return $this->buildUploadResult($file, $fileName, $filePath);
+        $result = $this->buildUploadResult($file, $fileName, $filePath);
+
+        return ['id' => $this->recordAttachment($result)->id] + $result;
+    }
+
+    /**
+     * 将上传结果写入附件台账
+     */
+    protected function recordAttachment(array $result): Attachment
+    {
+        return app(AttachmentService::class)->record([
+            'disk' => $result['storage'],
+            'path' => $result['file_path'],
+            'name' => $result['file_name'],
+            'original_name' => $result['origin_name'],
+            'extension' => $result['file_ext'],
+            'mime_type' => $result['mime_type'],
+            'size' => (int) $result['file_size'],
+        ], $this->user());
     }
 
     /**

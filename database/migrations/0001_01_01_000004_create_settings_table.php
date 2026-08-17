@@ -375,6 +375,22 @@ return new class extends Migration
                 'input_type' => 'bool',
                 'remark' => '自动优化上传的图片。',
             ],
+            [
+                'name' => '临时访问地址有效期',
+                'key' => 'upload.temporary_url_minutes',
+                'value' => 10,
+                'cast_type' => SettingType::CAST_TYPE_INT,
+                'input_type' => SettingType::CAST_TYPE_INT,
+                'remark' => '私有磁盘临时签名访问地址的有效期（分钟）。',
+            ],
+            [
+                'name' => '孤儿附件清理天数',
+                'key' => 'upload.prune_orphan_days',
+                'value' => 0,
+                'cast_type' => SettingType::CAST_TYPE_INT,
+                'input_type' => SettingType::CAST_TYPE_INT,
+                'remark' => '孤儿附件自动清理天数，0 表示不清理。',
+            ],
 
         ]);
     }

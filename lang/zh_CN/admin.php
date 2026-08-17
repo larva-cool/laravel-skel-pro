@@ -58,4 +58,16 @@ return [
 
     // 系统设置
     'setting_save_success' => '设置保存成功',
+
+    // 附件管理
+    'attachment_delete_success' => '附件删除成功',
+    'attachment_batch_delete_success' => '批量删除成功',
+    'attachment_rename_success' => '附件重命名成功',
+    'attachment_move_success' => '附件移动成功',
+    'attachment_move_failed' => '附件移动失败',
+    'attachment_register_success' => '附件登记成功',
+    'attachment_file_missing' => '物理文件不存在',
+    'attachment_target_exists' => '目标路径已存在同名文件',
+    'attachment_invalid_target_path' => '目标路径不合法',
+    'attachment_temporary_url_unsupported' => '当前存储驱动不支持临时访问地址',
 ];
