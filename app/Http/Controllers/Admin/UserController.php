@@ -43,9 +43,9 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
-        // $this->middleware('permission:users.index')->only(['index', 'show']);
-        // $this->middleware('permission:users.edit')->only(['update', 'toggleStatus', 'resetPassword', 'resetContact', 'adjustBalance', 'extendVip']);
-        // $this->middleware('permission:users.delete')->only(['destroy']);
+        $this->middleware('permission:users.index')->only(['index', 'show', 'loginHistories', 'socials', 'pointTrades', 'coinTrades']);
+        $this->middleware('permission:users.edit')->only(['update', 'toggleStatus', 'resetPassword', 'resetContact', 'adjustBalance', 'extendVip']);
+        $this->middleware('permission:users.delete')->only(['destroy']);
     }
 
     /**

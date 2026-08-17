@@ -25,6 +25,7 @@ class MailCodeController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('permission:mail-codes.index')->only(['index', 'show']);
     }
 
     /**

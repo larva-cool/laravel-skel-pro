@@ -27,6 +27,10 @@ class MenuController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
+        $this->middleware('permission:menus.index')->only(['index', 'show']);
+        $this->middleware('permission:menus.create')->only(['store']);
+        $this->middleware('permission:menus.edit')->only(['update']);
+        $this->middleware('permission:menus.delete')->only(['destroy']);
     }
 
     /**
