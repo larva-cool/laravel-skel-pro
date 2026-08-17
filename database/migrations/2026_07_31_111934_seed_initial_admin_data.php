@@ -213,6 +213,10 @@ return new class extends Migration
                         'type' => MenuType::MENU,
                         'sort' => 0,
                         'keep_alive' => true,
+                        'permission' => 'settings.index',
+                        'buttons' => [
+                            ['title' => '保存系统设置', 'permission' => 'settings.edit'],
+                        ],
                     ],
                     [
                         'key' => 'system.admin',
