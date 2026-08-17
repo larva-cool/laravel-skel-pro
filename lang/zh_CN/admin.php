@@ -48,7 +48,14 @@ return [
     'menu_has_children' => '存在子菜单，无法删除',
     'menu_invalid_parent' => '父级菜单不能是自身或其下级菜单',
 
+    // 地区管理
+    'area_invalid_parent' => '父级地区不能是自身或其下级地区',
+    'area_has_children' => '存在下级地区，无法删除',
+
     // 通知管理
     'notification_mark_all_read_success' => '全部标记为已读',
     'notification_mark_read_success' => '标记为已读成功',
+
+    // 系统设置
+    'setting_save_success' => '设置保存成功',
 ];

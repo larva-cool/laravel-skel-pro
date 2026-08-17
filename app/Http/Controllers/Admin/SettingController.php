@@ -194,7 +194,7 @@ class SettingController extends Controller
         settings()->clearCache();
         settings()->all(true);
 
-        return response()->json(['message' => '设置保存成功']);
+        return response()->json(['message' => __('admin.setting_save_success')]);
     }
 
     /**

@@ -48,7 +48,14 @@ return [
     'menu_has_children' => 'Cannot delete: menu has children.',
     'menu_invalid_parent' => 'Parent menu cannot be itself or its descendants.',
 
+    // Area management
+    'area_invalid_parent' => 'Parent area cannot be itself or its descendants.',
+    'area_has_children' => 'Cannot delete: area has children.',
+
     // Notification management
     'notification_mark_all_read_success' => 'All marked as read.',
     'notification_mark_read_success' => 'Marked as read successfully.',
+
+    // System settings
+    'setting_save_success' => 'Settings saved successfully.',
 ];
