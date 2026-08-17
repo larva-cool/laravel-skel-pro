@@ -164,7 +164,7 @@ class PermissionMiddlewareTest extends TestCase
     public function admin_without_permission_gets_forbidden(string $method, string $uri, string $requiredPermission): void
     {
         // 授予一个无关权限，确保管理员已登录且有角色，仅缺少目标权限
-        $admin = $this->createAdminWithPermissions(['online-user.kick']);
+        $admin = $this->createAdminWithPermissions(['attachments.create']);
 
         $this->actingAs($admin, 'admin')
             ->{$method}($uri)
