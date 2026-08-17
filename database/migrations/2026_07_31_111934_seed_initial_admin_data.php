@@ -393,7 +393,7 @@ return new class extends Migration
                         'title' => '性能监控',
                         'icon' => 'ri:pulse-line',
                         'type' => MenuType::MENU,
-                        'sort' => 2,
+                        'sort' => 1,
                         'keep_alive' => false,
                         'permission' => 'pulse.index',
                     ],
