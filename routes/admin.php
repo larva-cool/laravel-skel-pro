@@ -104,6 +104,18 @@ Route::group(['prefix' => 'monitor'], function (Registrar $registrar) {
     $registrar->get('usage', [\App\Http\Controllers\Admin\MonitorController::class, 'usage'])->name('monitor.usage');
 });
 
+// 调试面板（Laravel Telescope 数据）
+Route::group(['prefix' => 'debug'], function (Registrar $registrar) {
+    $registrar->get('tags', [\App\Http\Controllers\Admin\DebugController::class, 'tags'])->name('debug.tags');
+    $registrar->post('tags', [\App\Http\Controllers\Admin\DebugController::class, 'monitor'])->name('debug.monitor');
+    $registrar->delete('tags', [\App\Http\Controllers\Admin\DebugController::class, 'unmonitor'])->name('debug.unmonitor');
+    $registrar->post('toggle-recording', [\App\Http\Controllers\Admin\DebugController::class, 'toggleRecording'])->name('debug.toggle-recording');
+    $registrar->delete('entries', [\App\Http\Controllers\Admin\DebugController::class, 'destroy'])->name('debug.destroy');
+    $registrar->get('entries', [\App\Http\Controllers\Admin\DebugController::class, 'index'])->name('debug.index');
+    $registrar->get('entries/{id}', [\App\Http\Controllers\Admin\DebugController::class, 'show'])->name('debug.show');
+    $registrar->put('entries/{id}/resolve', [\App\Http\Controllers\Admin\DebugController::class, 'resolve'])->name('debug.resolve');
+});
+
 // AI 聊天
 Route::get('chat/conversations', [\App\Http\Controllers\Admin\ChatController::class, 'conversations'])->name('chat.conversations');
 Route::get('chat/conversations/{conversationId}', [\App\Http\Controllers\Admin\ChatController::class, 'conversation'])->name('chat.conversation');

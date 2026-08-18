@@ -70,4 +70,13 @@ return [
     'attachment_target_exists' => '目标路径已存在同名文件',
     'attachment_invalid_target_path' => '目标路径不合法',
     'attachment_temporary_url_unsupported' => '当前存储驱动不支持临时访问地址',
+
+    // 调试面板（Telescope）
+    'debug_entry_not_found' => '调试记录不存在',
+    'debug_resolve_success' => '异常已标记为已解决',
+    'debug_monitor_success' => '标签监控已开启',
+    'debug_unmonitor_success' => '标签监控已关闭',
+    'debug_recording_paused' => '已暂停记录',
+    'debug_recording_resumed' => '已恢复记录',
+    'debug_clear_success' => '调试记录已清空',
 ];

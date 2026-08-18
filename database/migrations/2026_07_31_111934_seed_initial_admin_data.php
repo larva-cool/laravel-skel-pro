@@ -397,6 +397,21 @@ return new class extends Migration
                         'keep_alive' => false,
                         'permission' => 'pulse.index',
                     ],
+                    [
+                        'key' => 'monitor.debug',
+                        'path' => 'debug',
+                        'name' => 'Debug',
+                        'component' => '/monitor/debug/index',
+                        'title' => '调试面板',
+                        'icon' => 'ri:bug-line',
+                        'type' => MenuType::MENU,
+                        'sort' => 2,
+                        'keep_alive' => false,
+                        'permission' => 'debug.index',
+                        'buttons' => [
+                            ['title' => '管理调试记录', 'permission' => 'debug.manage'],
+                        ],
+                    ],
                 ],
             ],
 

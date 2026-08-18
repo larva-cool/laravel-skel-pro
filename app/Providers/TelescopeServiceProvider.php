@@ -7,7 +7,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Models\User;
+use App\Models\Admin\Admin;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
@@ -62,16 +63,30 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     }
 
     /**
+     * Configure the Telescope authorization services.
+     *
+     * 官方 Telescope UI 与后台共用同一套权限体系，
+     * 因此这里改为使用 admin guard 并校验 debug.index 权限。
+     */
+    protected function authorization(): void
+    {
+        $this->gate();
+
+        Telescope::auth(function (Request $request) {
+            return $this->app->environment('local')
+                || Gate::forUser($request->user('admin'))->check('viewTelescope');
+        });
+    }
+
+    /**
      * Register the Telescope gate.
      *
      * This gate determines who can access Telescope in non-local environments.
      */
     protected function gate(): void
     {
-        Gate::define('viewTelescope', function (User $user) {
-            return in_array($user->email, [
-                //
-            ]);
+        Gate::define('viewTelescope', function (?Admin $admin) {
+            return $admin?->can('debug.index') ?? false;
         });
     }
 }

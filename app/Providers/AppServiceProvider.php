@@ -32,8 +32,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\SettingManagerService::class, function () {
             return new \App\Services\SettingManagerService;
         });
-        // telescope 配置
-        if ($this->app->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
+        // telescope 配置（是否采集由 telescope.enabled 控制，存储驱动始终注册以供后台调试面板读取）
+        if (class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }

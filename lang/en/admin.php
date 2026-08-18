@@ -70,4 +70,13 @@ return [
     'attachment_target_exists' => 'A file already exists at the target path.',
     'attachment_invalid_target_path' => 'The target path is invalid.',
     'attachment_temporary_url_unsupported' => 'The current storage driver does not support temporary URLs.',
+
+    // Debug panel (Telescope)
+    'debug_entry_not_found' => 'The debug entry does not exist.',
+    'debug_resolve_success' => 'The exception has been marked as resolved.',
+    'debug_monitor_success' => 'Tag monitoring enabled.',
+    'debug_unmonitor_success' => 'Tag monitoring disabled.',
+    'debug_recording_paused' => 'Recording paused.',
+    'debug_recording_resumed' => 'Recording resumed.',
+    'debug_clear_success' => 'Debug entries cleared.',
 ];
