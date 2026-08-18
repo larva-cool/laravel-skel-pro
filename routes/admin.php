@@ -118,6 +118,39 @@ Route::group(['prefix' => 'debug'], function (Registrar $registrar) {
     $registrar->put('entries/{id}/resolve', [\App\Http\Controllers\Admin\DebugController::class, 'resolve'])->name('debug.resolve');
 });
 
+// 队列管理（Laravel Horizon 数据代理）
+Route::group(['prefix' => 'queue'], function (Registrar $registrar) {
+    $registrar->get('stats', [\App\Http\Controllers\Admin\QueueController::class, 'stats'])->name('queue.stats');
+    $registrar->get('workload', [\App\Http\Controllers\Admin\QueueController::class, 'workload'])->name('queue.workload');
+    $registrar->get('masters', [\App\Http\Controllers\Admin\QueueController::class, 'masters'])->name('queue.masters');
+
+    // 标签监控
+    $registrar->get('monitoring/tags', [\App\Http\Controllers\Admin\QueueController::class, 'monitoringTags'])->name('queue.monitoring.tags');
+    $registrar->get('monitoring/jobs', [\App\Http\Controllers\Admin\QueueController::class, 'monitoringJobs'])->name('queue.monitoring.jobs');
+    $registrar->post('monitoring/tags', [\App\Http\Controllers\Admin\QueueController::class, 'monitorTag'])->name('queue.monitoring.tag');
+    $registrar->delete('monitoring/tags/{tag}', [\App\Http\Controllers\Admin\QueueController::class, 'stopMonitoringTag'])->name('queue.monitoring.tag.destroy');
+
+    // 指标
+    $registrar->get('metrics/jobs', [\App\Http\Controllers\Admin\QueueController::class, 'jobMetrics'])->name('queue.metrics.jobs');
+    $registrar->get('metrics/jobs/{id}', [\App\Http\Controllers\Admin\QueueController::class, 'jobMetricsDetail'])->name('queue.metrics.jobs.detail');
+    $registrar->get('metrics/queues', [\App\Http\Controllers\Admin\QueueController::class, 'queueMetrics'])->name('queue.metrics.queues');
+    $registrar->get('metrics/queues/{id}', [\App\Http\Controllers\Admin\QueueController::class, 'queueMetricsDetail'])->name('queue.metrics.queues.detail');
+
+    // 批处理
+    $registrar->get('batches', [\App\Http\Controllers\Admin\QueueController::class, 'batches'])->name('queue.batches');
+    $registrar->get('batches/{id}', [\App\Http\Controllers\Admin\QueueController::class, 'batchDetail'])->name('queue.batches.detail');
+    $registrar->post('batches/{id}/retry', [\App\Http\Controllers\Admin\QueueController::class, 'retryBatch'])->name('queue.batches.retry');
+
+    // 任务列表
+    $registrar->get('jobs/pending', [\App\Http\Controllers\Admin\QueueController::class, 'pendingJobs'])->name('queue.jobs.pending');
+    $registrar->get('jobs/completed', [\App\Http\Controllers\Admin\QueueController::class, 'completedJobs'])->name('queue.jobs.completed');
+    $registrar->get('jobs/silenced', [\App\Http\Controllers\Admin\QueueController::class, 'silencedJobs'])->name('queue.jobs.silenced');
+    $registrar->post('jobs/failed/{id}/retry', [\App\Http\Controllers\Admin\QueueController::class, 'retryJob'])->name('queue.jobs.retry');
+    $registrar->get('jobs/failed', [\App\Http\Controllers\Admin\QueueController::class, 'failedJobs'])->name('queue.jobs.failed');
+    $registrar->get('jobs/failed/{id}', [\App\Http\Controllers\Admin\QueueController::class, 'failedJobDetail'])->name('queue.jobs.failed.detail');
+    $registrar->get('jobs/{id}', [\App\Http\Controllers\Admin\QueueController::class, 'jobDetail'])->name('queue.jobs.detail');
+});
+
 // AI 聊天
 Route::get('chat/conversations', [\App\Http\Controllers\Admin\ChatController::class, 'conversations'])->name('chat.conversations');
 Route::get('chat/conversations/{conversationId}', [\App\Http\Controllers\Admin\ChatController::class, 'conversation'])->name('chat.conversation');
