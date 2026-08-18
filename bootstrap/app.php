@@ -44,6 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->preventRequestForgery([
             '/admin/*',
             '/api/*',
+            '/horizon/api/*',
         ]);
         // Configure the cookie encryption middleware.
         // $middleware->encryptCookies([
@@ -78,6 +79,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->level(PDOException::class, LogLevel::CRITICAL);
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*') || $request->is('admin/*'),
+            fn (Request $request) => $request->is('api/*') || $request->is('admin/*') || $request->is('horizon/api/*'),
         );
     })->create();
