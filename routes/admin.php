@@ -95,6 +95,8 @@ Route::delete('attachments/{id}', [\App\Http\Controllers\Admin\AttachmentControl
 Route::group(['prefix' => 'monitor'], function (Registrar $registrar) {
     $registrar->get('servers', [\App\Http\Controllers\Admin\MonitorController::class, 'servers'])->name('monitor.servers');
     $registrar->get('queues', [\App\Http\Controllers\Admin\MonitorController::class, 'queues'])->name('monitor.queues');
+    $registrar->get('reverb/connections', [\App\Http\Controllers\Admin\MonitorController::class, 'reverbConnections'])->name('monitor.reverb.connections');
+    $registrar->get('reverb/messages', [\App\Http\Controllers\Admin\MonitorController::class, 'reverbMessages'])->name('monitor.reverb.messages');
     $registrar->get('cache', [\App\Http\Controllers\Admin\MonitorController::class, 'cache'])->name('monitor.cache');
     $registrar->get('exceptions', [\App\Http\Controllers\Admin\MonitorController::class, 'exceptions'])->name('monitor.exceptions');
     $registrar->get('slow-queries', [\App\Http\Controllers\Admin\MonitorController::class, 'slowQueries'])->name('monitor.slow-queries');

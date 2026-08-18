@@ -23,6 +23,8 @@ use Laravel\Pulse\Recorders\SlowOutgoingRequests as SlowOutgoingRequestsRecorder
 use Laravel\Pulse\Recorders\SlowQueries as SlowQueriesRecorder;
 use Laravel\Pulse\Recorders\SlowRequests as SlowRequestsRecorder;
 use Laravel\Pulse\Support\CacheStoreResolver;
+use Laravel\Reverb\Pulse\Recorders\ReverbConnections as ReverbConnectionsRecorder;
+use Laravel\Reverb\Pulse\Recorders\ReverbMessages as ReverbMessagesRecorder;
 
 /**
  * 后台性能监控控制器
@@ -122,6 +124,68 @@ class MonitorController extends Controller
         return $this->respond($period, [
             'queues' => $queues,
             'config' => $this->recorderConfig(QueuesRecorder::class),
+        ]);
+    }
+
+    /**
+     * Reverb WebSocket 连接数（平均 / 峰值）
+     */
+    public function reverbConnections(Request $request): JsonResponse
+    {
+        $period = $this->period($request);
+
+        $apps = $this->remember('reverb-connections', $period, function (CarbonInterval $interval): array {
+            $max = Pulse::graph(['reverb_connections'], 'max', $interval);
+            $avg = Pulse::graph(['reverb_connections'], 'avg', $interval);
+
+            return $max->map(function (Collection $readings, string $app) use ($avg): array {
+                $current = $avg->get($app)?->get('reverb_connections')?->last();
+
+                return [
+                    'app_id' => $app,
+                    'current' => $current === null ? null : (float) $current,
+                    'peak' => (float) ($readings->get('reverb_connections')?->max() ?? 0),
+                    'avg' => $this->series($avg->get($app)?->get('reverb_connections')),
+                    'max' => $this->series($readings->get('reverb_connections')),
+                ];
+            })->values()->all();
+        });
+
+        return $this->respond($period, [
+            'apps' => $apps,
+            'config' => $this->recorderConfig(ReverbConnectionsRecorder::class),
+        ]);
+    }
+
+    /**
+     * Reverb 消息吞吐（发送 / 接收）
+     */
+    public function reverbMessages(Request $request): JsonResponse
+    {
+        $period = $this->period($request);
+
+        $apps = $this->remember('reverb-messages', $period, function (CarbonInterval $interval): array {
+            return Pulse::graph(
+                ['reverb_message:sent', 'reverb_message:received'],
+                'count',
+                $interval,
+            )->map(function (Collection $readings, string $app): array {
+                $sent = $readings->get('reverb_message:sent');
+                $received = $readings->get('reverb_message:received');
+
+                return [
+                    'app_id' => $app,
+                    'sent_total' => (int) ($sent?->sum() ?? 0),
+                    'received_total' => (int) ($received?->sum() ?? 0),
+                    'sent' => $this->series($sent),
+                    'received' => $this->series($received),
+                ];
+            })->values()->all();
+        });
+
+        return $this->respond($period, [
+            'apps' => $apps,
+            'config' => $this->recorderConfig(ReverbMessagesRecorder::class),
         ]);
     }
 
