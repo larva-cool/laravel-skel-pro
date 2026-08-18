@@ -83,7 +83,7 @@ return [
     |
     */
 
-    'middleware' => ['web', \App\Http\Middleware\HorizonAuthenticate::class],
+    'middleware' => ['web'],
 
     /*
     |--------------------------------------------------------------------------
