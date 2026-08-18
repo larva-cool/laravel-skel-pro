@@ -386,6 +386,23 @@ return new class extends Migration
                 'sort' => 95,
                 'children' => [
                     [
+                        'key' => 'monitor.horizon',
+                        'path' => 'horizon',
+                        'name' => 'Horizon',
+                        'component' => '/monitor/horizon/index',
+                        'title' => '队列监控',
+                        'icon' => 'ri:flow-chart',
+                        'type' => MenuType::MENU,
+                        'sort' => 0,
+                        'keep_alive' => true,
+                        'permission' => 'horizon.index',
+                        'buttons' => [
+                            ['title' => '重试失败任务', 'permission' => 'horizon.index'],
+                            ['title' => '重试批次', 'permission' => 'horizon.index'],
+                            ['title' => '管理标签监控', 'permission' => 'horizon.index'],
+                        ],
+                    ],
+                    [
                         'key' => 'monitor.pulse',
                         'path' => 'pulse',
                         'name' => 'Pulse',
