@@ -32,10 +32,30 @@ class AttachmentController extends Controller
     public function __construct(protected AttachmentService $attachmentService)
     {
         $this->middleware('auth:admin');
-        $this->middleware('permission:attachments.index')->only(['index', 'show', 'download', 'temporaryUrl']);
+        $this->middleware('permission:attachments.index')->only(['index', 'show', 'download', 'temporaryUrl', 'disks']);
         $this->middleware('permission:attachments.create')->only(['register']);
         $this->middleware('permission:attachments.edit')->only(['rename', 'move']);
         $this->middleware('permission:attachments.delete')->only(['destroy', 'batchDestroy']);
+    }
+
+    /**
+     * 获取所有可用的存储磁盘（供前端下拉选择使用）
+     */
+    public function disks(): JsonResponse
+    {
+        $default = (string) config('filesystems.default');
+
+        $data = [];
+        foreach (array_keys((array) config('filesystems.disks', [])) as $disk) {
+            $data[] = [
+                'label' => (string) $disk,
+                'value' => (string) $disk,
+                'driver' => (string) config("filesystems.disks.{$disk}.driver"),
+                'is_default' => $disk === $default,
+            ];
+        }
+
+        return response()->json(['data' => $data]);
     }
 
     /**

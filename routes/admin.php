@@ -82,6 +82,7 @@ Route::post('uploader/video', [\App\Http\Controllers\Admin\UploaderController::c
 Route::post('uploader/token', [\App\Http\Controllers\Admin\UploaderController::class, 'uploadToken'])->name('uploader.token');
 
 // 附件管理
+Route::get('attachments/disks', [\App\Http\Controllers\Admin\AttachmentController::class, 'disks'])->name('attachments.disks');
 Route::post('attachments/register', [\App\Http\Controllers\Admin\AttachmentController::class, 'register'])->name('attachments.register');
 Route::delete('attachments', [\App\Http\Controllers\Admin\AttachmentController::class, 'batchDestroy'])->name('attachments.batch-destroy');
 Route::get('attachments/{id}/download', [\App\Http\Controllers\Admin\AttachmentController::class, 'download'])->name('attachments.download');

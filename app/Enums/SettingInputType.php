@@ -28,6 +28,7 @@ enum SettingInputType: string implements \JsonSerializable
     case REMOTE_SELECT = 'remote_select'; // 远程下拉选择
     case REMOTE_RADIO = 'remote_radio'; // 远程单选
     case REMOTE_CHECKBOX = 'remote_checkbox'; // 远程多选
+    case IMAGE = 'image'; // 图片
 
     /**
      * 获取配置输入类型标签
@@ -45,6 +46,7 @@ enum SettingInputType: string implements \JsonSerializable
             self::REMOTE_SELECT => '远程下拉选择',
             self::REMOTE_RADIO => '远程单选',
             self::REMOTE_CHECKBOX => '远程多选',
+            self::IMAGE => '图片',
         };
     }
 

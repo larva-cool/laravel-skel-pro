@@ -35,6 +35,7 @@ class SettingInputTypeTest extends TestCase
         $this->assertSame('remote_select', SettingInputType::REMOTE_SELECT->value);
         $this->assertSame('remote_radio', SettingInputType::REMOTE_RADIO->value);
         $this->assertSame('remote_checkbox', SettingInputType::REMOTE_CHECKBOX->value);
+        $this->assertSame('image', SettingInputType::IMAGE->value);
     }
 
     #[Test]
@@ -51,6 +52,7 @@ class SettingInputTypeTest extends TestCase
         $this->assertSame('远程下拉选择', SettingInputType::REMOTE_SELECT->label());
         $this->assertSame('远程单选', SettingInputType::REMOTE_RADIO->label());
         $this->assertSame('远程多选', SettingInputType::REMOTE_CHECKBOX->label());
+        $this->assertSame('图片', SettingInputType::IMAGE->label());
     }
 
     #[Test]
@@ -64,6 +66,7 @@ class SettingInputTypeTest extends TestCase
         $this->assertFalse(SettingInputType::SELECT->isRemote());
         $this->assertFalse(SettingInputType::RADIO->isRemote());
         $this->assertFalse(SettingInputType::CHECKBOX->isRemote());
+        $this->assertFalse(SettingInputType::IMAGE->isRemote());
     }
 
     #[Test]
@@ -76,6 +79,7 @@ class SettingInputTypeTest extends TestCase
         $this->assertFalse(SettingInputType::STRING->hasOptions());
         $this->assertFalse(SettingInputType::BOOL->hasOptions());
         $this->assertFalse(SettingInputType::REMOTE_SELECT->hasOptions());
+        $this->assertFalse(SettingInputType::IMAGE->hasOptions());
     }
 
     #[Test]
@@ -93,7 +97,7 @@ class SettingInputTypeTest extends TestCase
     public function keys_returns_all_names(): void
     {
         $this->assertSame(
-            ['STRING', 'TEXTAREA', 'INT', 'BOOL', 'SELECT', 'RADIO', 'CHECKBOX', 'REMOTE_SELECT', 'REMOTE_RADIO', 'REMOTE_CHECKBOX'],
+            ['STRING', 'TEXTAREA', 'INT', 'BOOL', 'SELECT', 'RADIO', 'CHECKBOX', 'REMOTE_SELECT', 'REMOTE_RADIO', 'REMOTE_CHECKBOX', 'IMAGE'],
             SettingInputType::keys()
         );
     }
@@ -103,7 +107,7 @@ class SettingInputTypeTest extends TestCase
     public function values_returns_all_values(): void
     {
         $this->assertSame(
-            ['string', 'textarea', 'int', 'bool', 'select', 'radio', 'checkbox', 'remote_select', 'remote_radio', 'remote_checkbox'],
+            ['string', 'textarea', 'int', 'bool', 'select', 'radio', 'checkbox', 'remote_select', 'remote_radio', 'remote_checkbox', 'image'],
             SettingInputType::values()
         );
     }
@@ -123,6 +127,7 @@ class SettingInputTypeTest extends TestCase
             'remote_select' => '远程下拉选择',
             'remote_radio' => '远程单选',
             'remote_checkbox' => '远程多选',
+            'image' => '图片',
         ];
 
         $this->assertSame($expected, SettingInputType::options());

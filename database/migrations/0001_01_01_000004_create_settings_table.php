@@ -42,6 +42,7 @@ return new class extends Migration
                 'value' => 'https://www.xxx.com',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'string',
+                'param' => '{"maxlength": 255}',
                 'remark' => '网站URL（一般为https://www.xxx.com）。',
             ],
             [
@@ -50,6 +51,7 @@ return new class extends Migration
                 'value' => 'https://m.xxx.com',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'string',
+                'param' => '{"maxlength": 500}',
                 'remark' => '移动网站URL（一般为https://m.xxx.com）。',
             ],
             [
@@ -58,6 +60,7 @@ return new class extends Migration
                 'value' => 'Laravel 13',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'string',
+                'param' => '{"maxlength": 255}',
                 'remark' => '网站标题（一般不超过80个字符）。',
             ],
             [
@@ -66,6 +69,7 @@ return new class extends Migration
                 'value' => 'Laravel 13',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'string',
+                'param' => '{"maxlength": 255}',
                 'remark' => '网站关键词（一般不超过100个字符）。',
             ],
             [
@@ -74,7 +78,7 @@ return new class extends Migration
                 'value' => 'Laravel 13',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'textarea',
-                'param' => '{"maxlength": 255}',
+                'param' => '{"maxlength": 500}',
                 'remark' => '网站描述（一般不超过200个字符）。',
             ],
             [
@@ -83,6 +87,7 @@ return new class extends Migration
                 'value' => 'ICP备XXXX号',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'string',
+                'param' => '{"maxlength": 255}',
                 'remark' => '信产部备案号。',
             ],
             [
@@ -91,6 +96,7 @@ return new class extends Migration
                 'value' => '公安备XXXX号',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'string',
+                'param' => '{"maxlength": 255}',
                 'remark' => '公安部备案号。',
             ],
             [
@@ -99,6 +105,7 @@ return new class extends Migration
                 'value' => 'support@xxx.com',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'string',
+                'param' => '{"maxlength": 255}',
                 'remark' => '服务邮箱（一般为support@xxx.com）。',
             ],
             [
@@ -107,6 +114,7 @@ return new class extends Migration
                 'value' => '13800000000',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'string',
+                'param' => '{"maxlength": 255}',
                 'remark' => '服务电话（一般为13800000000）。',
             ],
             [
@@ -115,6 +123,7 @@ return new class extends Migration
                 'value' => 'lawyer@xxx.com',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'string',
+                'param' => '{"maxlength": 255}',
                 'remark' => '法律邮箱（一般为lawyer@xxx.com）。',
             ],
 
@@ -125,6 +134,7 @@ return new class extends Migration
                 'value' => '10',
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 60}',
                 'remark' => '短信验证码有效期，单位为分钟。',
             ],
             [
@@ -133,6 +143,7 @@ return new class extends Migration
                 'value' => '10',
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 30}',
                 'remark' => '短信验证码清理时间，单位为天。',
             ],
             [
@@ -149,6 +160,7 @@ return new class extends Migration
                 'value' => '60',
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 60}',
                 'remark' => '两次获取验证码间隔，单位为秒。',
             ],
             [
@@ -157,6 +169,7 @@ return new class extends Migration
                 'value' => '3',
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 1000}',
                 'remark' => '验证码最大允许错误次数，超过后验证码失效。',
             ],
             [
@@ -165,6 +178,7 @@ return new class extends Migration
                 'value' => '20',
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 100}',
                 'remark' => '每个IP地址每小时最大获取验证码次数。',
             ],
             [
@@ -173,6 +187,7 @@ return new class extends Migration
                 'value' => '10',
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 1000}',
                 'remark' => '每个手机号每小时最大获取验证码次数。',
             ],
 
@@ -199,6 +214,7 @@ return new class extends Migration
                 'value' => '6',
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 4, "max": 10}',
                 'remark' => '邮件验证码长度，单位为数字。',
             ],
             [
@@ -207,6 +223,7 @@ return new class extends Migration
                 'value' => '60',
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 300}',
                 'remark' => '两次获取验证码间隔，单位为秒。',
             ],
             [
@@ -215,27 +232,31 @@ return new class extends Migration
                 'value' => '3',
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 1000}',
                 'remark' => '验证码最大允许错误次数，超过后验证码失效。',
             ],
 
             // 用户配置
             [
                 'name' => '用户注册',
-                'key' => 'user.enable_register', 'value' => 1,
+                'key' => 'user.enable_register',
+                'value' => 1,
                 'cast_type' => SettingType::CAST_TYPE_BOOL,
                 'input_type' => SettingType::CAST_TYPE_BOOL,
                 'remark' => '关闭后，用户将无法注册。',
             ],
             [
                 'name' => '手机注册',
-                'key' => 'user.enable_phone_register', 'value' => 1,
+                'key' => 'user.enable_phone_register',
+                'value' => 1,
                 'cast_type' => SettingType::CAST_TYPE_BOOL,
                 'input_type' => SettingType::CAST_TYPE_BOOL,
                 'remark' => '关闭后，用户将无法通过手机号注册。',
             ],
             [
                 'name' => '邮箱注册',
-                'key' => 'user.enable_email_register', 'value' => 1,
+                'key' => 'user.enable_email_register',
+                'value' => 1,
                 'cast_type' => SettingType::CAST_TYPE_BOOL,
                 'input_type' => SettingType::CAST_TYPE_BOOL,
                 'remark' => '关闭后，用户将无法通过邮箱注册。',
@@ -251,7 +272,8 @@ return new class extends Migration
             ],
             [
                 'name' => '用户登录仅允许一个设备',
-                'key' => 'user.only_one_device_login', 'value' => 1,
+                'key' => 'user.only_one_device_login',
+                'value' => 1,
                 'cast_type' => SettingType::CAST_TYPE_BOOL,
                 'input_type' => SettingType::CAST_TYPE_BOOL,
                 'remark' => '开启后，用户在其他设备的登录将会退出。',
@@ -259,8 +281,10 @@ return new class extends Migration
             [
                 'name' => '用户名变更次数',
                 'key' => 'user.username_change',
-                'value' => 3, 'cast_type' => SettingType::CAST_TYPE_INT,
+                'value' => 3,
+                'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 0, "max": 1000}',
                 'remark' => '用户名最大允许修改的次数，0表示不允许修改。',
             ],
             [
@@ -325,6 +349,7 @@ return new class extends Migration
                 'value' => 365,
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 3650}',
                 'remark' => '积分过期后，自动回收',
             ],
             [
@@ -332,7 +357,7 @@ return new class extends Migration
                 'key' => 'user.default_avatar',
                 'value' => 'img/avatar.png',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
-                'input_type' => 'string',
+                'input_type' => 'image',
                 'remark' => '',
             ],
             // 上传配置
@@ -341,7 +366,8 @@ return new class extends Migration
                 'key' => 'upload.storage',
                 'value' => config('filesystems.default'),
                 'cast_type' => SettingType::CAST_TYPE_STRING,
-                'input_type' => 'string',
+                'input_type' => 'remote_select',
+                'param' => '{"url": "/admin/attachments/disks"}',
                 'remark' => '上传文件默认驱动',
             ],
             [
@@ -350,6 +376,7 @@ return new class extends Migration
                 'value' => 'jpg,png,gif,jpeg,doc,docx,md,txt,pdf,7z,zip,rar,xls,ppt,pptx,wps,mp3,mp4,gz,tar,bz,psd,csv',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'textarea',
+                'param' => '',
                 'remark' => '允许上传的文件类型，多个类型用逗号分隔。',
             ],
             [
@@ -358,6 +385,7 @@ return new class extends Migration
                 'value' => 'jpg,png,gif,jpeg',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'textarea',
+                'param' => '',
                 'remark' => '允许上传的图片类型，多个类型用逗号分隔。',
             ],
             [
@@ -382,6 +410,7 @@ return new class extends Migration
                 'value' => 10,
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 1440}',
                 'remark' => '私有磁盘临时签名访问地址的有效期（分钟）。',
             ],
             [
@@ -390,6 +419,7 @@ return new class extends Migration
                 'value' => 0,
                 'cast_type' => SettingType::CAST_TYPE_INT,
                 'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 0, "max": 3650}',
                 'remark' => '孤儿附件自动清理天数，0 表示不清理。',
             ],
 

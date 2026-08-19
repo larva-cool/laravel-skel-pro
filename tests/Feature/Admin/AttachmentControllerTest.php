@@ -68,6 +68,25 @@ class AttachmentControllerTest extends TestCase
     }
 
     #[Test]
+    #[TestDox('获取磁盘列表返回全部磁盘名称与值')]
+    public function admin_can_list_disks(): void
+    {
+        $response = $this->actingAsAdmin()->getJson('/admin/attachments/disks');
+
+        $response->assertOk()
+            ->assertJsonStructure(['data' => [['label', 'value', 'driver', 'is_default']]])
+            ->assertJsonCount(count(config('filesystems.disks')), 'data')
+            ->assertJsonPath('data.0.value', array_keys(config('filesystems.disks'))[0]);
+    }
+
+    #[Test]
+    #[TestDox('未登录获取磁盘列表返回 401')]
+    public function guest_cannot_list_disks(): void
+    {
+        $this->getJson('/admin/attachments/disks')->assertUnauthorized();
+    }
+
+    #[Test]
     #[TestDox('获取附件列表返回分页结构')]
     public function admin_can_list_attachments(): void
     {
