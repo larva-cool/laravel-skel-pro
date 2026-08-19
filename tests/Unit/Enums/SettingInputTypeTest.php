@@ -93,7 +93,7 @@ class SettingInputTypeTest extends TestCase
     public function keys_returns_all_names(): void
     {
         $this->assertSame(
-            ['STRING', 'TEXTAREA', 'INT', 'BOOL', 'SELECT', 'RADIO', 'CHECKBOX', 'REMOTE_SELECT'],
+            ['STRING', 'TEXTAREA', 'INT', 'BOOL', 'SELECT', 'RADIO', 'CHECKBOX', 'REMOTE_SELECT', 'REMOTE_RADIO', 'REMOTE_CHECKBOX'],
             SettingInputType::keys()
         );
     }
@@ -103,7 +103,7 @@ class SettingInputTypeTest extends TestCase
     public function values_returns_all_values(): void
     {
         $this->assertSame(
-            ['string', 'textarea', 'int', 'bool', 'select', 'radio', 'checkbox', 'remote_select'],
+            ['string', 'textarea', 'int', 'bool', 'select', 'radio', 'checkbox', 'remote_select', 'remote_radio', 'remote_checkbox'],
             SettingInputType::values()
         );
     }
@@ -121,6 +121,8 @@ class SettingInputTypeTest extends TestCase
             'radio' => '单选',
             'checkbox' => '多选',
             'remote_select' => '远程下拉选择',
+            'remote_radio' => '远程单选',
+            'remote_checkbox' => '远程多选',
         ];
 
         $this->assertSame($expected, SettingInputType::options());
