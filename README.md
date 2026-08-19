@@ -26,18 +26,19 @@
 
 ```
 app/
-├── Enums/                  # 枚举类（AdminStatus、MenuType、UserStatus 等）
+├── Enums/                  # 枚举类（AdminStatus、ScheduleStatus、UserStatus 等）
 │   └── Traits/HasLabel.php
 ├── Events/                 # 事件（Admin/LoginSucceeded、User/LoginSucceeded）
 ├── Http/
 │   ├── Controllers/
-│   │   ├── Admin/          # 后台控制器（AuthController 等）
+│   │   ├── Admin/          # 后台控制器（AuthController、ScheduleLogController 等）
 │   │   └── Api/            # API 控制器
 │   ├── Requests/           # 表单请求验证
 │   └── Resources/          # Eloquent API Resources
+├── Listeners/              # 事件监听器（System/ScheduleLogListener）
 ├── Models/
 │   ├── Admin/              # 后台模型（Admin、AdminMenu）
-│   ├── System/             # 系统模型（Area、Setting、MailCode、PhoneCode）
+│   ├── System/             # 系统模型（Area、Setting、MailCode、ScheduleLog）
 │   ├── User/               # 前台用户模型（LoginHistory）
 │   ├── Sanctum/            # Sanctum 个人访问令牌
 │   └── Traits/             # 模型 Trait
@@ -145,14 +146,17 @@ POST /admin/auth/login
 }
 ```
 
-**成功响应：**
+**成功响应（HTTP 200）：**
 ```json
 {
-  "code": 200,
-  "message": "登录成功",
-  "data": {
-    "token": "1|laravel_sanctum_token_xxx",
-    "refreshToken": "1|laravel_sanctum_token_xxx"
+  "access_token": "1|laravel_sanctum_token_xxx",
+  "user": {
+    "user_id": 1,
+    "user_name": "admin",
+    "email": "admin@example.com",
+    "avatar": "",
+    "roles": ["super-admin"],
+    "buttons": ["admin.index", "admin.create", "..."]
   }
 }
 ```
@@ -170,7 +174,7 @@ POST /admin/auth/login
 **未认证响应（HTTP 401）：**
 ```json
 {
-  "message": "登录已过期，请重新登录"
+  "message": "Unauthenticated."
 }
 ```
 
@@ -187,17 +191,97 @@ Accept: application/json
 
 ### 统一响应格式
 
-所有接口统一返回 JSON 格式：
+项目调用 `JsonResource::withoutWrapping()` 取消默认的 `data` 包裹，因此响应格式按场景分为以下几种：
+
+**单条资源（GET 详情、POST 创建）：** 直接返回资源对象
 
 ```json
 {
-  "code": 200,       // 业务状态码：200 成功，400 业务错误，401 未认证
-  "message": "...", // 提示消息
-  "data": {}        // 业务数据
+  "id": 1,
+  "name": "...",
+  "...": "其他字段"
 }
 ```
 
-HTTP 状态码遵循 RESTful 规范：2xx 成功、4xx 客户端错误、5xx 服务器错误。表单验证错误返回 422，未认证返回 401。
+**分页列表（GET 列表）：** Laravel 标准分页结构
+
+```json
+{
+  "data": [ { "...": "资源对象" } ],
+  "links": { "first": "...", "last": "...", "prev": null, "next": "..." },
+  "meta": { "current_page": 1, "per_page": 15, "total": 100, "..." : "..." }
+}
+```
+
+**操作类响应（PUT/PATCH/DELETE）：** 返回 `message` 或 204 No Content
+
+```json
+{ "message": "操作成功" }
+```
+
+**认证响应（POST login）：** 返回 `access_token` 与用户信息
+
+```json
+{
+  "access_token": "1|laravel_sanctum_token_xxx",
+  "user": { "id": 1, "name": "admin", "..." : "..." }
+}
+```
+
+**错误响应：** HTTP 状态码 + `message`，验证错误附带 `errors`
+
+```json
+// 401 未认证
+{ "message": "Unauthenticated." }
+
+// 422 验证失败
+{ "message": "The given data was invalid.", "errors": { "field": ["错误信息"] } }
+```
+
+HTTP 状态码遵循 RESTful 规范：2xx 成功、4xx 客户端错误、5xx 服务器错误。创建资源返回 201，无内容操作返回 204，表单验证错误返回 422，未认证返回 401。
+
+### 调度任务日志接口（`/admin/schedule-logs`）
+
+| 方法 | 路径 | 说明 | 认证 | 权限 |
+|------|------|------|------|------|
+| GET | `/admin/schedule-logs` | 调度日志列表（分页） | 是 | `schedule-logs.index` |
+| GET | `/admin/schedule-logs/{id}` | 调度日志详情 | 是 | `schedule-logs.index` |
+
+列表支持以下查询参数：
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `per_page` | integer | 每页条数（1~100，默认 15） |
+| `name` | string | 任务名称关键词（模糊匹配） |
+| `type` | string | 任务类型：`command`、`callback`、`exec` |
+| `status` | integer | 执行状态：0 执行中、1 成功、2 失败、3 跳过 |
+| `start_date` | date | 开始时间起始 |
+| `end_date` | date | 开始时间截止 |
+
+**列表响应示例：**
+
+```json
+{
+  "data": [
+    {
+      "id": 10000012,
+      "name": "telescope:prune --hours=48",
+      "type": "command",
+      "expression": "0 1 * * *",
+      "status": 1,
+      "status_text": "执行成功",
+      "exit_code": 0,
+      "runtime": 1.235,
+      "exception": null,
+      "hostname": "app-server-01",
+      "started_at": "2026-08-19 01:00:00",
+      "finished_at": "2026-08-19 01:00:01"
+    }
+  ],
+  "links": { "...": "分页链接" },
+  "meta": { "total": 1, "...": "分页元信息" }
+}
+```
 
 ## 认证与权限
 
@@ -225,6 +309,8 @@ HTTP 状态码遵循 RESTful 规范：2xx 成功、4xx 客户端错误、5xx 服
 | `sessions` / `cache` / `jobs` | 会话/缓存/队列 |
 | `mail_codes` / `phone_codes` | 邮件/手机验证码 |
 | `login_histories` | 登录历史 |
+| `schedule_logs` | 调度任务执行日志 |
+| `attachments` | 附件管理 |
 | `pulse_*` / `telescope_*` | 监控数据 |
 
 初始数据由 `AdminSeeder` 和 `AdminMenuSeeder` 填充，包含超级管理员角色和完整的后台菜单结构。
@@ -240,6 +326,15 @@ HTTP 状态码遵循 RESTful 规范：2xx 成功、4xx 客户端错误、5xx 服
 | `mobile_replace(?string $value): string` | 手机号脱敏 |
 | `settings(string $key, $default)` | 快捷读取系统设置 |
 | `validation_exception($field, $message)` | 快速抛出表单验证异常 |
+
+### 系统设置项
+
+通过 `settings()` 函数读取，可在后台「配置管理」中修改：
+
+| Key | 类型 | 默认值 | 说明 |
+|-----|------|--------|------|
+| `schedule.log_enabled` | bool | `true` | 是否记录调度任务执行日志 |
+| `schedule.log_prunable_days` | int | `30` | 调度日志保留天数（1~365），超过后由 `model:prune` 自动清理 |
 
 ## 编码规范
 
@@ -288,7 +383,19 @@ php artisan test --coverage
 在 `routes/console.php` 中定义：
 
 - `auth:clear-resets` — 每日 01:00 清理过期密码重置令牌
-- `model:prune` — 每日 01:05 清理已标记删除的模型
+- `model:prune` — 每日 01:05 清理已标记删除的模型（含调度日志过期清理）
+- `stats:user` — 每日 01:10 统计昨日用户数据
+- `telescope:prune --hours=48 --keep-exceptions` — 每日 01:15 清理 Telescope 记录（保留异常）
+- `horizon:snapshot` — 每 5 分钟记录应用状态快照
+
+### 调度任务执行日志
+
+系统自动记录每个调度任务的执行情况，包括任务名称、类型（command/callback/exec）、Cron 表达式、执行状态（执行中/成功/失败/跳过）、退出码、耗时与异常摘要。
+
+- **自动记录**：通过监听 `ScheduledTaskStarting`、`ScheduledTaskFinished`、`ScheduledTaskFailed`、`ScheduledTaskSkipped` 事件自动写入 `schedule_logs` 表
+- **开关控制**：系统设置 `schedule.log_enabled`（默认开启）
+- **自动清理**：通过 `model:prune` 命令定期清理超过保留天数的日志，保留天数由 `schedule.log_prunable_days` 控制（默认 30 天）
+- **后台查看**：只读 API `/admin/schedule-logs`（列表分页 + 详情），支持按名称、类型、状态、时间范围筛选
 
 本地测试调度器：
 
