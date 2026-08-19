@@ -47,6 +47,23 @@ return [
             'report' => false,
         ],
 
+        'tos' => [
+            'driver' => 'tos',
+            'access_key' => env('VOLC_ACCESS_KEY'),
+            'access_secret' => env('VOLC_SECRET_KEY'),
+            'region' => env('TOS_REGION'),
+            'bucket' => env('TOS_BUCKET'),
+            'endpoint' => env('TOS_ENDPOINT'),
+            'url' => env('TOS_URL'),
+            'is_custom_domain' => false,
+            'options' => [
+                'max_age' => '31536000'
+            ],
+            'ssl' => true,
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
