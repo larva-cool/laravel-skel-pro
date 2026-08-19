@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cc4a89f07a783a68a1b808132bf18d2f",
+    "content-hash": "7af140a81130cf3faf89eb54c75ac3e2",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -2879,6 +2879,171 @@
             "time": "2026-03-17T14:54:13+00:00"
         },
         {
+            "name": "larva/flysystem-kodo",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/larva-cool/flysystem-kodo.git",
+                "reference": "9dbe05cd838390a9d1abf6680e015d3c9dea205c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/larva-cool/flysystem-kodo/zipball/9dbe05cd838390a9d1abf6680e015d3c9dea205c",
+                "reference": "9dbe05cd838390a9d1abf6680e015d3c9dea205c",
+                "shasum": ""
+            },
+            "require": {
+                "larva/qiniu-php-sdk": "^8.0",
+                "league/flysystem": "^2.0.0 || ^3.0.0",
+                "league/mime-type-detection": "^1.0.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.6"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Larva\\Flysystem\\Qiniu\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "This is a Flysystem adapter for the Qiniu kodo.",
+            "keywords": [
+                "Flysystem",
+                "Larva",
+                "kodo",
+                "qiniu"
+            ],
+            "support": {
+                "issues": "https://github.com/larva-cool/flysystem-kodo/issues",
+                "source": "https://github.com/larva-cool/flysystem-kodo/tree/1.1.0"
+            },
+            "time": "2026-08-05T02:30:24+00:00"
+        },
+        {
+            "name": "larva/laravel-flysystem-kodo",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/larva-cool/laravel-flysystem-kodo.git",
+                "reference": "c4e5b41e60a726897801c89292f8e50728f0e4c0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/larva-cool/laravel-flysystem-kodo/zipball/c4e5b41e60a726897801c89292f8e50728f0e4c0",
+                "reference": "c4e5b41e60a726897801c89292f8e50728f0e4c0",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^12.0 | ^13.0",
+                "larva/flysystem-kodo": "^1.0",
+                "league/flysystem": "^3.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.6"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Larva\\Flysystem\\Qiniu\\KodoServiceProvider"
+                    ]
+                },
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Larva\\Flysystem\\Qiniu\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "This is a Flysystem adapter for the Qiniu Kodo.",
+            "keywords": [
+                "Flysystem",
+                "Larva",
+                "kodo",
+                "qiniu"
+            ],
+            "support": {
+                "issues": "https://github.com/larva-cool/laravel-flysystem-kodo/issues",
+                "source": "https://github.com/larva-cool/laravel-flysystem-kodo/tree/2.1.0"
+            },
+            "time": "2026-07-24T07:51:28+00:00"
+        },
+        {
+            "name": "larva/qiniu-php-sdk",
+            "version": "8.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/larva-cool/qiniu-php-sdk.git",
+                "reference": "0229d4c983f24470d7fa0686ba5aa13bc553f400"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/larva-cool/qiniu-php-sdk/zipball/0229d4c983f24470d7fa0686ba5aa13bc553f400",
+                "reference": "0229d4c983f24470d7fa0686ba5aa13bc553f400",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-xml": "*",
+                "myclabs/php-enum": "^1.8.4",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5",
+                "squizlabs/php_codesniffer": "^3.10"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Qiniu/functions.php",
+                    "src/Qiniu/Http/Middleware/Middleware.php"
+                ],
+                "psr-4": {
+                    "Qiniu\\": "src/Qiniu"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Qiniu",
+                    "email": "sdk@qiniu.com",
+                    "homepage": "http://www.qiniu.com"
+                }
+            ],
+            "description": "Qiniu Resource (Cloud) Storage SDK for PHP",
+            "homepage": "http://developer.qiniu.com/",
+            "keywords": [
+                "cloud",
+                "qiniu",
+                "sdk",
+                "storage"
+            ],
+            "support": {
+                "source": "https://github.com/larva-cool/qiniu-php-sdk/tree/8.0.0"
+            },
+            "time": "2026-08-05T02:26:07+00:00"
+        },
+        {
             "name": "larva/volcengine-tls-sdk-php",
             "version": "1.1.2",
             "source": {
@@ -3735,6 +3900,69 @@
                 "source": "https://github.com/jmespath/jmespath.php/tree/2.9.2"
             },
             "time": "2026-07-06T18:56:19+00:00"
+        },
+        {
+            "name": "myclabs/php-enum",
+            "version": "1.8.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/myclabs/php-enum.git",
+                "reference": "e7be26966b7398204a234f8673fdad5ac6277802"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/myclabs/php-enum/zipball/e7be26966b7398204a234f8673fdad5ac6277802",
+                "reference": "e7be26966b7398204a234f8673fdad5ac6277802",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5",
+                "squizlabs/php_codesniffer": "1.*",
+                "vimeo/psalm": "^4.6.2 || ^5.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MyCLabs\\Enum\\": "src/"
+                },
+                "classmap": [
+                    "stubs/Stringable.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP Enum contributors",
+                    "homepage": "https://github.com/myclabs/php-enum/graphs/contributors"
+                }
+            ],
+            "description": "PHP Enum implementation",
+            "homepage": "https://github.com/myclabs/php-enum",
+            "keywords": [
+                "enum"
+            ],
+            "support": {
+                "issues": "https://github.com/myclabs/php-enum/issues",
+                "source": "https://github.com/myclabs/php-enum/tree/1.8.5"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/mnapoli",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/myclabs/php-enum",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-01-14T11:49:03+00:00"
         },
         {
             "name": "nesbot/carbon",
