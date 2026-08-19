@@ -73,6 +73,20 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'tls' => [ // TLS日志渠道
+            'driver' => 'monolog',
+            'level' => env('LOG_LEVEL', 'debug'),
+            'handler' => \Larva\Volc\MonologHandler::class,
+            'handler_with' => [
+                'ak' => env('VOLC_ACCESS_KEY'),
+                'sk' => env('VOLC_SECRET_KEY'),
+                'endpoint' => env('TLS_ENDPOINT', 'https://tls-cn-beijing.volces.com'),
+                'topicId' => env('TLS_TOPIC', ''),
+                'region' => env('TLS_REGION', 'cn-beijing'),
+            ],
+            'formatter' => \Larva\Volc\TlsLoggingFormatter::class,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
