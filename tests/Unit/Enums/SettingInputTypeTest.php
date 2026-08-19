@@ -49,6 +49,33 @@ class SettingInputTypeTest extends TestCase
         $this->assertSame('单选', SettingInputType::RADIO->label());
         $this->assertSame('多选', SettingInputType::CHECKBOX->label());
         $this->assertSame('远程下拉选择', SettingInputType::REMOTE_SELECT->label());
+        $this->assertSame('远程单选', SettingInputType::REMOTE_RADIO->label());
+        $this->assertSame('远程多选', SettingInputType::REMOTE_CHECKBOX->label());
+    }
+
+    #[Test]
+    #[TestDox('isRemote 仅远程类型返回 true')]
+    public function is_remote_only_true_for_remote_types(): void
+    {
+        $this->assertTrue(SettingInputType::REMOTE_SELECT->isRemote());
+        $this->assertTrue(SettingInputType::REMOTE_RADIO->isRemote());
+        $this->assertTrue(SettingInputType::REMOTE_CHECKBOX->isRemote());
+        $this->assertFalse(SettingInputType::STRING->isRemote());
+        $this->assertFalse(SettingInputType::SELECT->isRemote());
+        $this->assertFalse(SettingInputType::RADIO->isRemote());
+        $this->assertFalse(SettingInputType::CHECKBOX->isRemote());
+    }
+
+    #[Test]
+    #[TestDox('hasOptions 仅本地选项类型返回 true')]
+    public function has_options_only_true_for_local_option_types(): void
+    {
+        $this->assertTrue(SettingInputType::SELECT->hasOptions());
+        $this->assertTrue(SettingInputType::RADIO->hasOptions());
+        $this->assertTrue(SettingInputType::CHECKBOX->hasOptions());
+        $this->assertFalse(SettingInputType::STRING->hasOptions());
+        $this->assertFalse(SettingInputType::BOOL->hasOptions());
+        $this->assertFalse(SettingInputType::REMOTE_SELECT->hasOptions());
     }
 
     #[Test]
