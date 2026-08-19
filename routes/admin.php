@@ -24,6 +24,9 @@ Route::apiResource('roles', \App\Http\Controllers\Admin\RoleController::class);
 // 前端路由配置
 Route::get('routes', [\App\Http\Controllers\Admin\MainController::class, 'routes'])->name('routes');
 
+// 数据概览
+Route::get('dashboard/stats', [\App\Http\Controllers\Admin\DashboardController::class, 'stats'])->name('dashboard.stats');
+
 // 通知管理
 Route::get('notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
 Route::get('notifications/unread', [\App\Http\Controllers\Admin\NotificationController::class, 'unread'])->name('notifications.unread');
