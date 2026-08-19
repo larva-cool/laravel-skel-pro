@@ -429,6 +429,18 @@ return new class extends Migration
                             ['title' => '管理调试记录', 'permission' => 'debug.manage'],
                         ],
                     ],
+                    [
+                        'key' => 'monitor.schedule-log',
+                        'path' => 'schedule-log',
+                        'name' => 'ScheduleLog',
+                        'component' => '/monitor/schedule-log/index',
+                        'title' => '调度日志',
+                        'icon' => 'ri:time-line',
+                        'type' => MenuType::MENU,
+                        'sort' => 3,
+                        'keep_alive' => true,
+                        'permission' => 'schedule-logs.index',
+                    ],
                 ],
             ],
 

@@ -423,6 +423,26 @@ return new class extends Migration
                 'remark' => '孤儿附件自动清理天数，0 表示不清理。',
             ],
 
+            // 调度配置
+            [
+                'name' => '记录调度任务日志',
+                'key' => 'schedule.log_enabled',
+                'value' => '1',
+                'cast_type' => SettingType::CAST_TYPE_BOOL,
+                'input_type' => SettingType::CAST_TYPE_BOOL,
+                'remark' => '是否记录调度任务的执行日志。',
+            ],
+            [
+                'name' => '调度日志清理时间',
+                'key' => 'schedule.log_prunable_days',
+                'value' => '30',
+                'cast_type' => SettingType::CAST_TYPE_INT,
+                'input_type' => SettingType::CAST_TYPE_INT,
+                'param' => '{"min": 1, "max": 365}',
+                'remark' => '调度任务日志保留天数，超期由 model:prune 命令清理。',
+                'sort' => 1,
+            ],
+
         ]);
     }
 

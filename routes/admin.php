@@ -120,6 +120,10 @@ Route::group(['prefix' => 'debug'], function (Registrar $registrar) {
     $registrar->put('entries/{id}/resolve', [\App\Http\Controllers\Admin\DebugController::class, 'resolve'])->name('debug.resolve');
 });
 
+// 调度任务日志（仅列表、详情，只读）
+Route::get('schedule-logs', [\App\Http\Controllers\Admin\ScheduleLogController::class, 'index'])->name('schedule-logs.index');
+Route::get('schedule-logs/{id}', [\App\Http\Controllers\Admin\ScheduleLogController::class, 'show'])->name('schedule-logs.show');
+
 // 队列管理（Laravel Horizon 数据代理）
 Route::group(['prefix' => 'queue'], function (Registrar $registrar) {
     $registrar->get('stats', [\App\Http\Controllers\Admin\QueueController::class, 'stats'])->name('queue.stats');

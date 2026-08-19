@@ -227,6 +227,7 @@ class SettingController extends Controller
             'email_captcha' => '邮件设置',
             'user' => '会员设置',
             'upload' => '上传设置',
+            'schedule' => '调度设置',
             'openai' => 'OpenAI 配置',
             'broadcast' => '点播设置',
         ];
