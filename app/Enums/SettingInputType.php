@@ -26,6 +26,8 @@ enum SettingInputType: string implements \JsonSerializable
     case RADIO = 'radio'; // 单选
     case CHECKBOX = 'checkbox'; // 多选
     case REMOTE_SELECT = 'remote_select'; // 远程下拉选择
+    case REMOTE_RADIO = 'remote_radio'; // 远程单选
+    case REMOTE_CHECKBOX = 'remote_checkbox'; // 远程多选
 
     /**
      * 获取配置输入类型标签
@@ -41,6 +43,24 @@ enum SettingInputType: string implements \JsonSerializable
             self::RADIO => '单选',
             self::CHECKBOX => '多选',
             self::REMOTE_SELECT => '远程下拉选择',
+            self::REMOTE_RADIO => '远程单选',
+            self::REMOTE_CHECKBOX => '远程多选',
         };
+    }
+
+    /**
+     * 是否为远程数据源类型（配置参数需包含 url）
+     */
+    public function isRemote(): bool
+    {
+        return in_array($this, [self::REMOTE_SELECT, self::REMOTE_RADIO, self::REMOTE_CHECKBOX], true);
+    }
+
+    /**
+     * 是否为需要 options 配置参数的选项类型
+     */
+    public function hasOptions(): bool
+    {
+        return in_array($this, [self::SELECT, self::RADIO, self::CHECKBOX], true);
     }
 }

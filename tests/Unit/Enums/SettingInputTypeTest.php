@@ -33,6 +33,8 @@ class SettingInputTypeTest extends TestCase
         $this->assertSame('radio', SettingInputType::RADIO->value);
         $this->assertSame('checkbox', SettingInputType::CHECKBOX->value);
         $this->assertSame('remote_select', SettingInputType::REMOTE_SELECT->value);
+        $this->assertSame('remote_radio', SettingInputType::REMOTE_RADIO->value);
+        $this->assertSame('remote_checkbox', SettingInputType::REMOTE_CHECKBOX->value);
     }
 
     #[Test]
