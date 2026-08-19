@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
 
+use App\Enums\SettingInputType;
 use App\Http\Controllers\Admin\SettingController;
 use App\Models\Admin\Admin;
 use App\Models\System\Setting;
@@ -453,6 +454,32 @@ class SettingControllerTest extends TestCase
     public function guest_cannot_get_setting_groups(): void
     {
         $this->getJson('/admin/settings/groups')
+            ->assertUnauthorized();
+    }
+
+    #[Test]
+    #[TestDox('获取输入类型列表返回所有枚举选项')]
+    public function admin_can_get_setting_input_types(): void
+    {
+        $response = $this->actingAsAdmin()->getJson('/admin/settings/input-types');
+
+        $response->assertOk()
+            ->assertJsonCount(count(SettingInputType::cases()), 'data')
+            ->assertJsonStructure(['data' => [['value', 'label']]])
+            ->assertJsonPath('data.0.value', SettingInputType::STRING->value)
+            ->assertJsonPath('data.0.label', SettingInputType::STRING->label());
+
+        $this->assertSame(
+            SettingInputType::values(),
+            array_column($response->json('data'), 'value')
+        );
+    }
+
+    #[Test]
+    #[TestDox('未登录不能获取输入类型列表')]
+    public function guest_cannot_get_setting_input_types(): void
+    {
+        $this->getJson('/admin/settings/input-types')
             ->assertUnauthorized();
     }
 }
