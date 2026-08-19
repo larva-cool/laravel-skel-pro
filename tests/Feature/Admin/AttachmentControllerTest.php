@@ -79,9 +79,24 @@ class AttachmentControllerTest extends TestCase
         $response->assertOk()
             ->assertJsonCount(2, 'data')
             ->assertJsonStructure([
-                'data' => [['id', 'name', 'original_name', 'disk', 'path', 'url', 'type', 'extension', 'mime_type', 'size', 'size_text', 'created_at']],
+                'data' => [['id', 'name', 'original_name', 'disk', 'path', 'url', 'preview_url', 'type', 'extension', 'mime_type', 'size', 'size_text', 'created_at']],
                 'meta' => ['current_page', 'total'],
             ]);
+    }
+
+    #[Test]
+    #[TestDox('私有磁盘附件列表返回临时签名预览地址')]
+    public function private_disk_attachment_returns_signed_preview_url(): void
+    {
+        Storage::fake('local');
+        $this->createAttachment(['disk' => 'local']);
+
+        $response = $this->actingAsAdmin()->getJson('/admin/attachments');
+
+        $response->assertOk()
+            ->assertJsonPath('data.0.url', null);
+
+        $this->assertNotNull($response->json('data.0.preview_url'));
     }
 
     #[Test]
