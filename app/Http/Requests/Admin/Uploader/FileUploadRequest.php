@@ -28,7 +28,6 @@ class FileUploadRequest extends UploadRequest
         return [
             'file' => [
                 'required',
-                'image',
                 File::types($types),
             ],
         ];

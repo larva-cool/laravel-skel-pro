@@ -388,4 +388,58 @@ class AttachmentControllerTest extends TestCase
         $response->assertOk()->assertJsonStructure(['id', 'storage', 'file_path', 'file_name']);
         $this->assertDatabaseHas('attachments', ['id' => $response->json('id'), 'original_name' => 'photo.jpg']);
     }
+
+    #[Test]
+    #[TestDox('通过上传接口上传非图片文件会自动写入附件台账')]
+    public function upload_endpoint_accepts_non_image_file(): void
+    {
+        settings()->set('upload.storage', 'public');
+
+        $response = $this->actingAsAdmin()->postJson('/admin/uploader/file', [
+            'file' => UploadedFile::fake()->create('report.pdf', 16, 'application/pdf'),
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('attachments', [
+            'id' => $response->json('id'),
+            'original_name' => 'report.pdf',
+            'extension' => 'pdf',
+        ]);
+    }
+
+    #[Test]
+    #[TestDox('通过图片上传接口上传图片会自动写入附件台账')]
+    public function image_upload_endpoint_records_attachment(): void
+    {
+        settings()->set('upload.storage', 'public');
+        settings()->set('upload.optimize_image', false);
+
+        $response = $this->actingAsAdmin()->postJson('/admin/uploader/image', [
+            'file' => UploadedFile::fake()->image('avatar.png'),
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('attachments', [
+            'id' => $response->json('id'),
+            'original_name' => 'avatar.png',
+        ]);
+    }
+
+    #[Test]
+    #[TestDox('通过视频上传接口上传视频会自动写入附件台账')]
+    public function video_upload_endpoint_records_attachment(): void
+    {
+        settings()->set('upload.storage', 'public');
+
+        $response = $this->actingAsAdmin()->postJson('/admin/uploader/video', [
+            'file' => UploadedFile::fake()->create('clip.mp4', 32, 'video/mp4'),
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('attachments', [
+            'id' => $response->json('id'),
+            'original_name' => 'clip.mp4',
+            'extension' => 'mp4',
+        ]);
+    }
 }
