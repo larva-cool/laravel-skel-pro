@@ -74,6 +74,7 @@ return new class extends Migration
                 'value' => 'Laravel 13',
                 'cast_type' => SettingType::CAST_TYPE_STRING,
                 'input_type' => 'textarea',
+                'param' => '{"maxlength": 255}',
                 'remark' => '网站描述（一般不超过200个字符）。',
             ],
             [
