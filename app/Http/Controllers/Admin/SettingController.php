@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\SettingInputType;
 use App\Http\Requests\Admin\Setting\SettingSaveRequest;
 use App\Http\Requests\Admin\Setting\StoreConfigRequest;
 use App\Http\Resources\Admin\SettingResource;
@@ -29,7 +30,7 @@ class SettingController extends Controller
     public function __construct()
     {
         $this->middleware('auth:admin');
-        $this->middleware('permission:settings.index')->only(['index', 'show', 'groups']);
+        $this->middleware('permission:settings.index')->only(['index', 'show', 'groups', 'inputTypes']);
         $this->middleware('permission:settings.create')->only(['store']);
         $this->middleware('permission:settings.edit')->only(['update', 'batchUpdate']);
         $this->middleware('permission:settings.delete')->only(['destroy']);
@@ -160,6 +161,19 @@ class SettingController extends Controller
             'groups' => array_values($groups),
             'disks' => $disks,
         ]);
+    }
+
+    /**
+     * 获取所有可用的配置输入类型（供前端下拉选择使用）
+     */
+    public function inputTypes(): JsonResponse
+    {
+        $data = array_map(
+            fn (SettingInputType $case): array => ['value' => $case->value, 'label' => $case->label()],
+            SettingInputType::cases()
+        );
+
+        return response()->json(['data' => $data]);
     }
 
     /**

@@ -60,6 +60,7 @@ Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class)->
 
 // 配置管理
 Route::get('settings/groups', [\App\Http\Controllers\Admin\SettingController::class, 'groups'])->name('settings.groups');
+Route::get('settings/input-types', [\App\Http\Controllers\Admin\SettingController::class, 'inputTypes'])->name('settings.input-types');
 Route::put('settings/batch', [\App\Http\Controllers\Admin\SettingController::class, 'batchUpdate'])->name('settings.batch');
 Route::apiResource('settings', \App\Http\Controllers\Admin\SettingController::class);
 

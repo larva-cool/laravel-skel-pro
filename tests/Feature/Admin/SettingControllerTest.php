@@ -200,6 +200,28 @@ class SettingControllerTest extends TestCase
     }
 
     #[Test]
+    #[TestDox('创建配置时 input_type 支持远程下拉')]
+    public function create_setting_accepts_remote_select_input_type(): void
+    {
+        $response = $this->actingAsAdmin()->postJson('/admin/settings', [
+            'name' => '远程下拉配置',
+            'key' => 'test.remote_select',
+            'value' => 'local',
+            'cast_type' => 'string',
+            'input_type' => 'remote_select',
+            'param' => '{"url":"/admin/settings/options"}',
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('input_type', 'remote_select');
+
+        $this->assertDatabaseHas('settings', [
+            'key' => 'test.remote_select',
+            'input_type' => 'remote_select',
+        ]);
+    }
+
+    #[Test]
     #[TestDox('获取配置详情')]
     public function admin_can_view_setting(): void
     {
