@@ -69,8 +69,9 @@ abstract class UploadRequest extends FormRequest
         }
 
         $result = $this->buildUploadResult($file, $fileName, $filePath);
+        $attachment = $this->recordAttachment($result);
 
-        return ['id' => $this->recordAttachment($result)->id] + $result;
+        return ['id' => $attachment->id, 'url' => app(AttachmentService::class)->url($attachment)] + $result;
     }
 
     /**

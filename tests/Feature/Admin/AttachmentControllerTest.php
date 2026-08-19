@@ -404,8 +404,23 @@ class AttachmentControllerTest extends TestCase
             'file' => UploadedFile::fake()->image('photo.jpg'),
         ]);
 
-        $response->assertOk()->assertJsonStructure(['id', 'storage', 'file_path', 'file_name']);
+        $response->assertOk()->assertJsonStructure(['id', 'storage', 'file_path', 'file_name', 'url']);
         $this->assertDatabaseHas('attachments', ['id' => $response->json('id'), 'original_name' => 'photo.jpg']);
+    }
+
+    #[Test]
+    #[TestDox('图片上传接口返回可直接预览的访问地址')]
+    public function image_upload_endpoint_returns_preview_url(): void
+    {
+        settings()->set('upload.storage', 'public');
+
+        $response = $this->actingAsAdmin()->postJson('/admin/uploader/image', [
+            'file' => UploadedFile::fake()->image('cover.jpg'),
+        ]);
+
+        $response->assertOk();
+        $this->assertNotNull($response->json('url'));
+        $this->assertStringContainsString($response->json('file_name'), (string) $response->json('url'));
     }
 
     #[Test]
