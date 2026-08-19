@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin\Setting;
 
+use App\Enums\SettingInputType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -43,7 +44,7 @@ class SettingSaveRequest extends FormRequest
             ],
             'value' => ['nullable', 'string'],
             'cast_type' => ['required', 'string', 'in:string,int,bool,float,json'],
-            'input_type' => ['required', 'string', 'in:string,textarea,int,bool,select,radio,checkbox'],
+            'input_type' => ['required', 'string', Rule::enum(SettingInputType::class)],
             'param' => ['nullable', 'string', 'json'],
             'sort' => ['sometimes', 'integer', 'min:0'],
             'remark' => ['nullable', 'string', 'max:255'],
