@@ -58,6 +58,7 @@ return [
 
     // System settings
     'setting_save_success' => 'Settings saved successfully.',
+    'setting_save_empty' => 'No settings to save, please check the submitted data.',
 
     // Attachment management
     'attachment_delete_success' => 'Attachment deleted successfully.',

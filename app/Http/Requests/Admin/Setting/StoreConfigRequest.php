@@ -19,6 +19,26 @@ use Illuminate\Support\Arr;
 class StoreConfigRequest extends FormRequest
 {
     /**
+     * 将请求数据统一整理为「扁平点号 key」形式，并剔除数据库中不存在的配置项
+     *
+     * 前端提交的是扁平点号 key（如 system.title），也兼容嵌套数组（如 system => [title => ...]）。
+     */
+    protected function prepareForValidation(): void
+    {
+        $input = $this->all();
+
+        $data = [];
+        foreach (Setting::query()->pluck('key') as $key) {
+            // Arr::has/Arr::get 会先按完整 key 精确匹配，再按点号做嵌套查找，因此两种格式均可命中
+            if (Arr::has($input, $key)) {
+                $data[$key] = Arr::get($input, $key);
+            }
+        }
+
+        $this->replace($data);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -30,8 +50,8 @@ class StoreConfigRequest extends FormRequest
 
         $rules = [];
         foreach ($settingKeys as $key => $castType) {
-            // 使用点号转义规则（Laravel 验证支持点号嵌套）
-            $ruleKey = str_replace('.', '.', $key);
+            // 转义点号，避免 Laravel 将 system.title 当作嵌套路径 $data['system']['title']
+            $ruleKey = str_replace('.', '\.', $key);
             $rules[$ruleKey] = match ($castType) {
                 'int', 'integer' => ['nullable', 'integer'],
                 'float' => ['nullable', 'numeric'],
@@ -41,25 +61,5 @@ class StoreConfigRequest extends FormRequest
         }
 
         return $rules;
-    }
-
-    /**
-     * 获取已验证的配置数据（只保留已知的配置项）
-     */
-    public function validated($key = null, $default = null): array
-    {
-        $validated = parent::validated();
-        $knownKeys = Setting::query()->pluck('key')->toArray();
-        $dotted = Arr::dot($validated);
-
-        // 只保留数据库中存在的 key
-        $filtered = [];
-        foreach ($dotted as $key => $value) {
-            if (in_array($key, $knownKeys, true)) {
-                $filtered[$key] = $value;
-            }
-        }
-
-        return $filtered;
     }
 }

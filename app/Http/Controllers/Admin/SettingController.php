@@ -183,13 +183,16 @@ class SettingController extends Controller
             $items[] = ['key' => $key, 'value' => (string) $val, 'updated_at' => $updateTime];
         }
 
-        if (! empty($items)) {
-            Setting::query()->upsert(
-                $items,
-                ['key'],
-                ['value', 'updated_at'],
-            );
+        // 没有任何可写入的配置项时明确报错，避免静默失败让前端误以为保存成功
+        if (empty($items)) {
+            return response()->json(['message' => __('admin.setting_save_empty')], 422);
         }
+
+        Setting::query()->upsert(
+            $items,
+            ['key'],
+            ['value', 'updated_at'],
+        );
 
         settings()->clearCache();
         settings()->all(true);

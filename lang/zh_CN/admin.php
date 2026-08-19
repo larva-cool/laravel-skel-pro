@@ -58,6 +58,7 @@ return [
 
     // 系统设置
     'setting_save_success' => '设置保存成功',
+    'setting_save_empty' => '没有可保存的配置项，请检查提交的数据',
 
     // 附件管理
     'attachment_delete_success' => '附件删除成功',

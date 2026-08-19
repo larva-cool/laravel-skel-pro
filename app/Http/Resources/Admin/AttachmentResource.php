@@ -52,6 +52,7 @@ class AttachmentResource extends JsonResource
             'disk' => $this->disk,
             'path' => $this->path,
             'url' => $service->url($this->resource),
+            'preview_url' => $this->previewUrl($service),
             'type' => $this->type,
             'extension' => $this->extension,
             'mime_type' => $this->mime_type,
@@ -64,5 +65,24 @@ class AttachmentResource extends JsonResource
             'created_at' => $this->created_at?->toDateTimeString(),
             $this->mergeWhen($this->withExists, fn () => ['exists' => $service->exists($this->resource)]),
         ];
+    }
+
+    /**
+     * 获取可直接用于展示的地址。
+     *
+     * 公开磁盘返回直链，私有磁盘退化为临时签名地址；取址失败时返回 null。
+     */
+    protected function previewUrl(AttachmentService $service): ?string
+    {
+        $url = $service->url($this->resource);
+        if ($url !== null) {
+            return $url;
+        }
+
+        try {
+            return $service->temporaryUrl($this->resource);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

@@ -352,6 +352,37 @@ class SettingControllerTest extends TestCase
     }
 
     #[Test]
+    #[TestDox('批量更新配置支持扁平点号 key（前端实际提交格式）')]
+    public function admin_can_batch_update_settings_with_flat_dotted_keys(): void
+    {
+        $response = $this->actingAsAdmin()->putJson('/admin/settings/batch', [
+            'system.title' => '扁平键标题',
+            'sms_captcha.length' => 8,
+            'user.enable_register' => 0,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('message', '设置保存成功');
+
+        $this->assertDatabaseHas('settings', [
+            'key' => 'system.title',
+            'value' => '扁平键标题',
+        ]);
+        $this->assertDatabaseHas('settings', [
+            'key' => 'sms_captcha.length',
+            'value' => '8',
+        ]);
+        $this->assertDatabaseHas('settings', [
+            'key' => 'user.enable_register',
+            'value' => '0',
+        ]);
+
+        $this->assertEquals('扁平键标题', settings('system.title'));
+        $this->assertEquals(8, settings('sms_captcha.length'));
+        $this->assertFalse(settings('user.enable_register'));
+    }
+
+    #[Test]
     #[TestDox('批量更新时整型字段传入非数字返回 422')]
     public function batch_update_validates_int_fields(): void
     {
@@ -362,6 +393,29 @@ class SettingControllerTest extends TestCase
         ]);
 
         $response->assertUnprocessable();
+    }
+
+    #[Test]
+    #[TestDox('批量更新时扁平点号 key 的整型字段传入非数字返回 422')]
+    public function batch_update_validates_int_fields_with_flat_dotted_keys(): void
+    {
+        $response = $this->actingAsAdmin()->putJson('/admin/settings/batch', [
+            'sms_captcha.length' => 'not-a-number',
+        ]);
+
+        $response->assertUnprocessable();
+    }
+
+    #[Test]
+    #[TestDox('批量更新时没有匹配到任何已知配置项返回 422')]
+    public function batch_update_returns_422_when_no_known_settings_matched(): void
+    {
+        $response = $this->actingAsAdmin()->putJson('/admin/settings/batch', [
+            'not.a.real.key' => 'value',
+        ]);
+
+        $response->assertUnprocessable()
+            ->assertJsonPath('message', '没有可保存的配置项，请检查提交的数据');
     }
 
     #[Test]
